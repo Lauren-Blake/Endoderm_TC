@@ -2,9 +2,9 @@
 title: "Untitled"
 author: "First Last"
 date: YYYY-MM-DD
-output:
+output: 
   html_document:
-    css: floating-toc.css
+    css: layout/floating-toc.css
     toc: true
 ---
 
@@ -13,7 +13,7 @@ output:
 **Code version:** `r system("git log -1 --format='%H'", intern = TRUE)`
 
 ```{r chunk-options, include=FALSE}
-source("../layout/chunk-options.R")
+source("layout/chunk-options.R")
 ```
 
 This is a template for writing reports with R Markdown.
