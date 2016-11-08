@@ -1,0 +1,410 @@
+---
+title: "Normalization"
+author: "Lauren Blake"
+date: "November 8, 2016"
+output: html_document
+---
+
+
+## VISUALIZATION OF THE RAW DATA 
+
+```{r}
+# Load libraries
+
+library("gplots")
+library("ggplot2")
+library("RColorBrewer")
+library("scales")
+library("edgeR")
+source("~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R")
+
+# Load colors 
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+# Set cutoff for lowly expressed genes
+
+expr_cutoff <- 1.5
+
+# Load count data
+
+gene_counts_combined_raw_data <-read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_combined.txt", header=TRUE)
+
+counts_genes <- gene_counts_combined_raw_data[1:30030,2:65]
+rownames(counts_genes) <- gene_counts_combined_raw_data[1:30030,1]
+#counts_genes <- gene_counts
+
+# Load sample info
+
+Endoderm_mapping_core_1 <- read.csv("~/Desktop/Endoderm_TC/ashlar-trial/data/Endoderm_mapping_core_1.csv")
+
+# Make labels with species and day
+species <- Endoderm_mapping_core_1$Species
+day <- Endoderm_mapping_core_1$Day
+individual <- Endoderm_mapping_core_1$Individual
+Sample_ID <- Endoderm_mapping_core_1$Sample_ID
+
+labels <- paste(species, day, sep=" ")
+
+```
+
+```{r}
+# Hierarchical clustering on raw data
+
+cors <- cor(counts_genes, method="spearman", use="pairwise.complete.obs")
+
+heatmap.2( cors, scale="column", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol=labels, ColSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Species))], RowSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+ 
+```
+
+```{r}
+#PCA function (original code from Julien Roux)
+#Load in the plot_scores function
+plot_scores <- function(pca, scores, n, m, cols, points=F, pchs =20, legend=F){
+  xmin <- min(scores[,n]) - (max(scores[,n]) - min(scores[,n]))*0.05
+  if (legend == T){ ## let some room (35%) for a legend                                                                                                                                                 
+    xmax <- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.50
+  }
+  else {
+    xmax <- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.05
+  }
+  ymin <- min(scores[,m]) - (max(scores[,m]) - min(scores[,m]))*0.05
+  ymax <- max(scores[,m]) + (max(scores[,m]) - min(scores[,m]))*0.05
+  plot(scores[,n], scores[,m], xlab=paste("PC", n, ": ", round(summary(pca)$importance[2,n],3)*100, "% variance explained", sep=""), ylab=paste("PC", m, ": ", round(summary(pca)$importance[2,m],3)*100, "% variance explained", sep=""), xlim=c(xmin, xmax), ylim=c(ymin, ymax), type="n")
+  if (points == F){
+    text(scores[,n],scores[,m], rownames(scores), col=cols, cex=1)
+  }
+  else {
+    points(scores[,n],scores[,m], col=cols, pch=pchs, cex=1.3)
+  }
+}
+
+# Run the PCA 
+
+# Check that there's no "NAs" in the data
+select <- counts_genes
+summary(apply(select, 1, var) == 0)
+
+row_sub = apply(counts_genes, 1, function(row) all(row !=0 ))
+counts_genes_no0 <- counts_genes[row_sub,]
+
+# Perform PCA
+
+pca_genes <- prcomp(t(counts_genes_no0), scale = T)
+scores <- pca_genes$x
+
+#Make PCA plots with the factors colored by day
+
+### PCs 1 and 2 Raw Data
+for (n in 1:1){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+for (n in 1:1){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+```
+
+## INITIALIZE NORMALIZATION
+
+```{r}
+expr_cutoff <- 1.5
+# Let's see what happens when we take the log2 of the raw counts
+
+log_counts_genes <- as.data.frame(log2(counts_genes))
+head(log_counts_genes)
+
+# Plot density (a) by species and (b) by day
+plotDensities(log_counts_genes, col=pal[as.numeric(Endoderm_mapping_core_1$Species)], legend="topright")
+
+plotDensities(log_counts_genes, col=pal[as.numeric(Endoderm_mapping_core_1$Day)], legend="topright")
+
+# Log2(CPM)
+
+cpm <- cpm(counts_genes, log=TRUE)
+
+# Make plot 
+hist(cpm, main = "log2(CPM) values in unfiltered data (n = 64 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+# Plot density (a) by species and (b) by day
+plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Species)], legend="topright")
+
+plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Day)], legend="topright")
+
+# Plot library size
+
+#boxplot_library_size <- ggplot(dge_original$samples, aes(x = as.factor(Endoderm_mapping_core_1$Day), y = dge_original$samples$lib.size, fill = Endoderm_mapping_core_1$Species)) + geom_boxplot()
+
+#boxplot_library_size + labs(title = "Library size by day") + labs(y = "Library size") + labs(x = "Day") + guides(fill=guide_legend(title="Species"))
+
+```
+
+### Filtering lowly expressed genes
+
+We are beginning with 30030 genes and 64 samples (8 samples/species x 4 timepoints/species x 2 species)
+# Based on what we have learned from Roux and Blake (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html), we will use a cutoff of log2(CPM) > 1.5 in at least 16 of the human samples and 16 of the chimp samples.
+
+```{r}
+
+
+# Make plot 
+hist(cpm, main = "log2(CPM) values in unfiltered data (n = 64 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+# Filter data
+
+humans <- c(1:8, 17:24, 33:40, 49:56)
+chimps <- c(9:16, 25:32, 41:48, 57:64 )
+
+
+cpm_filtered <- (rowSums(cpm[,humans] > 1.5) > 16 & rowSums(cpm[,chimps] > 1.5) > 16)
+
+genes_in_cutoff <- cpm[cpm_filtered==TRUE,]
+dim(genes_in_cutoff)
+
+# Make a histogram of the filtered data 
+
+hist(as.numeric(unlist(genes_in_cutoff)), main = "log2(CPM) values in filtered data (n = 64 samples, 10,270 genes)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+
+```
+
+## About GC Content Normalization
+
+# Roux and Blake's comparative analysis (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html) showed that GC content normalization does not substantially impact gene counts. Therefore, we will not perform it in this analysis. 
+
+## Correction for library size
+
+```{r}
+# Find the original counts of all of the genes that fit the criteria 
+
+counts_genes_in_cutoff <- counts_genes[cpm_filtered==TRUE,]
+dim(counts_genes_in_cutoff)
+
+# Take the TMM of the counts only for the genes that remain after filtering
+
+dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
+
+head(summary(cpm_in_cutoff))
+
+# Make density plots of the filtered data
+
+plotDensities(cpm_in_cutoff, col=pal[as.numeric(species)], legend="topright")
+
+plotDensities(cpm_in_cutoff, col=pal[as.numeric(day)], legend="topright")
+
+#gplots::heatmap.2(x=as.matrix(t(cpm_in_cutoff)),
+#                  , distfun = dist(x, method = "euclidean"), 
+#                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, col=colors, denscol="white", ColSideColors=pal[as.integer(as.factor(Day))+9])
+
+cors <- cor(cpm_in_cutoff, method="spearman", use="pairwise.complete.obs")
+
+heatmap.2( cors, scale="column", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol=labels, ColSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Species))], RowSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+
+```
+
+## Visualizing the filtered data
+
+```{r}
+# Make PCA plots with the factors colored by day
+
+pca_genes <- prcomp(t(cpm_in_cutoff), scale = T)
+scores <- pca_genes$x
+
+### PCs 1 and 2 
+for (n in 1:1){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+for (n in 2:2){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+```
+
+From the PCA plot, we see that Sample D0201570116 is a clear outlier and doesn't cluster with anything, including its technical replicate. We will remove this sample and then go through the same process as above to visualize the data. 
+
+## Normalization after removal of Sample D0201570116
+
+```{r}
+# Get data and sample info
+
+counts_genes63 <- counts_genes[,-2]
+dim(counts_genes63)
+
+After_removal_sample_info <- read.csv("~/Desktop/Endoderm_TC/ashlar-trial/data/After_removal_sample_info.csv")
+
+Species <- After_removal_sample_info$Species
+species <- After_removal_sample_info$Species
+day <- After_removal_sample_info$Day
+individual <- After_removal_sample_info$Individual
+Sample_ID <- After_removal_sample_info$Sample_ID
+labels <- paste(Sample_ID, day, sep=" ")
+
+
+# Log2(CPM)
+
+cpm <- cpm(counts_genes63, log=TRUE)
+
+# Make plot 
+hist(cpm, main = "log2(CPM) values in unfiltered data (n = 64 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+abline(v = 1.5, col = "red", lwd = 3)
+
+# Filter lowly expressed genes
+
+humans <- c(1:7, 16:23, 32:39, 48:55)
+chimps <- c(8:15, 24:31, 40:47, 56:63)
+
+cpm_filtered <- (rowSums(cpm[,humans] > 1.5) > 15 & rowSums(cpm[,chimps] > 1.5) > 16)
+
+genes_in_cutoff <- cpm[cpm_filtered==TRUE,]
+dim(genes_in_cutoff)
+
+# Find the original counts of all of the genes that fit the criteria 
+
+counts_genes_in_cutoff <- counts_genes63[cpm_filtered==TRUE,]
+dim(counts_genes_in_cutoff)
+
+# Take the TMM of the counts only for the genes that remain after filtering
+
+dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
+
+head(summary(cpm_in_cutoff))
+
+# Make plot 
+hist(cpm_in_cutoff, main = "log2(CPM) values in filtered data (10,304 genes from 63 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+
+# Make table of the normalized data
+
+#write.table(cpm_in_cutoff,file="~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_combined_norm_data.txt",sep="\t", col.names = T, row.names = T)
+
+
+```
+
+There are 10,304 genes remaining. 
+
+```{r}
+
+sample <- Endoderm_mapping_core_1$Sample[-2]
+
+# Make PCA plots with the factors colored by day
+
+pca_genes <- prcomp(t(cpm_in_cutoff), scale = T, retx = TRUE, center = TRUE)
+scores <- pca_genes$x
+
+### PCs Plots on filtered and normalized data
+# PCs 1 and 2
+for (n in 1:1){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+for (n in 1:1){
+  col.v <- pal[as.integer(day)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day), shape=species, size=2)) + geom_point() + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCs 1 and 2 from global normalized expression")
+#ggplotly()
+
+# PCs 2 and 3
+for (n in 2:2){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+# For some reason the command below is giving an error:
+#ggplot(data=pcs, aes(x=pc2, y=pc3, color=as.factor(day), shape=Species, size=2))  + geom_point() + xlab(paste("PC2 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC3 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 2 and 3 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day")
+#ggplotly()
+
+# PCs 3 and 4
+#for (n in 3:3){
+#  col.v <- pal[as.integer(species)]
+#  plot_scores(pca_genes, scores, n, n+1, col.v)
+#}
+
+ggplot(data=pcs, aes(x=pc3, y=pc4, color=as.factor(day), shape=Species, size=2)) + geom_point() + xlab(paste("PC3 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC4 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 3 and 4 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCs 3 and 4 from global normalized expression")
+#ggplotly()
+
+# PCs 4 and 5
+#for (n in 4:4){
+#  col.v <- pal[as.integer(species)]
+#  plot_scores(pca_genes, scores, n, n+1, col.v)
+#}
+
+ggplot(data=pcs, aes(x=pc4, y=pc5, color=as.factor(day), shape=Species, size=2))  + geom_point() + xlab(paste("PC4 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC5 (",(summary$importance[2,2]*100), "% of variance)")) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCs 4 and 5 from global normalized expression")
+#ggplotly()
+
+# Hierarchical clustering on normalized data
+
+cors <- cor(cpm_in_cutoff, method="pearson", use="pairwise.complete.obs")
+
+heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels,labRow=' ', ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+#gplots::heatmap.2(x=as.matrix(t(cpm_in_cutoff)),
+#                  , distfun = dist(x, method = "euclidean"), 
+#                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, col=colors, denscol="white", ColSideColors=pal[as.integer(as.factor(Day))+9])
+          
+
+```
+
+PC 1 is correlated with day, PC 2 with species, PC 3 is somewhat by species, PC 4 with day, and PC 5 separates one sample (D228815) from the rest of the samples. 
+
+### What if we just looked at Days 0, 1, and 3?
+
+```{r}
+# Remove day 2 (samples) 15 31 47 63
+no_day_two <- cpm_in_cutoff[,-(31:47)]
+no_day_two_species <- species[-(31:47)]
+head(no_day_two_species)
+no_day_two_day <- day[-(31:47)]
+head(no_day_two_day)
+
+
+# Run PCA
+pca_genes <- prcomp(t(no_day_two), scale = T, retx = TRUE, center = TRUE)
+scores <- pca_genes$x
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(no_day_two_day), shape=no_day_two_species, size=2))  +  geom_point() + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCs 1 and 2 from global normalized expression (no day 2)")
+
+cors <- cor(no_day_two , method="pearson", use="pairwise.complete.obs")
+
+heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels,labRow=' ', ColSideColors=pal[as.integer(as.factor(no_day_two_species))], RowSideColors=pal[as.integer(as.factor(no_day_two_day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+```
+

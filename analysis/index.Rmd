@@ -12,3 +12,4 @@ title: "Home"
 ## Analysis
 
 *  [Plots of unmapped and mapped reads](../analysis/Unmapped_mapped_plots.html)
+*  [Normalization steps](../analysis/Normalize_again.html)

@@ -286,6 +286,27 @@ ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_ru
 
 ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run2, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 2, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
 <p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-3-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Session Info</p>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.2.2 (2015-08-14)
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
+Running under: OS X 10.11 (El Capitan)
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] scales_0.4.0  ggplot2_2.1.0 knitr_1.14   
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_0.12.7      digest_0.6.10    assertthat_0.1   plyr_1.8.4      
+ [5] grid_3.2.2       gtable_0.2.0     formatR_1.4      magrittr_1.5    
+ [9] evaluate_0.10    stringi_1.1.2    rmarkdown_1.1    labeling_0.3    
+[13] tools_3.2.2      stringr_1.1.0    munsell_0.4.3    yaml_2.1.13     
+[17] colorspace_1.2-7 htmltools_0.3.5  tibble_1.2      </code></pre>
 </div>
 
 

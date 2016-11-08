@@ -7,10 +7,9 @@ title: "Home"
 **Code version:** `r system("git log -1 --format='%H'", intern = TRUE)`
 
 
-## Notes
 
-*  [Making a project site](tutorial.html) ([2015-12-12 lab meeting slides]
 
 ## Analysis
 
 *  [Plots of unmapped and mapped reads](../analysis/Unmapped_mapped_plots.html)
+*  [Normalization steps](../analysis/Normalization_again.html)

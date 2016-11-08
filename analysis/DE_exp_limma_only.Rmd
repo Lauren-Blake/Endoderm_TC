@@ -1,0 +1,58 @@
+---
+title: "DE_exp_limma"
+author: "Lauren Blake"
+date: "November 8, 2016"
+output: html_document
+---
+
+
+```{r}
+# Load libraries
+
+library("gplots")
+library("ggplot2")
+library("RColorBrewer")
+library("scales")
+library("edgeR")
+library("Biobase")
+library("GEOquery")
+library("plyr")
+theme_set(theme_bw(base_size = 16))
+library("biomaRt")
+library("colorfulVennPlot")
+library("VennDiagram")
+library("gridExtra")
+library("car")
+library("topGO")
+library("rowr")
+library("Cormotif")
+library("ggfortify")
+library("dplyr")
+library("tidyr")
+library("statmod")
+library("qtlcharts")
+library("mygene")
+library("R.utils")
+library("vioplot")
+library("colorspace")
+library("magrittr")
+library("dendextend")
+source("~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R")
+
+# Load colors 
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+# Load normalized data
+
+
+
+```
+
+
+
+
+### Assessing differential gene expression using Limma
+
+Here, the model for expression has fixed effects for day, species, and a day-by-species interaction term. 
