@@ -1,6 +1,7 @@
 # About the Endoderm Time Course Project
 
 This experiment collects RNA-seq data from human and chimpanzee iPSCs that are then differntiated into definitive endoderm. 
+There are 2 species (humans and chimps) with 6 human iPSC lines with 2 replicates and 4 chimp iPSC lines with 4 replicates. RNA was extracted from the iPSCs for each day of the differentation for a total of 4 days. 
 
 It was performed by Bryan Pavlovic, Sammy Thomas, and Lauren Blake in the Yoav Gilad lab at the University of Chicago.
 
