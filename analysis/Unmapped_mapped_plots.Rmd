@@ -129,3 +129,9 @@ ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_po
 
 ```
 
+Session Info
+
+```{r}
+sessionInfo()
+```
+
