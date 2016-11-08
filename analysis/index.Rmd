@@ -9,8 +9,8 @@ title: "Home"
 
 ## Notes
 
-*  [Making a project site](tutorial.html) ([2015-12-12 lab meeting slides](../docs/repo-setup-tutorial-stephens-lab-2015-12-03.pdf))
+*  [Making a project site](tutorial.html) ([2015-12-12 lab meeting slides]
 
 ## Analysis
 
-*  [An exmaple: using PCA to visualize some single-cell data](single-cell-pca.html)
+*  [Plots of unmapped and mapped reads](../data/Unmapped_mapped_plots.html)

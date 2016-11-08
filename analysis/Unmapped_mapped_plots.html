@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>Mapped_unmapped</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="libs/highlight/textmate.css"
+      type="text/css" />
+<script src="libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">ashlar</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/jhsiao999/ashlar">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Mapped_unmapped</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>November 7, 2016</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#plots-of-unmapped-and-mapped-reads">PLOTS OF UNMAPPED AND MAPPED READS</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The goal of this script is to process the data from the 2 core runs of our endoderm time course project. The data was sequenced on an Illumina 4000 at the University of Chicago Genomics Core Facility. There are 2 species (humans and chimps) with 6 human iPSC lines with 2 replicates and 4 chimp iPSC lines with 4 replicates. RNA was extracted from the iPSCs for each day of the differentation into endoderm for a total of 4 days.</p>
+</div>
+<div id="plots-of-unmapped-and-mapped-reads" class="section level2">
+<h2>PLOTS OF UNMAPPED AND MAPPED READS</h2>
+<pre class="r"><code># Sent all figures to a folder rather than ./analysis
+
+source(&quot;chunk-options.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code># Load necessary libraries
+library(ggplot2)</code></pre>
+<pre><code>Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.3
+library(scales)</code></pre>
+<pre><code>Warning: package &#39;scales&#39; was built under R version 3.2.3</code></pre>
+<pre class="r"><code># Get data for unmapped and mapped reads
+Endoderm_mapping_2_core_runs &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/Endoderm_mapping_2_core_runs.csv&quot;)
+
+
+
+# Plot mapped reads per sample with a line at 10 million reads
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (2 core runs)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/data%20prep-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped_post_subsample, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (2 core runs, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/data%20prep-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run1, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 1)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/data%20prep-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 1 AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run1, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 1, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/data%20prep-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run2, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 2)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/data%20prep-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run2, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 2, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/data%20prep-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot for unmapped reads/sample for both core runs
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_unmapped, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Unmapped reads for all samples (2 core runs)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot for unmapped reads/sample
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_unmapped_run1, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Unmapped reads for all samples  (core run 1)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-1-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot for unmapped reads/lane in core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Lane_run1), y = Reads_unmapped_run1, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Lane number&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;)  + ggtitle(&quot;Unmapped reads for all samples  (core run 1)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-1-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot for unmapped reads/sample
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_unmapped_run2, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Unmapped reads for all samples  (core run 2)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-1-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot for unmapped reads/lane in core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Lane_run2), y = Reads_unmapped_run2, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Lane number&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + ggtitle(&quot;Unmapped reads for all samples  (core run 2)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-1-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Originally, we had considered subsampling to the median.</p>
+<pre class="r"><code># Originally, we had considered subsampling to the median. Find the median of the mapped reads (not including sample D0_3647_0116)
+
+median_test &lt;- as.data.frame(Endoderm_mapping_2_core_runs$Total_mapped)
+median_run &lt;- as.data.frame(median_test[-10,])
+
+median(as.numeric(t(median_run)))</code></pre>
+<pre><code>[1] 35953173</code></pre>
+<pre class="r"><code>#We will subsample Sample D036470116 to the median number of reads, 35953173 reads.
+#Actual number of reads in  SampleD036470116 post subsampling: 35644778 reads.</code></pre>
+<p>Given the distribution of the mapped reads, we will subsample to the second highest value.</p>
+<pre class="r"><code># Plot mapped reads per sample with a line at 10 million reads
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (2 core runs)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped_post_subsample, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (2 core runs, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run1, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 1)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-3-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 1 AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run1, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 1, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-3-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run2, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 2)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-3-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run2, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 2, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="figure/Unmapped_mapped_plots.Rmd/unnamed-chunk-3-6.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

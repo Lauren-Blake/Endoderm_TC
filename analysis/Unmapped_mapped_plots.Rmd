@@ -1,0 +1,131 @@
+---
+title: "Mapped_unmapped"
+author: "Lauren Blake"
+date: "November 7, 2016"
+output: html_document
+---
+
+
+## Introduction
+
+The goal of this script is to process the data from the 2 core runs of our endoderm time course project. The data was sequenced on an Illumina 4000 at the University of Chicago Genomics Core Facility. 
+There are 2 species (humans and chimps) with 6 human iPSC lines with 2 replicates and 4 chimp iPSC lines with 4 replicates. RNA was extracted from the iPSCs for each day of the differentation into endoderm for a total of 4 days. 
+
+## PLOTS OF UNMAPPED AND MAPPED READS
+
+```{r figure file}
+# Sent all figures to a folder rather than ./analysis
+
+source("chunk-options.R")
+```
+
+
+```{r data prep}
+# Load necessary libraries
+library(ggplot2)
+## Warning: package 'ggplot2' was built under R version 3.2.3
+library(scales)
+
+# Get data for unmapped and mapped reads
+Endoderm_mapping_2_core_runs <- read.csv("~/Desktop/Endoderm_TC/ashlar-trial/data/Endoderm_mapping_2_core_runs.csv")
+
+
+
+# Plot mapped reads per sample with a line at 10 million reads
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (2 core runs)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped_post_subsample, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (2 core runs, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+
+# Plot mapped reads per sample for core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run1, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 1)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 1 AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run1, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 1, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run2, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 2)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run2, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 2, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+```
+
+
+
+```{r}
+# Plot for unmapped reads/sample for both core runs
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_unmapped, fill = Species)) + ylab("Number of unmapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Unmapped reads for all samples (2 core runs)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot for unmapped reads/sample
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_unmapped_run1, fill = Species)) + ylab("Number of unmapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Unmapped reads for all samples  (core run 1)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot for unmapped reads/lane in core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Lane_run1), y = Reads_unmapped_run1, fill = Species)) + ylab("Number of unmapped reads") + xlab("Lane number") + geom_bar(stat = "identity", colour = "black")  + ggtitle("Unmapped reads for all samples  (core run 1)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot for unmapped reads/sample
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_unmapped_run2, fill = Species)) + ylab("Number of unmapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Unmapped reads for all samples  (core run 2)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot for unmapped reads/lane in core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Lane_run2), y = Reads_unmapped_run2, fill = Species)) + ylab("Number of unmapped reads") + xlab("Lane number") + geom_bar(stat = "identity", colour = "black") + ggtitle("Unmapped reads for all samples  (core run 2)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+
+```
+
+Originally, we had considered subsampling to the median. 
+```{r}
+# Originally, we had considered subsampling to the median. Find the median of the mapped reads (not including sample D0_3647_0116)
+
+median_test <- as.data.frame(Endoderm_mapping_2_core_runs$Total_mapped)
+median_run <- as.data.frame(median_test[-10,])
+
+median(as.numeric(t(median_run)))
+
+#We will subsample Sample D036470116 to the median number of reads, 35953173 reads.
+#Actual number of reads in  SampleD036470116 post subsampling: 35644778 reads.
+```
+
+Given the distribution of the mapped reads, we will subsample to the second highest value.
+
+```{r}
+
+# Plot mapped reads per sample with a line at 10 million reads
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (2 core runs)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped_post_subsample, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (2 core runs, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+
+# Plot mapped reads per sample for core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run1, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 1)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 1 AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run1, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 1, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run2, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 2)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run2, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 2, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+
+```
+
