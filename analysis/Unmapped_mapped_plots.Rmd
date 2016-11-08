@@ -16,7 +16,7 @@ There are 2 species (humans and chimps) with 6 human iPSC lines with 2 replicate
 ```{r figure file}
 # Sent all figures to a folder rather than ./analysis
 
-source("chunk-options.R")
+source("~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R")
 ```
 
 
