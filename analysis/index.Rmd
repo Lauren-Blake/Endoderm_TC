@@ -13,4 +13,4 @@ title: "Home"
 
 ## Analysis
 
-*  [Plots of unmapped and mapped reads](../data/Unmapped_mapped_plots.html)
+*  [Plots of unmapped and mapped reads](../analysis/Unmapped_mapped_plots.html)
