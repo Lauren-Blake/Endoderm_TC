@@ -157,7 +157,7 @@ $(document).ready(function () {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">Endoderm Time Course</a>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -229,7 +229,7 @@ expr_cutoff &lt;- 1.5
 
 # Load count data
 
-gene_counts_combined_raw_data &lt;-read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_combined.txt&quot;, header=TRUE)
+gene_counts_combined_raw_data &lt;-read.delim(&quot;~/Desktop/Endoderm_TC/gene_counts_combined.txt&quot;, header=TRUE)
 
 counts_genes &lt;- gene_counts_combined_raw_data[1:30030,2:65]
 rownames(counts_genes) &lt;- gene_counts_combined_raw_data[1:30030,1]
@@ -432,8 +432,10 @@ plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Species)], legend=
 #boxplot_library_size + labs(title = &quot;Library size by day&quot;) + labs(y = &quot;Library size&quot;) + labs(x = &quot;Day&quot;) + guides(fill=guide_legend(title=&quot;Species&quot;))</code></pre>
 <div id="filtering-lowly-expressed-genes" class="section level3">
 <h3>Filtering lowly expressed genes</h3>
-<p>We are beginning with 30030 genes and 64 samples (8 samples/species x 4 timepoints/species x 2 species) # Based on what we have learned from Roux and Blake (<a href="http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html" class="uri">http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html</a>), we will use a cutoff of log2(CPM) &gt; 1.5 in at least 16 of the human samples and 16 of the chimp samples.</p>
-<pre class="r"><code># Make plot 
+<p>We are beginning with 30030 genes and 64 samples (8 samples/species x 4 timepoints/species x 2 species)</p>
+<pre class="r"><code>#Based on what we have learned from Roux and Blake (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html), we will use a cutoff of log2(CPM) &gt; 1.5 in at least 16 of the human samples and 16 of the chimp samples.
+
+# Make plot 
 hist(cpm, main = &quot;log2(CPM) values in unfiltered data (n = 64 samples)&quot;, breaks = 100, ylim = c(0, 50000), xlab = &quot;log2(CPM) values&quot;)
 abline(v = expr_cutoff, col = &quot;red&quot;, lwd = 3)</code></pre>
 <p><img src="figure/Normalize_again.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -703,14 +705,23 @@ dim(genes_in_cutoff)</code></pre>
 counts_genes_in_cutoff &lt;- counts_genes63[cpm_filtered==TRUE,]
 dim(counts_genes_in_cutoff)</code></pre>
 <pre><code>[1] 10304    63</code></pre>
-<pre class="r"><code># Take the TMM of the counts only for the genes that remain after filtering
+<pre class="r"><code>#write.table(counts_genes_in_cutoff,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_cutoff_norm_data.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)
+
+
+# Take the TMM of the counts only for the genes that remain after filtering
 
 dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
 dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
 
 cpm_in_cutoff &lt;- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
 
-head(summary(cpm_in_cutoff))</code></pre>
+# Make table of the normalized data
+
+write.table(cpm_in_cutoff,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)
+
+dim(cpm_in_cutoff)</code></pre>
+<pre><code>[1] 10304    63</code></pre>
+<pre class="r"><code>head(summary(cpm_in_cutoff))</code></pre>
 <pre><code>    D0_20157           D0_20961           D0_21792       
  &quot;Min.   :-6.284  &quot; &quot;Min.   :-4.394  &quot; &quot;Min.   :-6.284  &quot;
  &quot;1st Qu.: 3.969  &quot; &quot;1st Qu.: 4.063  &quot; &quot;1st Qu.: 3.831  &quot;
@@ -861,9 +872,6 @@ head(summary(cpm_in_cutoff))</code></pre>
 <pre class="r"><code># Make plot 
 hist(cpm_in_cutoff, main = &quot;log2(CPM) values in filtered data (10,304 genes from 63 samples)&quot;, breaks = 100, ylim = c(0, 50000), xlab = &quot;log2(CPM) values&quot;)</code></pre>
 <p><img src="figure/Normalize_again.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Make table of the normalized data
-
-#write.table(cpm_in_cutoff,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_combined_norm_data.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)</code></pre>
 <p>There are 10,304 genes remaining.</p>
 <pre class="r"><code>sample &lt;- Endoderm_mapping_core_1$Sample[-2]
 

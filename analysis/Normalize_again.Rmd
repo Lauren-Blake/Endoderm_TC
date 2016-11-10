@@ -29,7 +29,7 @@ expr_cutoff <- 1.5
 
 # Load count data
 
-gene_counts_combined_raw_data <-read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_combined.txt", header=TRUE)
+gene_counts_combined_raw_data <-read.delim("~/Desktop/Endoderm_TC/gene_counts_combined.txt", header=TRUE)
 
 counts_genes <- gene_counts_combined_raw_data[1:30030,2:65]
 rownames(counts_genes) <- gene_counts_combined_raw_data[1:30030,1]
@@ -147,10 +147,10 @@ plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Day)], legend="top
 ### Filtering lowly expressed genes
 
 We are beginning with 30030 genes and 64 samples (8 samples/species x 4 timepoints/species x 2 species)
-# Based on what we have learned from Roux and Blake (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html), we will use a cutoff of log2(CPM) > 1.5 in at least 16 of the human samples and 16 of the chimp samples.
+
 
 ```{r}
-
+#Based on what we have learned from Roux and Blake (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html), we will use a cutoff of log2(CPM) > 1.5 in at least 16 of the human samples and 16 of the chimp samples.
 
 # Make plot 
 hist(cpm, main = "log2(CPM) values in unfiltered data (n = 64 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
@@ -274,6 +274,9 @@ dim(genes_in_cutoff)
 counts_genes_in_cutoff <- counts_genes63[cpm_filtered==TRUE,]
 dim(counts_genes_in_cutoff)
 
+#write.table(counts_genes_in_cutoff,file="~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_cutoff_norm_data.txt",sep="\t", col.names = T, row.names = T)
+
+
 # Take the TMM of the counts only for the genes that remain after filtering
 
 dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
@@ -281,14 +284,16 @@ dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
 
 cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
 
+# Make table of the normalized data
+
+write.table(cpm_in_cutoff,file="~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt",sep="\t", col.names = T, row.names = T)
+
+dim(cpm_in_cutoff)
+
 head(summary(cpm_in_cutoff))
 
 # Make plot 
 hist(cpm_in_cutoff, main = "log2(CPM) values in filtered data (10,304 genes from 63 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
-
-# Make table of the normalized data
-
-#write.table(cpm_in_cutoff,file="~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_combined_norm_data.txt",sep="\t", col.names = T, row.names = T)
 
 
 ```

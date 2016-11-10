@@ -13,3 +13,4 @@ title: "Home"
 
 *  [Plots of unmapped and mapped reads](../analysis/Unmapped_mapped_plots.html)
 *  [Normalization steps](../analysis/Normalize_again.html)
+*  [Difference in slopes](../analysis/Diff_in_slopes.html)
