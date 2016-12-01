@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2016-11-26" />
+
+<title>Global_variation</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<link rel="stylesheet"
+      href="libs/highlight/textmate.css"
+      type="text/css" />
+<script src="libs/highlight/highlight.js"></script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Global_variation</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>November 26, 2016</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#check-data">Check data</a></li>
+<li><a href="#evaluate-the-variances-between-day-species-pairs">Evaluate the variances between day-species pairs</a><ul>
+<li><a href="#check-to-see-if-differences-between-means-within-humans-and-chimps">Check to see if differences between means within humans and chimps</a></li>
+</ul></li>
+<li><a href="#lets-see-if-we-can-parse-out-which-genes-do-experience-a-reduction-in-variance-between-day-0-and-day-1">Let’s see if we can parse out which genes do experience a reduction in variance between day 0 and day 1</a><ul>
+<li><a href="#find-genes-for-which-variance-in-day-0-is-higher-than-the-variance-for-day-1">Find genes for which variance in day 0 is higher than the variance for day 1</a></li>
+<li><a href="#is-the-difference-in-variance-between-day-0-and-day-1-being-driven-by-differences-in-means">Is the difference in variance between day 0 and day 1 being driven by differences in means?</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>The goal of this script is to assess the extent of regulatory variation in our cell types.</p>
+<div id="check-data" class="section level2">
+<h2>Check data</h2>
+<pre class="r"><code># Load libraries
+
+library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code># Load data
+cpm_in_cutoff &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt&quot;)</code></pre>
+<pre class="r"><code># Take the mean of the technical replicates when available
+
+  # Day 0 technical replicates
+D0_28815 &lt;- as.data.frame(apply(cpm_in_cutoff[,5:6], 1, mean))
+D0_3647 &lt;- as.data.frame(apply(cpm_in_cutoff[,8:9], 1, mean))
+D0_3649 &lt;- as.data.frame(apply(cpm_in_cutoff[,10:11], 1, mean))
+D0_40300 &lt;- as.data.frame(apply(cpm_in_cutoff[,12:13], 1, mean))
+D0_4955 &lt;- as.data.frame(apply(cpm_in_cutoff[,14:15], 1, mean))
+  # Day 1 technical replicates
+D1_20157 &lt;- as.data.frame(apply(cpm_in_cutoff[,16:17], 1, mean))
+D1_28815 &lt;- as.data.frame(apply(cpm_in_cutoff[,21:22], 1, mean))
+D1_3647 &lt;- as.data.frame(apply(cpm_in_cutoff[,24:25], 1, mean))
+D1_3649 &lt;- as.data.frame(apply(cpm_in_cutoff[,26:27], 1, mean))
+D1_40300 &lt;- as.data.frame(apply(cpm_in_cutoff[,28:29], 1, mean))
+D1_4955 &lt;- as.data.frame(apply(cpm_in_cutoff[,30:31], 1, mean))
+  # Day 2 technical replicates
+D2_20157 &lt;- as.data.frame(apply(cpm_in_cutoff[,32:33], 1, mean))
+D2_28815 &lt;- as.data.frame(apply(cpm_in_cutoff[,37:38], 1, mean))
+D2_3647 &lt;- as.data.frame(apply(cpm_in_cutoff[,40:41], 1, mean))
+D2_3649 &lt;- as.data.frame(apply(cpm_in_cutoff[,42:43], 1, mean))
+D2_40300 &lt;- as.data.frame(apply(cpm_in_cutoff[,44:45], 1, mean))
+D2_4955 &lt;- as.data.frame(apply(cpm_in_cutoff[,46:47], 1, mean))
+  # Day 3 technical replicates
+D3_20157 &lt;- as.data.frame(apply(cpm_in_cutoff[,48:49], 1, mean))
+D3_28815 &lt;- as.data.frame(apply(cpm_in_cutoff[,53:54], 1, mean))
+D3_3647 &lt;- as.data.frame(apply(cpm_in_cutoff[,56:57], 1, mean))
+D3_3649 &lt;- as.data.frame(apply(cpm_in_cutoff[,58:59], 1, mean))
+D3_40300 &lt;- as.data.frame(apply(cpm_in_cutoff[,60:61], 1, mean))
+D3_4955 &lt;- as.data.frame(apply(cpm_in_cutoff[,62:63], 1, mean))
+
+# Create a new data frame with all of the combined technical replicates
+mean_tech_reps &lt;- cbind(cpm_in_cutoff[,1:4], D0_28815, cpm_in_cutoff[,7], D0_3647, D0_3649, D0_40300, D0_4955, D1_20157, cpm_in_cutoff[,18:20], D1_28815, cpm_in_cutoff[,23], D1_3647, D1_3649, D1_40300, D1_4955, D2_20157, cpm_in_cutoff[,34:36], D2_28815, cpm_in_cutoff[,39], D2_3647, D2_3649, D2_40300, D2_4955, D3_20157, cpm_in_cutoff[,50:52], D3_28815, cpm_in_cutoff[,55], D3_3647, D3_3649, D3_40300, D3_4955)
+
+
+colnames(mean_tech_reps) &lt;- c(&quot;D0_20157&quot;, &quot;D0_20961&quot;, &quot;D0_21792&quot;, &quot;D0_28162&quot;, &quot;D0_28815&quot;, &quot;D0_29089&quot;, &quot;D0_3647&quot;, &quot;D0_3649&quot;, &quot;D0_40300&quot;, &quot;D0_4955&quot;, &quot;D1_20157&quot;, &quot;D1_20961&quot;, &quot;D1_21792&quot;, &quot;D1_28162&quot;, &quot;D1_28815&quot;, &quot;D1_29089&quot;, &quot;D1_3647&quot;, &quot;D1_3649&quot;, &quot;D1_40300&quot;, &quot;D1_4955&quot;, &quot;D2_20157&quot;, &quot;D2_20961&quot;, &quot;D2_21792&quot;, &quot;D2_28162&quot;, &quot;D2_28815&quot;, &quot;D2_29089&quot;, &quot;D2_3647&quot;, &quot;D2_3649&quot;, &quot;D2_40300&quot;, &quot;D2_4955&quot;, &quot;D3_20157&quot;, &quot;D3_20961&quot;, &quot;D3_21792&quot;, &quot;D3_28162&quot;, &quot;D3_28815&quot;, &quot;D3_29089&quot;, &quot;D3_3647&quot;, &quot;D3_3649&quot;, &quot;D3_40300&quot;, &quot;D3_4955&quot;)
+
+dim(mean_tech_reps)</code></pre>
+<pre><code>[1] 10304    40</code></pre>
+<pre class="r"><code># Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors &lt;- read.delim(&quot;~/Downloads/samplefactors-filtered.txt&quot;, stringsAsFactors=FALSE)
+day &lt;- bio_rep_samplefactors$Day
+species &lt;- bio_rep_samplefactors$Species
+
+# Make PCA plots with the factors colored by day
+
+pca_genes &lt;- prcomp(t(mean_tech_reps), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+0), shape=species, size=2)) + geom_point() + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + ggtitle(&quot;PCs 1 and 2 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;) + labs(title = &quot;PCs 1 and 2 from global normalized expression&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ggplotly()</code></pre>
+</div>
+<div id="evaluate-the-variances-between-day-species-pairs" class="section level2">
+<h2>Evaluate the variances between day-species pairs</h2>
+<pre class="r"><code># Calculate the mean for each species-time pair
+
+humans_day0_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,1:6]),1, var) )
+colnames(humans_day0_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day0_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,7:10]),1, var))
+colnames(chimps_day0_var) &lt;- c(&quot;Variance&quot;) 
+humans_day1_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,11:16]),1, var))
+colnames(humans_day1_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day1_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,17:20]),1, var))
+colnames(chimps_day1_var) &lt;- c(&quot;Variance&quot;)
+humans_day2_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,21:26]),1, var))
+colnames(humans_day2_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day2_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,27:30]),1, var))
+colnames(chimps_day2_var) &lt;- c(&quot;Variance&quot;)
+humans_day3_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,31:36]),1, var))
+colnames(humans_day3_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day3_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,37:40]),1, var))
+colnames(chimps_day3_var) &lt;- c(&quot;Variance&quot;)
+
+ 
+humans_day0_mean &lt;- apply(as.data.frame(mean_tech_reps[,1:6]),1, mean)
+chimps_day0_mean &lt;- apply(as.data.frame(mean_tech_reps[,7:10]),1, mean)
+humans_day1_mean &lt;- apply(as.data.frame(mean_tech_reps[,11:16]),1, mean)
+chimps_day1_mean &lt;- apply(as.data.frame(mean_tech_reps[,17:20]),1, mean)
+humans_day2_mean &lt;- apply(as.data.frame(mean_tech_reps[,21:26]),1, mean)
+chimps_day2_mean &lt;- apply(as.data.frame(mean_tech_reps[,27:30]),1, mean)
+humans_day3_mean &lt;- apply(as.data.frame(mean_tech_reps[,31:36]),1, mean)
+chimps_day3_mean &lt;- apply(as.data.frame(mean_tech_reps[,37:40]),1, mean)
+
+# Make arrays with all the means
+
+labels1 &lt;- array(&quot;Chimp Day 0&quot;, dim = c(10304, 1)) 
+labels2 &lt;- array(&quot;Chimp Day 1&quot;, dim = c(10304, 1)) 
+labels3 &lt;- array(&quot;Chimp Day 2&quot;, dim = c(10304, 1)) 
+labels4 &lt;- array(&quot;Chimp Day 3&quot;, dim = c(10304, 1)) 
+labels5 &lt;- array(&quot;Human Day 0&quot;, dim = c(10304, 1)) 
+labels6 &lt;- array(&quot;Human Day 1&quot;, dim = c(10304, 1)) 
+labels7 &lt;- array(&quot;Human Day 2&quot;, dim = c(10304, 1)) 
+labels8 &lt;- array(&quot;Human Day 3&quot;, dim = c(10304, 1)) 
+
+# Make species-day labels
+labels9 &lt;- rbind(labels1, labels2, labels3, labels4, labels5, labels6, labels7, labels8)
+labels &lt;- as.numeric(as.factor(labels9))
+# Make labels so same days from different species are the same color
+labels10 &lt;- rbind(labels1, labels2, labels3, labels4, labels1, labels2, labels3, labels4)
+labels10 &lt;- as.numeric(as.factor(labels10))
+
+#1 Overall trend across genes
+# Boxplot of variances gives general trend
+HC_var &lt;- rbind(as.data.frame(chimps_day0_var), as.data.frame(chimps_day1_var), as.data.frame(chimps_day2_var), as.data.frame(chimps_day3_var), as.data.frame(humans_day0_var), as.data.frame(humans_day1_var), as.data.frame(humans_day2_var), as.data.frame(humans_day3_var))
+
+HC_var_labels &lt;- cbind(HC_var, labels, labels10)
+
+p &lt;- ggplot(HC_var_labels, aes(x = factor(labels), y = HC_var))
+p &lt;- p + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + scale_y_continuous(trans = &quot;log2&quot;) + ggtitle(&quot;Variance for each gene by species and day&quot;) + xlab(&quot;Species-Day Pair&quot;) + ylab(&quot;Variance for each gene&quot;) 
+p &lt;- p + scale_x_discrete(labels=c(&quot;1&quot; = &quot;C Day 0&quot;, &quot;2&quot; = &quot;C Day 1&quot;, &quot;3&quot; = &quot;C Day 2&quot;, &quot;4&quot; = &quot;C Day 3&quot;, &quot;5&quot; = &quot;H Day 0&quot;, &quot;6&quot; = &quot;H Day 1&quot;, &quot;7&quot; = &quot;H Day 2&quot;, &quot;8&quot; = &quot;H Day 3&quot;))
+p</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="check-to-see-if-differences-between-means-within-humans-and-chimps" class="section level3">
+<h3>Check to see if differences between means within humans and chimps</h3>
+<pre class="r"><code>########## Within chimps ##########
+
+# Test at least one of the means is different
+group &lt;- rbind(labels1, labels2, labels3, labels4)
+
+var_day_species &lt;- rbind(chimps_day0_var,chimps_day1_var, chimps_day2_var, chimps_day3_var)
+
+aov_groups &lt;- cbind(var_day_species, group)
+
+dim(aov_groups)</code></pre>
+<pre><code>[1] 41216     2</code></pre>
+<pre class="r"><code>aov_bet &lt;- oneway.test(aov_groups$Variance ~ aov_groups$group)
+aov_bet</code></pre>
+<pre><code>
+    One-way analysis of means (not assuming equal variances)
+
+data:  aov_groups$Variance and aov_groups$group
+F = 16.803, num df = 3, denom df = 22848, p-value = 6.715e-11</code></pre>
+<pre class="r"><code># F = 16.803, num df = 3, denom df = 22848, p-value = 6.715e-11
+
+# Test groups individually
+
+# Day 0 and Day 1
+t.test(chimps_day0_var, chimps_day1_var) # 0.4586</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  chimps_day0_var and chimps_day1_var
+t = 0.74112, df = 20602, p-value = 0.4586
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.009003645  0.019951877
+sample estimates:
+mean of x mean of y 
+0.1066976 0.1012235 </code></pre>
+<pre class="r"><code>t.test(chimps_day0_var, chimps_day1_var, alternative = &quot;greater&quot;)</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  chimps_day0_var and chimps_day1_var
+t = 0.74112, df = 20602, p-value = 0.2293
+alternative hypothesis: true difference in means is greater than 0
+95 percent confidence interval:
+ -0.006675837          Inf
+sample estimates:
+mean of x mean of y 
+0.1066976 0.1012235 </code></pre>
+<pre class="r"><code># Day 1 and Day 2
+t.test(chimps_day1_var, chimps_day2_var) # 0.03103</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  chimps_day1_var and chimps_day2_var
+t = -2.1569, df = 20602, p-value = 0.03103
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.030404332 -0.001453377
+sample estimates:
+mean of x mean of y 
+0.1012235 0.1171524 </code></pre>
+<pre class="r"><code># Day 2 and Day 3
+t.test(chimps_day2_var, chimps_day3_var) # 2.992e-06</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  chimps_day2_var and chimps_day3_var
+t = -4.6727, df = 19996, p-value = 2.992e-06
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.05354353 -0.02189784
+sample estimates:
+mean of x mean of y 
+0.1171524 0.1548730 </code></pre>
+<pre class="r"><code>########## Within humans ##########
+
+# Test at least one of the means is different
+group &lt;- rbind(labels5, labels6, labels7, labels8)
+
+var_day_species &lt;- rbind(humans_day0_var,humans_day1_var, humans_day2_var, humans_day3_var)
+
+aov_groups &lt;- cbind(var_day_species, group)
+
+dim(aov_groups)</code></pre>
+<pre><code>[1] 41216     2</code></pre>
+<pre class="r"><code>aov_bet &lt;- oneway.test(aov_groups$Variance ~ aov_groups$group)
+aov_bet</code></pre>
+<pre><code>
+    One-way analysis of means (not assuming equal variances)
+
+data:  aov_groups$Variance and aov_groups$group
+F = 80.035, num df = 3, denom df = 22652, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code># F = 80.035, num df = 3, denom df = 22652, p-value &lt; 2.2e-16
+
+# Test groups individually
+
+# Day 0 and Day 1
+t.test(humans_day0_var, humans_day1_var) # &lt; 2.2e-16</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  humans_day0_var and humans_day1_var
+t = 13.533, df = 19259, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ 0.0768552 0.1028897
+sample estimates:
+ mean of x  mean of y 
+0.18524994 0.09537748 </code></pre>
+<pre class="r"><code># Day 1 and Day 2
+t.test(humans_day1_var, humans_day2_var) # &lt; 2.2e-16</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  humans_day1_var and humans_day2_var
+t = -8.765, df = 20334, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.05783207 -0.03669358
+sample estimates:
+ mean of x  mean of y 
+0.09537748 0.14264030 </code></pre>
+<pre class="r"><code># Day 2 and Day 3
+t.test(humans_day2_var, humans_day3_var) # 7.301e-07</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  humans_day2_var and humans_day3_var
+t = -4.9549, df = 18769, p-value = 7.301e-07
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.04229841 -0.01831887
+sample estimates:
+mean of x mean of y 
+0.1426403 0.1729489 </code></pre>
+<p>Conclusion: For both species, there is at least 1 mean (of the variances) that is different; however, when testing between the chimps day 0 and 1, there is not enough statistical evidence to suggest a difference in the means of the variances (p = 0.4586). Even if you make the argument that biologically we expect a reduction in variance between day 0 an dday 1 (due to cannalization, for example) and therefore try a one-sided t-test, the p-value is still not statistically significant (p = 0.2293).</p>
+</div>
+</div>
+<div id="lets-see-if-we-can-parse-out-which-genes-do-experience-a-reduction-in-variance-between-day-0-and-day-1" class="section level2">
+<h2>Let’s see if we can parse out which genes do experience a reduction in variance between day 0 and day 1</h2>
+<pre class="r"><code>#2 Gene-specific trend
+
+humans_day0_var &lt;- apply(as.data.frame(mean_tech_reps[,1:6]),1, var) 
+chimps_day0_var &lt;-apply(as.data.frame(mean_tech_reps[,7:10]),1, var)
+humans_day1_var &lt;- apply(as.data.frame(mean_tech_reps[,11:16]),1, var)
+
+chimps_day1_var &lt;- apply(as.data.frame(mean_tech_reps[,17:20]),1, var)
+
+# Chimps: some genes have a higher variance at day 0 than day 1
+
+plot(log10(chimps_day1_var), log10(chimps_day0_var), ylab = &quot;Log10 variance for each gene- Chimps Day 0&quot;, xlab = &quot;Log 10 variance for each gene- Chimps Day 1&quot;, main = &quot;Per gene variance for Chimps&quot;)
+abline(0,1, col = &quot;red&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor.test(log10(chimps_day1_var), log10(chimps_day0_var), method = &quot;spearman&quot;)</code></pre>
+<pre><code>
+    Spearman&#39;s rank correlation rho
+
+data:  log10(chimps_day1_var) and log10(chimps_day0_var)
+S = 8.8596e+10, p-value &lt; 2.2e-16
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+      rho 
+0.5140996 </code></pre>
+<pre class="r"><code># Humans: more genes have a higher variance at day 0 than day 1
+plot(log10(humans_day1_var), log10(humans_day0_var), ylab = &quot;Log10 variance for each gene- Humans Day 0&quot;, xlab = &quot;Log 10 variance for each gene- Humans Day 1&quot;)
+abline(0,1, col = &quot;red&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor.test(log10(humans_day1_var), log10(humans_day0_var), method = &quot;spearman&quot;)</code></pre>
+<pre><code>
+    Spearman&#39;s rank correlation rho
+
+data:  log10(humans_day1_var) and log10(humans_day0_var)
+S = 6.821e+10, p-value &lt; 2.2e-16
+alternative hypothesis: true rho is not equal to 0
+sample estimates:
+      rho 
+0.6259078 </code></pre>
+<div id="find-genes-for-which-variance-in-day-0-is-higher-than-the-variance-for-day-1" class="section level3">
+<h3>Find genes for which variance in day 0 is higher than the variance for day 1</h3>
+<pre class="r"><code># Notes from Joyce
+## For each gene, gene-specific difference in variance, a nonparametric test - Kruskal.test
+#kruskal.test(log10(as.data.frame(chimps_day1_var)[1,1]), log10(as.data.frame(chimps_day0_var)[1,1]))
+
+# We are going to first use a parametric test
+
+# Variance in day 0 &gt; var in day 1
+
+############# Chimps #####################
+
+# Make an array to store the p-values
+
+chimp_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+  x &lt;- t(mean_tech_reps[i,7:10])
+  y &lt;- t(mean_tech_reps[i,17:20])
+  htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+  chimp_var_pval[i,1] &lt;- htest$p.value
+}
+
+hist(chimp_var_pval)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>############## For humans
+
+human_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+  x &lt;- t(mean_tech_reps[i,1:6])
+  y &lt;- t(mean_tech_reps[i,11:16])
+  htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+  human_var_pval[i,1] &lt;- htest$p.value
+}
+
+hist(human_var_pval)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>############ Find overlap
+
+# Make one data frame
+
+var_pval &lt;- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+rownames(var_pval) &lt;- rownames(mean_tech_reps)
+
+dim(var_pval)</code></pre>
+<pre><code>[1] 10304     2</code></pre>
+<pre class="r"><code># P-val &lt; 0.05 for chimps only
+num_var_pval_chimps &lt;- var_pval[ which(var_pval[,1] &lt; 0.05), ]
+dim(num_var_pval_chimps)</code></pre>
+<pre><code>[1] 612   2</code></pre>
+<pre class="r"><code># P-val &lt; 0.05 for humans only
+num_var_pval_humans &lt;- var_pval[ which(var_pval[,2] &lt; 0.05), ]
+dim(num_var_pval_humans)</code></pre>
+<pre><code>[1] 2289    2</code></pre>
+<pre class="r"><code># Note: there are 612 with p-val &lt; 0.05 in the chimps and 2,289 with p-val &lt; 0.05 in the humans. 
+
+# P-val &lt; 0.05 for both humans and chimps (tested separately)
+
+num_var_pval &lt;- var_pval[ which(var_pval[,1] &lt; 0.05 &amp; var_pval[,2] &lt; 0.05), ]
+
+dim(num_var_pval)</code></pre>
+<pre><code>[1] 159   2</code></pre>
+<pre class="r"><code># See the gene names of the 159 that overlap 
+
+rownames(num_var_pval)</code></pre>
+<pre><code>  [1] &quot;ENSG00000005206&quot; &quot;ENSG00000005810&quot; &quot;ENSG00000008300&quot;
+  [4] &quot;ENSG00000011478&quot; &quot;ENSG00000034063&quot; &quot;ENSG00000048162&quot;
+  [7] &quot;ENSG00000053372&quot; &quot;ENSG00000055070&quot; &quot;ENSG00000063587&quot;
+ [10] &quot;ENSG00000063978&quot; &quot;ENSG00000065243&quot; &quot;ENSG00000065320&quot;
+ [13] &quot;ENSG00000067829&quot; &quot;ENSG00000071462&quot; &quot;ENSG00000076201&quot;
+ [16] &quot;ENSG00000083312&quot; &quot;ENSG00000083937&quot; &quot;ENSG00000084112&quot;
+ [19] &quot;ENSG00000085644&quot; &quot;ENSG00000088451&quot; &quot;ENSG00000089248&quot;
+ [22] &quot;ENSG00000090905&quot; &quot;ENSG00000090924&quot; &quot;ENSG00000091656&quot;
+ [25] &quot;ENSG00000095951&quot; &quot;ENSG00000096433&quot; &quot;ENSG00000099381&quot;
+ [28] &quot;ENSG00000100243&quot; &quot;ENSG00000100422&quot; &quot;ENSG00000100503&quot;
+ [31] &quot;ENSG00000100526&quot; &quot;ENSG00000100764&quot; &quot;ENSG00000101421&quot;
+ [34] &quot;ENSG00000103222&quot; &quot;ENSG00000103335&quot; &quot;ENSG00000103381&quot;
+ [37] &quot;ENSG00000104365&quot; &quot;ENSG00000104369&quot; &quot;ENSG00000105221&quot;
+ [40] &quot;ENSG00000105364&quot; &quot;ENSG00000105647&quot; &quot;ENSG00000105663&quot;
+ [43] &quot;ENSG00000105669&quot; &quot;ENSG00000106105&quot; &quot;ENSG00000106261&quot;
+ [46] &quot;ENSG00000107831&quot; &quot;ENSG00000108021&quot; &quot;ENSG00000108591&quot;
+ [49] &quot;ENSG00000109265&quot; &quot;ENSG00000109320&quot; &quot;ENSG00000109519&quot;
+ [52] &quot;ENSG00000110514&quot; &quot;ENSG00000113732&quot; &quot;ENSG00000114745&quot;
+ [55] &quot;ENSG00000115484&quot; &quot;ENSG00000116990&quot; &quot;ENSG00000117500&quot;
+ [58] &quot;ENSG00000119431&quot; &quot;ENSG00000120314&quot; &quot;ENSG00000121879&quot;
+ [61] &quot;ENSG00000124207&quot; &quot;ENSG00000124275&quot; &quot;ENSG00000124608&quot;
+ [64] &quot;ENSG00000126883&quot; &quot;ENSG00000127947&quot; &quot;ENSG00000128607&quot;
+ [67] &quot;ENSG00000130520&quot; &quot;ENSG00000131165&quot; &quot;ENSG00000131966&quot;
+ [70] &quot;ENSG00000132467&quot; &quot;ENSG00000133243&quot; &quot;ENSG00000133619&quot;
+ [73] &quot;ENSG00000133937&quot; &quot;ENSG00000134318&quot; &quot;ENSG00000134452&quot;
+ [76] &quot;ENSG00000134882&quot; &quot;ENSG00000135476&quot; &quot;ENSG00000135637&quot;
+ [79] &quot;ENSG00000135643&quot; &quot;ENSG00000136051&quot; &quot;ENSG00000137822&quot;
+ [82] &quot;ENSG00000138303&quot; &quot;ENSG00000138650&quot; &quot;ENSG00000139233&quot;
+ [85] &quot;ENSG00000139436&quot; &quot;ENSG00000139613&quot; &quot;ENSG00000140391&quot;
+ [88] &quot;ENSG00000141503&quot; &quot;ENSG00000141568&quot; &quot;ENSG00000142166&quot;
+ [91] &quot;ENSG00000148337&quot; &quot;ENSG00000149308&quot; &quot;ENSG00000151779&quot;
+ [94] &quot;ENSG00000152749&quot; &quot;ENSG00000152782&quot; &quot;ENSG00000153317&quot;
+ [97] &quot;ENSG00000155868&quot; &quot;ENSG00000158815&quot; &quot;ENSG00000161999&quot;
+[100] &quot;ENSG00000162458&quot; &quot;ENSG00000162664&quot; &quot;ENSG00000162931&quot;
+[103] &quot;ENSG00000163104&quot; &quot;ENSG00000163508&quot; &quot;ENSG00000163602&quot;
+[106] &quot;ENSG00000163607&quot; &quot;ENSG00000163930&quot; &quot;ENSG00000164068&quot;
+[109] &quot;ENSG00000164091&quot; &quot;ENSG00000164327&quot; &quot;ENSG00000164651&quot;
+[112] &quot;ENSG00000164741&quot; &quot;ENSG00000165138&quot; &quot;ENSG00000165617&quot;
+[115] &quot;ENSG00000166147&quot; &quot;ENSG00000166716&quot; &quot;ENSG00000167333&quot;
+[118] &quot;ENSG00000167395&quot; &quot;ENSG00000167595&quot; &quot;ENSG00000168101&quot;
+[121] &quot;ENSG00000168398&quot; &quot;ENSG00000169490&quot; &quot;ENSG00000170584&quot;
+[124] &quot;ENSG00000171570&quot; &quot;ENSG00000173456&quot; &quot;ENSG00000173915&quot;
+[127] &quot;ENSG00000176383&quot; &quot;ENSG00000176624&quot; &quot;ENSG00000177200&quot;
+[130] &quot;ENSG00000177731&quot; &quot;ENSG00000177879&quot; &quot;ENSG00000179918&quot;
+[133] &quot;ENSG00000181638&quot; &quot;ENSG00000182325&quot; &quot;ENSG00000182473&quot;
+[136] &quot;ENSG00000183751&quot; &quot;ENSG00000183873&quot; &quot;ENSG00000184381&quot;
+[139] &quot;ENSG00000185798&quot; &quot;ENSG00000185800&quot; &quot;ENSG00000186638&quot;
+[142] &quot;ENSG00000187097&quot; &quot;ENSG00000187535&quot; &quot;ENSG00000187555&quot;
+[145] &quot;ENSG00000188735&quot; &quot;ENSG00000188931&quot; &quot;ENSG00000189376&quot;
+[148] &quot;ENSG00000196072&quot; &quot;ENSG00000198176&quot; &quot;ENSG00000198198&quot;
+[151] &quot;ENSG00000198793&quot; &quot;ENSG00000204271&quot; &quot;ENSG00000204304&quot;
+[154] &quot;ENSG00000204681&quot; &quot;ENSG00000223501&quot; &quot;ENSG00000228449&quot;
+[157] &quot;ENSG00000233589&quot; &quot;ENSG00000240857&quot; &quot;ENSG00000258056&quot;</code></pre>
+<p>Conclusion: 612 genes undergo a reduction in variance in the chimps between day 0 and day 1 (cutoff of p-value &lt; 0.05) and 2,289 genes undergo a reduction in variance in the humans between day 0 and day 1 (cutoff of p-value &lt; 0.05). The overlap number of genes that undergo a reduction in variance between day 0 and day 1 in the chimps as well as the humans (calculated separately from above) is 159.</p>
+</div>
+<div id="is-the-difference-in-variance-between-day-0-and-day-1-being-driven-by-differences-in-means" class="section level3">
+<h3>Is the difference in variance between day 0 and day 1 being driven by differences in means?</h3>
+<p>This is an important check because prior observation shows that in RNA-seq data, higher expression tends to have higher variance.</p>
+<pre class="r"><code># Variance-mean dependency genome wide
+
+############### Chimps
+# day0 and day1
+fit_day0 &lt;- lm(chimps_day0_var ~ chimps_day0_mean)
+fit_day1 &lt;- lm(chimps_day1_var ~ chimps_day1_mean)
+fit_day0; fit_day1</code></pre>
+<pre><code>
+Call:
+lm(formula = chimps_day0_var ~ chimps_day0_mean)
+
+Coefficients:
+     (Intercept)  chimps_day0_mean  
+         0.38461          -0.05323  </code></pre>
+<pre><code>
+Call:
+lm(formula = chimps_day1_var ~ chimps_day1_mean)
+
+Coefficients:
+     (Intercept)  chimps_day1_mean  
+         0.33044          -0.04377  </code></pre>
+<pre class="r"><code>par(mfrow = c(1,2))
+plot(x = chimps_day0_mean, y = sqrt(chimps_day0_var))
+l1 &lt;- lowess(chimps_day0_mean, chimps_day0_var)
+lines(l1, col = &quot;red&quot;)
+plot(x = chimps_day1_mean, y = sqrt(chimps_day1_var))
+l0 &lt;- lowess(chimps_day1_mean, chimps_day1_var)
+lines(l0, col = &quot;red&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>############### Humans
+# day0 and day1
+fit_day0 &lt;- lm(humans_day0_var ~ humans_day0_mean)
+fit_day1 &lt;- lm(humans_day1_var ~ humans_day1_mean)
+fit_day0; fit_day1</code></pre>
+<pre><code>
+Call:
+lm(formula = humans_day0_var ~ humans_day0_mean)
+
+Coefficients:
+     (Intercept)  humans_day0_mean  
+         0.55722          -0.07037  </code></pre>
+<pre><code>
+Call:
+lm(formula = humans_day1_var ~ humans_day1_mean)
+
+Coefficients:
+     (Intercept)  humans_day1_mean  
+         0.30728          -0.04002  </code></pre>
+<pre class="r"><code>par(mfrow = c(1,2))
+plot(x = humans_day0_mean, y = sqrt(humans_day0_var))
+l1 &lt;- lowess(humans_day0_mean, humans_day0_var)
+lines(l1, col = &quot;red&quot;)
+plot(x = humans_day1_mean, y = sqrt(humans_day1_var))
+l0 &lt;- lowess(humans_day1_mean, humans_day1_var)
+lines(l0, col = &quot;red&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>### What about in the genes that show a reduction in variance between days 0 and 1?
+
+# Find the genes that show a reduction in variance in chimps
+
+inshared_lists = row.names(mean_tech_reps) %in% rownames(num_var_pval_chimps)
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(mean_tech_reps, inshared_lists_data)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+norm_exp_chimp_612 &lt;- counts_genes_in_cutoff[,1:40]
+
+# Find the genes that show a reduction in variance in humans
+
+inshared_lists = row.names(mean_tech_reps) %in% rownames(num_var_pval_humans)
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(mean_tech_reps, inshared_lists_data)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+norm_exp_human_2289 &lt;- counts_genes_in_cutoff[,1:40]
+
+# Define chimp and human means and variances
+  # Means
+
+norm_exp_human_2289_day0_mean &lt;- apply(as.data.frame(norm_exp_human_2289[,1:6]),1, mean) 
+
+norm_exp_chimp_612_day0_mean &lt;-apply(as.data.frame(norm_exp_chimp_612[,7:10]),1, mean)
+
+norm_exp_human_2289_day1_mean &lt;- apply(as.data.frame(norm_exp_human_2289[,11:16]),1, mean)
+
+norm_exp_chimp_612_day1_mean &lt;- apply(as.data.frame(norm_exp_chimp_612[,17:20]),1, mean)
+
+
+  # Variances
+norm_exp_human_2289_day0_var &lt;- apply(as.data.frame(norm_exp_human_2289[,1:6]),1, var) 
+
+norm_exp_chimp_612_day0_var &lt;-apply(as.data.frame(norm_exp_chimp_612[,7:10]),1, var)
+
+norm_exp_human_2289_day1_var &lt;- apply(as.data.frame(norm_exp_human_2289[,11:16]),1, var)
+
+norm_exp_chimp_612_day1_var &lt;- apply(as.data.frame(norm_exp_chimp_612[,17:20]),1, var)
+
+
+############### Chimps
+
+# day0 and day1
+fit_day0 &lt;- lm(norm_exp_chimp_612_day0_var ~ norm_exp_chimp_612_day0_mean)
+fit_day1 &lt;- lm(norm_exp_chimp_612_day1_var ~ norm_exp_chimp_612_day1_mean)
+fit_day0; fit_day1</code></pre>
+<pre><code>
+Call:
+lm(formula = norm_exp_chimp_612_day0_var ~ norm_exp_chimp_612_day0_mean)
+
+Coefficients:
+                 (Intercept)  norm_exp_chimp_612_day0_mean  
+                      0.8355                       -0.1250  </code></pre>
+<pre><code>
+Call:
+lm(formula = norm_exp_chimp_612_day1_var ~ norm_exp_chimp_612_day1_mean)
+
+Coefficients:
+                 (Intercept)  norm_exp_chimp_612_day1_mean  
+                    0.025744                     -0.002724  </code></pre>
+<pre class="r"><code>par(mfrow = c(1,2))
+plot(x = norm_exp_chimp_612_day0_mean, y = sqrt(norm_exp_chimp_612_day0_var))
+l1 &lt;- lowess(norm_exp_chimp_612_day0_mean, norm_exp_chimp_612_day0_var)
+lines(l1, col = &quot;red&quot;)
+plot(x = norm_exp_chimp_612_day1_mean, y = sqrt(norm_exp_chimp_612_day1_var))
+l0 &lt;- lowess(norm_exp_chimp_612_day1_mean, norm_exp_chimp_612_day1_var)
+lines(l0, col = &quot;red&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-7-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>############### Humans
+# day0 and day1
+fit_day0 &lt;- lm(norm_exp_human_2289_day0_var ~ norm_exp_human_2289_day0_mean)
+fit_day1 &lt;- lm(norm_exp_human_2289_day1_var ~ norm_exp_human_2289_day1_mean)
+fit_day0; fit_day1</code></pre>
+<pre><code>
+Call:
+lm(formula = norm_exp_human_2289_day0_var ~ norm_exp_human_2289_day0_mean)
+
+Coefficients:
+                  (Intercept)  norm_exp_human_2289_day0_mean  
+                       1.0134                        -0.1299  </code></pre>
+<pre><code>
+Call:
+lm(formula = norm_exp_human_2289_day1_var ~ norm_exp_human_2289_day1_mean)
+
+Coefficients:
+                  (Intercept)  norm_exp_human_2289_day1_mean  
+                     0.067248                      -0.006535  </code></pre>
+<pre class="r"><code>par(mfrow = c(1,2))
+plot(x = norm_exp_human_2289_day0_mean, y = sqrt(norm_exp_human_2289_day0_var))
+l1 &lt;- lowess(norm_exp_human_2289_day0_mean, norm_exp_human_2289_day0_var)
+lines(l1, col = &quot;red&quot;)
+plot(x = norm_exp_human_2289_day1_mean, y = sqrt(norm_exp_human_2289_day1_var))
+l0 &lt;- lowess(norm_exp_human_2289_day0_mean, norm_exp_human_2289_day0_var)
+lines(l0, col = &quot;red&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-7-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code># Look at this genomewide
+
+HC_var &lt;- cbind((chimps_day1_mean - chimps_day0_mean), chimps_day1_var-chimps_day0_var)
+plot(HC_var, xlab = &quot;Differences in Means (Day 1 - Day 0)&quot;, ylab = &quot;Differences in Variances (Day 1 - Day 0)&quot;, main = &quot;Variances and Means in Day 1 compared to Day 0 in Chimps&quot;)
+
+
+HC_var &lt;- cbind((humans_day1_mean - humans_day0_mean), humans_day1_var-humans_day0_var)
+plot(HC_var, xlab = &quot;Differences in Means (Day 1 - Day 0)&quot;, ylab = &quot;Differences in Variances (Day 1 - Day 0)&quot;, main = &quot;Variances and Means in Day 1 compared to Day 0 in Humans&quot;)
+
+
+# An example gene 
+#iimean_day1GTday0 &lt;- humans_day1_mean - humans_day0_mean 
+#iivar_day1GTday0 &lt;- humans_day1_var - humans_day0_var
+#ii_gene &lt;- iimean_day1GTday0 &gt; 0 &amp; iivar_day1GTday0 &lt; 0 
+
+#ii_gene_df &lt;- as.data.frame(ii_gene)
+#high_mean_low_var &lt;- ii_gene_df[which(ii_gene_df == &quot;TRUE&quot;) , ]
+
+#head(which(ii_gene))
+#iimean_day1GTday0[2]; iivar_day1GTday0[2]
+#ii_expr &lt;- unlist(mean_tech_reps[2, ])
+#boxplot(c(ii_expr[1:6]), c(ii_expr[11:16]), ylab = &quot;log2 normalized expression for ENSG00000000419&quot;, xlab = &quot;Day&quot;, &quot;Gene&quot;)</code></pre>
+<p>We can see that there are a number of genes where the mean is higher in day 1 than day 0 but the variance is lower in day 1 than day 0.</p>
+<pre class="r"><code>### Let&#39;s look at these within the genes that have been previously identified as having a reduction in variance between day 0 and day 1 
+
+# In chimps
+HC_var &lt;- cbind((norm_exp_chimp_612_day1_mean - norm_exp_chimp_612_day0_mean), norm_exp_chimp_612_day1_var-norm_exp_chimp_612_day0_var)
+plot(HC_var, xlab = &quot;Differences in Means (Day 1 - Day 0)&quot;, ylab = &quot;Differences in Variances (Day 1 - Day 0)&quot;, main = &quot;Variances and Means in Day 1 compared to Day 0 in Chimps (Subset)&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>iimean_day1GTday0_chimps &lt;- norm_exp_chimp_612_day1_mean - norm_exp_chimp_612_day0_mean
+iivar_day1GTday0_chimps &lt;- norm_exp_chimp_612_day1_var - norm_exp_chimp_612_day0_var
+ii_gene &lt;- iimean_day1GTday0_chimps &gt; 0 &amp; iivar_day1GTday0_chimps &lt; 0 
+
+ii_gene_df &lt;- as.data.frame(ii_gene)
+
+high_mean_low_var_chimps &lt;- as.data.frame(ii_gene_df[which(ii_gene_df == &quot;TRUE&quot;) , ])
+high_mean_low_var_chimps &lt;- as.data.frame(high_mean_low_var_chimps)
+
+# 341 genes
+
+head(which(ii_gene))</code></pre>
+<pre><code>ENSG00000005810 ENSG00000006025 ENSG00000009830 ENSG00000011114 
+              2               4              11              12 
+ENSG00000011426 ENSG00000011478 
+             13              14 </code></pre>
+<pre class="r"><code>iimean_day1GTday0_chimps[2]; iivar_day1GTday0_chimps[2]</code></pre>
+<pre><code>ENSG00000005810 
+      0.2646586 </code></pre>
+<pre><code>ENSG00000005810 
+    -0.08526825 </code></pre>
+<pre class="r"><code>exp &lt;- as.data.frame(mean_tech_reps[grepl(&quot;ENSG00000005810&quot;, rownames(mean_tech_reps)), ])
+
+ii_expr &lt;- unlist(exp)
+boxplot(c(ii_expr[7:10]), c(ii_expr[17:20]), ylab = &quot;log2 normalized expression&quot;, main = &quot;Gene expression for ENSG00000005810 (Chimps)&quot;, xaxt=&quot;n&quot;, xlab = &quot;Day&quot;)
+axis(1, at=1:2, labels=c(&quot;Day 0&quot;, &quot;Day 1&quot;))</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># In humans
+
+HC_var &lt;- cbind((norm_exp_human_2289_day1_mean - norm_exp_human_2289_day0_mean), norm_exp_human_2289_day1_var - norm_exp_human_2289_day0_var)
+plot(HC_var, xlab = &quot;Differences in Means (Day 1 - Day 0)&quot;, ylab = &quot;Differences in Variances (Day 1 - Day 0)&quot;, main = &quot;Variances and Means in Day 1 compared to Day 0 in Humans (Subset)&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>iimean_day1GTday0_humans &lt;- norm_exp_human_2289_day1_mean - norm_exp_human_2289_day0_mean
+iivar_day1GTday0_humans &lt;- norm_exp_human_2289_day1_var - norm_exp_human_2289_day0_var
+ii_gene &lt;- iimean_day1GTday0_humans &gt; 0 &amp; iivar_day1GTday0_humans &lt; 0 
+
+ii_gene_df &lt;- as.data.frame(ii_gene)
+high_mean_low_var &lt;- ii_gene_df[which(ii_gene_df == &quot;TRUE&quot;) , ]
+
+# 1,283 genes
+
+head(which(ii_gene))</code></pre>
+<pre><code>ENSG00000000419 ENSG00000003393 ENSG00000004059 ENSG00000004142 
+              2               4               5               6 
+ENSG00000004487 ENSG00000004975 
+              7               9 </code></pre>
+<pre class="r"><code>iimean_day1GTday0_humans[2]; iivar_day1GTday0_humans[2]</code></pre>
+<pre><code>ENSG00000000419 
+      0.3050568 </code></pre>
+<pre><code>ENSG00000000419 
+     -0.1042365 </code></pre>
+<pre class="r"><code>ii_expr &lt;- unlist(mean_tech_reps[2, ])
+boxplot(c(ii_expr[1:6]), c(ii_expr[11:16]), xaxt=&quot;n&quot;, ylab = &quot;log2 normalized expression&quot;, main = &quot;Gene expression for ENSG00000000419 (Humans)&quot;, xlab = &quot;Day&quot;)
+axis(1, at=1:2, labels=c(&quot;Day 0&quot;, &quot;Day 1&quot;))</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-8-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># In humans and chimps
+
+inshared_lists = row.names(mean_tech_reps) %in% rownames(num_var_pval)
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(mean_tech_reps, inshared_lists_data)
+counts_genes_in_cutoff &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+over_gene_red_var &lt;- counts_genes_in_cutoff[,1:40]
+
+# Define chimp and human means and variances
+  # Means
+
+over_human_day0_mean &lt;- apply(as.data.frame(over_gene_red_var[,1:6]),1, mean) 
+
+over_chimp_day0_mean &lt;-apply(as.data.frame(over_gene_red_var[,7:10]),1, mean)
+
+over_human_day1_mean &lt;- apply(as.data.frame(over_gene_red_var[,11:16]),1, mean)
+
+over_chimp_day1_mean &lt;- apply(as.data.frame(over_gene_red_var[,17:20]),1, mean)
+
+
+  # Variances
+over_human_day0_var &lt;- apply(as.data.frame(over_gene_red_var[,1:6]),1, var) 
+
+over_chimp_day0_var &lt;-apply(as.data.frame(over_gene_red_var[,7:10]),1, var)
+
+over_human_day1_var &lt;- apply(as.data.frame(over_gene_red_var[,11:16]),1, var)
+
+over_chimp_day1_var &lt;- apply(as.data.frame(over_gene_red_var[,17:20]),1, var)
+
+
+iimean_day1GTday0_chimps &lt;- over_chimp_day1_mean - over_chimp_day0_mean
+iivar_day1GTday0_chimps &lt;- over_chimp_day1_var - over_chimp_day0_var
+iimean_day1GTday0_humans &lt;- over_human_day1_mean - over_chimp_day0_mean
+iivar_day1GTday0_humans &lt;- over_human_day1_var - over_chimp_day0_var
+
+
+ii_gene &lt;- iimean_day1GTday0_chimps &gt; 0 &amp; iivar_day1GTday0_chimps &lt; 0 &amp; iimean_day1GTday0_humans &gt; 0 &amp; iivar_day1GTday0_humans &lt; 0
+
+ii_gene_df &lt;- as.data.frame(ii_gene)
+high_mean_low_var &lt;- ii_gene_df[which(ii_gene_df == &quot;TRUE&quot;) , ]
+
+# 78 genes
+
+head(which(ii_gene))</code></pre>
+<pre><code>ENSG00000005810 ENSG00000011478 ENSG00000034063 ENSG00000053372 
+              2               4               5               7 
+ENSG00000055070 ENSG00000063587 
+              8               9 </code></pre>
+<pre class="r"><code>#iimean_day1GTday0[4]; iivar_day1GTday0[4]
+ii_expr &lt;- unlist(over_gene_red_var[4, ])
+boxplot(c(ii_expr[7:10]), c(ii_expr[17:20]), c(ii_expr[1:6]), c(ii_expr[11:16]),  ylab = &quot;log2 normalized expression&quot;,  xaxt=&quot;n&quot;, main = &quot;Gene expression for ENSG00000011478&quot;, xlab = &quot;Species-Day Pair&quot;)
+axis(1, at=1:4, labels=c(&quot;C Day 0&quot;, &quot;C Day 1&quot;, &quot;H Day 0&quot;, &quot;H Day 1&quot;))</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-8-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#3.2 Driven by expression background
+# for lowly expressed genes, more difference in variance
+
+# Genomewide chimps
+HC_var &lt;- cbind((chimps_day1_mean + chimps_day0_mean)/2, chimps_day1_var-chimps_day0_var)
+plot(HC_var, xlab = &quot;(log2 expression mean day 0 + log2 expression mean day 1) / 2&quot;, ylab = &quot;Difference in variance (Day 1-Day 0)&quot;, main = &quot;Relationship between background and variance differences (chimps, all genes)&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Genomewide humans
+HC_var &lt;- cbind((humans_day1_mean + humans_day0_mean)/2, humans_day1_var-humans_day0_var)
+plot(HC_var, xlab = &quot;(log2 expression mean day 0 + log2 expression mean day 1) / 2&quot;, ylab = &quot;Difference in variance (Day 1-Day 0)&quot;, main = &quot;Relationship bet. background and variance differences (humans, all genes)&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Significantly reduced variance in chimps
+
+HC_var &lt;- cbind((norm_exp_chimp_612_day1_mean + norm_exp_chimp_612_day0_mean)/2, norm_exp_chimp_612_day1_var-norm_exp_chimp_612_day0_var)
+plot(HC_var, xlab = &quot;(log2 expression mean day 0 + log2 expression mean day 1) / 2&quot;, ylab = &quot;Difference in variance (Day 1-Day 0)&quot;, main = &quot;Relationship bet. background and variance differences (chimps, subset)&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Significantly reduced variance in humans
+
+HC_var &lt;- cbind((norm_exp_human_2289_day1_mean + norm_exp_human_2289_day0_mean)/2, norm_exp_human_2289_day1_var-norm_exp_human_2289_day0_var)
+plot(HC_var, xlab = &quot;(log2 expression mean day 0 + log2 expression mean day 1) / 2&quot;, ylab = &quot;Difference in variance (Day 1-Day 0)&quot;, main = &quot;Relationship bet. background and variance differences (humans, subset)&quot;)</code></pre>
+<p><img src="figure/Assess_reg_var.Rmd/unnamed-chunk-9-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#HC_var &lt;- cbind((chimps_day1_mean - chimps_day0_mean), chimps_day1_var-chimps_day0_var)
+#plot(HC_var)</code></pre>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+$(document).ready(function () {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
