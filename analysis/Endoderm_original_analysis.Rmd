@@ -1,0 +1,2680 @@
+---
+title: "Endoderm_original_analysis"
+author: "Lauren Blake"
+date: "January 8, 2017"
+output: html_document
+---
+
+## Introduction
+
+The goal of this script is to process the data from the 2 core runs of our endoderm time course project. The data was sequenced on an Illumina 4000 at the University of Chicago Genomics Core Facility. 
+There are 2 species (humans and chimps) with 6 human iPSC lines with 2 replicates and 4 chimp iPSC lines with 4 replicates. RNA was extracted from the iPSCs for each day of the differentation into endoderm for a total of 4 days. 
+
+## PLOTS OF UNMAPPED AND MAPPED READS
+
+```{r}
+# Load necessary libraries
+library(ggplot2)
+## Warning: package 'ggplot2' was built under R version 3.2.3
+library(scales)
+
+# Get data for unmapped and mapped reads
+Endoderm_mapping_2_core_runs <- read.csv("~/Desktop/Endoderm_TC/Endoderm_mapping_2_core_runs.csv")
+
+
+
+# Plot mapped reads per sample with a line at 10 million reads
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (2 core runs)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped_post_subsample, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (2 core runs, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+
+# Plot mapped reads per sample for core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run1, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 1)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 1 AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run1, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 1, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run2, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 2)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run2, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 2, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+```
+
+
+
+```{r}
+# Plot for unmapped reads/sample for both core runs
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_unmapped, fill = Species)) + ylab("Number of unmapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Unmapped reads for all samples (2 core runs)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot for unmapped reads/sample
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_unmapped_run1, fill = Species)) + ylab("Number of unmapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Unmapped reads for all samples  (core run 1)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot for unmapped reads/lane in core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Lane_run1), y = Reads_unmapped_run1, fill = Species)) + ylab("Number of unmapped reads") + xlab("Lane number") + geom_bar(stat = "identity", colour = "black")  + ggtitle("Unmapped reads for all samples  (core run 1)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot for unmapped reads/sample
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_unmapped_run2, fill = Species)) + ylab("Number of unmapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Unmapped reads for all samples  (core run 2)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot for unmapped reads/lane in core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Lane_run2), y = Reads_unmapped_run2, fill = Species)) + ylab("Number of unmapped reads") + xlab("Lane number") + geom_bar(stat = "identity", colour = "black") + ggtitle("Unmapped reads for all samples  (core run 2)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+
+```
+
+Originally, we had considered subsampling to the median. 
+```{r}
+# Originally, we had considered subsampling to the median. Find the median of the mapped reads (not including sample D0_3647_0116)
+
+median_test <- as.data.frame(Endoderm_mapping_2_core_runs$Total_mapped)
+median_run <- as.data.frame(median_test[-10,])
+
+median(as.numeric(t(median_run)))
+
+#We will subsample Sample D036470116 to the median number of reads, 35953173 reads.
+#Actual number of reads in  SampleD036470116 post subsampling: 35644778 reads.
+```
+
+Given the distribution of the mapped reads, we will subsample to the second highest value.
+
+```{r}
+
+# Plot mapped reads per sample with a line at 10 million reads
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (2 core runs)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped_post_subsample, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (2 core runs, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+
+# Plot mapped reads per sample for core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run1, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 1)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 1 AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run1, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 1, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run2, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 2)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+# Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run2, fill = Species)) + ylab("Number of mapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Mapped reads for all samples  (core run 2, post-subsampling)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
+
+
+```
+
+## VISUALIZATION OF THE RAW DATA 
+
+```{r}
+# Load libraries
+
+library("gplots")
+library("RColorBrewer")
+library("scales")
+library("edgeR")
+
+# Load colors 
+
+colors <- colorRampPalette(c(brewer.pal(9, "Blues")[1],brewer.pal(9, "Blues")[9]))(100)
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+# Set expression cutoff
+
+expr_cutoff <- 1.5
+
+# Load count data
+
+gene_counts_combined_raw_data <- read.delim("~/Desktop/Endoderm_TC/gene_counts_combined.txt")
+#gene_counts_combined_raw_data <- read.delim("~/Dropbox/Endoderm TC/gene_counts_combined_raw_data.txt", header=FALSE, stringsAsFactors=FALSE)
+counts_genes <- gene_counts_combined_raw_data[1:30030,2:65]
+rownames(counts_genes) <- gene_counts_combined_raw_data[1:30030,1]
+#counts_genes <- gene_counts
+
+# Load sample info
+
+Endoderm_mapping_core_1 <- read.csv("~/Desktop/Endoderm_TC/Endoderm_mapping_core_1.csv")
+
+# Make labels with species and day
+species <- Endoderm_mapping_core_1$Species
+day <- Endoderm_mapping_core_1$Day
+individual <- Endoderm_mapping_core_1$Individual
+Sample_ID <- Endoderm_mapping_core_1$Sample_ID
+
+labels <- paste(species, day, sep=" ")
+
+```
+
+```{r}
+# Hierarchical clustering on raw data
+
+cors <- cor(counts_genes, method="spearman", use="pairwise.complete.obs")
+
+heatmap.2( cors, scale="column", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol=labels, ColSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Species))], RowSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+ 
+```
+
+```{r}
+#PCA function (original code from Julien Roux)
+#Load in the plot_scores function
+plot_scores <- function(pca, scores, n, m, cols, points=F, pchs =20, legend=F){
+  xmin <- min(scores[,n]) - (max(scores[,n]) - min(scores[,n]))*0.05
+  if (legend == T){ ## let some room (35%) for a legend                                                                                                                                                 
+    xmax <- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.50
+  }
+  else {
+    xmax <- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.05
+  }
+  ymin <- min(scores[,m]) - (max(scores[,m]) - min(scores[,m]))*0.05
+  ymax <- max(scores[,m]) + (max(scores[,m]) - min(scores[,m]))*0.05
+  plot(scores[,n], scores[,m], xlab=paste("PC", n, ": ", round(summary(pca)$importance[2,n],3)*100, "% variance explained", sep=""), ylab=paste("PC", m, ": ", round(summary(pca)$importance[2,m],3)*100, "% variance explained", sep=""), xlim=c(xmin, xmax), ylim=c(ymin, ymax), type="n")
+  if (points == F){
+    text(scores[,n],scores[,m], rownames(scores), col=cols, cex=1)
+  }
+  else {
+    points(scores[,n],scores[,m], col=cols, pch=pchs, cex=1.3)
+  }
+}
+
+# Run the PCA 
+
+# Check that there's no "NAs" in the data
+select <- counts_genes
+summary(apply(select, 1, var) == 0)
+
+row_sub = apply(counts_genes, 1, function(row) all(row !=0 ))
+counts_genes_no0 <- counts_genes[row_sub,]
+
+# Perform PCA
+
+pca_genes <- prcomp(t(counts_genes_no0), scale = T)
+scores <- pca_genes$x
+
+#Make PCA plots with the factors colored by day
+
+### PCs 1 and 2 Raw Data
+for (n in 1:1){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+for (n in 1:1){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+```
+
+## INITIALIZE NORMALIZATION
+
+```{r}
+# Let's see what happens when we take the log2 of the raw counts
+
+log_counts_genes <- as.data.frame(log2(counts_genes))
+head(log_counts_genes)
+
+# Plot density (a) by species and (b) by day
+plotDensities(log_counts_genes, col=pal[as.numeric(Endoderm_mapping_core_1$Species)], legend="topright")
+
+plotDensities(log_counts_genes, col=pal[as.numeric(Endoderm_mapping_core_1$Day)], legend="topright")
+
+# Log2(CPM)
+
+cpm <- cpm(counts_genes, log=TRUE)
+
+# Make plot 
+hist(cpm, main = "log2(CPM) values in unfiltered data (n = 64 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+# Plot density (a) by species and (b) by day
+plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Species)], legend="topright")
+
+plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Day)], legend="topright")
+
+# Plot library size
+
+#boxplot_library_size <- ggplot(dge_original$samples, aes(x = as.factor(Endoderm_mapping_core_1$Day), y = dge_original$samples$lib.size, fill = Endoderm_mapping_core_1$Species)) + geom_boxplot()
+
+#boxplot_library_size + labs(title = "Library size by day") + labs(y = "Library size") + labs(x = "Day") + guides(fill=guide_legend(title="Species"))
+
+```
+
+### Filtering lowly expressed genes
+
+We are beginning with 30030 genes and 64 samples (8 samples/species x 4 timepoints/species x 2 species)
+Based on what we have learned from Roux and Blake (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html), we will use a cutoff of log2(CPM) > 1.5 in at least 16 of the human samples and 16 of the chimp samples.
+
+```{r}
+expr_cutoff <- 1.5
+
+# Make plot 
+hist(cpm, main = "log2(CPM) values in unfiltered data (n = 64 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+abline(v = expr_cutoff, col = "red", lwd = 3)
+
+# Filter data
+
+humans <- c(1:8, 17:24, 33:40, 49:56)
+chimps <- c(9:16, 25:32, 41:48, 57:64 )
+
+
+cpm_filtered <- (rowSums(cpm[,humans] > 1.5) > 16 & rowSums(cpm[,chimps] > 1.5) > 16)
+
+genes_in_cutoff <- cpm[cpm_filtered==TRUE,]
+dim(genes_in_cutoff)
+
+# Make a histogram of the filtered data 
+
+hist(as.numeric(unlist(genes_in_cutoff)), main = "log2(CPM) values in filtered data (n = 64 samples, 10,270 genes)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+
+```
+
+## About GC Content Normalization
+
+Roux and Blake's comparative analysis (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html) showed that GC content normalization does not substantially impact gene counts. Therefore, we will not perform it in this analysis. 
+
+## Correction for library size
+
+```{r}
+# Find the original counts of all of the genes that fit the criteria 
+
+counts_genes_in_cutoff <- counts_genes[cpm_filtered==TRUE,]
+dim(counts_genes_in_cutoff)
+
+# Take the TMM of the counts only for the genes that remain after filtering
+
+dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
+
+head(summary(cpm_in_cutoff))
+
+# Make density plots of the filtered data
+
+plotDensities(cpm_in_cutoff, col=pal[as.numeric(species)], legend="topright")
+
+plotDensities(cpm_in_cutoff, col=pal[as.numeric(day)], legend="topright")
+
+#gplots::heatmap.2(x=as.matrix(t(cpm_in_cutoff)),
+#                  , distfun = dist(x, method = "euclidean"), 
+#                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, col=colors, denscol="white", ColSideColors=pal[as.integer(as.factor(Day))+9])
+
+cors <- cor(cpm_in_cutoff, method="spearman", use="pairwise.complete.obs")
+
+heatmap.2( cors, scale="column", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol=labels, ColSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Species))], RowSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+
+```
+
+## Visualizing the filtered data
+
+```{r}
+# Make PCA plots with the factors colored by day
+
+pca_genes <- prcomp(t(cpm_in_cutoff), scale = T)
+scores <- pca_genes$x
+
+### PCs 1 and 2 
+for (n in 1:1){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+for (n in 2:2){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+```
+
+From the PCA plot, we see that Sample D0201570116 is a clear outlier and doesn't cluster with anything, including its technical replicate. We will remove this sample and then go through the same process as above to visualize the data. 
+
+## Normalization after removal of Sample D0201570116
+
+```{r}
+# Get data and sample info
+
+counts_genes63 <- counts_genes[,-2]
+dim(counts_genes63)
+
+After_removal_sample_info <- read.csv("~/Desktop/Endoderm_TC/After_removal_sample_info.csv")
+
+Species <- After_removal_sample_info$Species
+species <- After_removal_sample_info$Species
+day <- After_removal_sample_info$Day
+individual <- After_removal_sample_info$Individual
+Sample_ID <- After_removal_sample_info$Sample_ID
+labels <- paste(Sample_ID, day, sep=" ")
+rep_batch <- After_removal_sample_info$Reprogramming_batch
+
+# Log2(CPM)
+
+cpm <- cpm(counts_genes63, log=TRUE)
+
+# Make plot 
+hist(cpm, main = "log2(CPM) values in unfiltered data (n = 64 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+abline(v = 1.5, col = "red", lwd = 3)
+
+# Filter lowly expressed genes
+
+humans <- c(1:7, 16:23, 32:39, 48:55)
+chimps <- c(8:15, 24:31, 40:47, 56:63)
+
+cpm_filtered <- (rowSums(cpm[,humans] > 1.5) > 15 & rowSums(cpm[,chimps] > 1.5) > 16)
+
+genes_in_cutoff <- cpm[cpm_filtered==TRUE,]
+dim(genes_in_cutoff)
+
+# Find the original counts of all of the genes that fit the criteria 
+
+counts_genes_in_cutoff <- counts_genes63[cpm_filtered==TRUE,]
+dim(counts_genes_in_cutoff)
+
+# Take the TMM of the counts only for the genes that remain after filtering
+
+dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff <- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
+
+head(summary(cpm_in_cutoff))
+
+# Make plot 
+hist(cpm_in_cutoff, main = "log2(CPM) values in filtered data (10,304 genes from 63 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
+
+# Make table of the normalized data
+
+# write.table(cpm_in_cutoff,file="~/Dropbox/Endoderm TC/gene_counts_combined_norm_data.txt",sep="\t", col.names = T, row.names = T)
+
+
+```
+
+There are 10,304 genes remaining. 
+
+
+```{r}
+library("ggplot2")
+dev.off()
+
+sample <- Endoderm_mapping_2_core_runs$Sample[-2]
+
+# Make PCA plots with the factors colored by day
+
+pca_genes <- prcomp(t(cpm_in_cutoff), scale = T, retx = TRUE, center = TRUE)
+scores <- pca_genes$x
+
+### PCs Plots on filtered and normalized data
+# PCs 1 and 2
+for (n in 1:1){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+for (n in 1:1){
+  col.v <- pal[as.integer(day)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+pc6 <- matrixpca[,6]
+pc7 <- matrixpca[,7]
+pc8 <- matrixpca[,8]
+pc9 <- matrixpca[,9]
+pc10 <- matrixpca[,10]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5, pc6, pc7, pc8, pc9, pc10)
+
+summary <- summary(pca_genes)
+
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=species, size=2)) +
+geom_point(aes(text = sample)) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2))  + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + labs(title = "PCA plot of normalized endoderm time course data")
+#ggplotly()
+
+# PCs 2 and 3
+for (n in 2:2){
+  col.v <- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+ggplot(data=pcs, aes(x=pc2, y=pc3, color=as.factor(day), shape=Species, size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC2 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC3 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 2 and 3 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCA plot of normalized endoderm time course data")
+#ggplotly()
+
+# PCs 3 and 4
+#for (n in 3:3){
+#  col.v <- pal[as.integer(species)]
+#  plot_scores(pca_genes, scores, n, n+1, col.v)
+#}
+
+ggplot(data=pcs, aes(x=pc3, y=pc4, color=as.factor(day), shape=Species, size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC3 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC4 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 3 and 4 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCA plot of normalized endoderm time course data")
+#ggplotly()
+
+# PCs 4 and 5
+#for (n in 4:4){
+#  col.v <- pal[as.integer(species)]
+#  plot_scores(pca_genes, scores, n, n+1, col.v)
+#}
+
+ggplot(data=pcs, aes(x=pc4, y=pc5, color=as.factor(day), shape=Species, size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC4 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC5 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 4 and 5 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCA plot of normalized endoderm time course data")
+#ggplotly()
+
+
+# Does reprogramming batch correlate with any PCs?
+
+# PCs 1 and 2
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Reprogramming Batch", labels=c("2015", "2016")) + labs(title = "PCA plot of normalized endoderm time course data")
+#ggplotly()
+
+# PCs 9 and 10
+ggplot(data=pcs, aes(x=pc9, y=pc10, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC9 (",(summary$importance[2,9]*100), "% of variance)")) + ylab(paste("PC10 (",(summary$importance[2,10]*100), "% of variance)")) + title("PCs 9 and 10 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Reprogramming Batch", labels=c("2015", "2016")) + labs(title = "PCA plot of normalized endoderm time course data")
+#ggplotly()
+
+
+pvaluesandr2 = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"), c("Rep_batch p_val", "Rep_batch R^2")))
+
+j = 1
+  for (j in 1:10){
+  
+  checkPC1 <- lm(pcs[,j] ~ as.factor(rep_batch))
+
+#Get the summary statistics from it
+  summary(checkPC1)
+
+#Get the p-value of the F-statistic
+  summary(checkPC1)$fstatistic
+
+  fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  
+#Fraction of the variance explained by the model
+  r2_value <- summary(checkPC1)$r.squared
+
+#Put the summary statistics into the matrix w
+
+  pvaluesandr2[j, 1] <- p_fstat
+  pvaluesandr2[j, 2] <- r2_value
+  
+}
+
+pvaluesandr2
+
+# Hierarchical clustering on normalized data
+dev.off()
+cors <- cor(cpm_in_cutoff, method="pearson", use="pairwise.complete.obs")
+
+heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels,labRow=' ', ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+#gplots::heatmap.2(x=as.matrix(t(cpm_in_cutoff)),
+#                  , distfun = dist(x, method = "euclidean"), 
+#                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, col=colors, denscol="white", ColSideColors=pal[as.integer(as.factor(Day))+9])
+          
+
+```
+
+PC 1 is correlated with day, PC 2 with species, PC 3 is somewhat by species, PC 4 with day, and PC 5 separates one sample (D228815) from the rest of the samples. 
+
+# Figures for the paper
+
+```{r}
+library("Biobase")
+library("GEOquery")
+library("plyr")
+#theme_set(theme_bw(base_size = 16))
+library("biomaRt")
+library("colorfulVennPlot")
+library("VennDiagram")
+library("gridExtra")
+library("car")
+library("topGO")
+library("rowr")
+library("Cormotif")
+library("ggfortify")
+library("dplyr")
+library("tidyr")
+library("statmod")
+library("qtlcharts")
+library("mygene")
+
+```
+
+
+## Cormotif analysis
+
+### Set up
+```{r}
+# Create a factor for the experiments, with the levels ordered such that as.numeric converts them to numbers in a defined manner
+
+species <- c("H", "H","H","H","H","H","H", "C", "C","C","C","C","C","C","C","H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C",
+             "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C",
+             "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C")
+group_fac <- factor(paste(species, day, sep = "."),
+                    levels = c("C.0", "C.1", "C.2", "C.3",
+                               "H.0", "H.1", "H.2", "H.3"))
+groupid <- as.numeric(group_fac)
+# Conditions to compare:
+# day0, day1, day2, day3, 
+compid_day <- data.frame(c1 = c(1, 2, 3, 4),
+                         c2 = c(5, 6, 7, 8))
+compid_tran <- data.frame(c1 = c(1, 1, 1, 5, 5, 5),
+                          c2 = c(2, 3, 4, 6, 7, 8))
+compid_all <- data.frame(c1 = c(1, 2, 3, 4, 1, 2, 3, 5, 6, 7),
+                         c2 = c(5, 6, 7, 8, 2, 3, 4, 6, 7, 8))
+                         
+compid_chimp <- data.frame(c1=c(1,2,3), c2=c(2,3,4))                         
+compid_human <- data.frame(c1=c(5,6,7), c2=c(6,7,8))
+
+```
+
+### Identifying genes with interspecies differences by day
+```{r}
+#interspecies differences at each day
+set.seed(12345)
+cormotif_day <- cormotiffit(exprs = genes_in_cutoff , groupid = groupid, compid = compid_day, K = 3:5)
+plotIC(cormotif_day)
+plotMotif(cormotif_day)
+
+gene_prob_day <- cormotif_day$bestmotif$p.post
+rownames(gene_prob_day) <- rownames(cpm_in_cutoff)
+
+# Note: Originally, the code had the "sep2013 archive" but it looks like that has been disabled online. 
+
+ensembl <- useMart(host = "dec2013.archive.ensembl.org", biomart = "ENSEMBL_MART_ENSEMBL", dataset = "hsapiens_gene_ensembl")
+gene_names <- getBM(filters= "ensembl_gene_id", attributes= c("ensembl_gene_id","hgnc_symbol") ,values=rownames(gene_prob_day),mart= ensembl)
+gene_prob_day <- gene_prob_day[(rownames(gene_prob_day) %in% gene_names[,1]),]
+#rownames(gene_names) <- gene_names[,1]
+gene_names <- gene_names[!duplicated(gene_names[,1]),]
+all(rownames(gene_prob_day) == gene_names[,1])
+rownames(gene_prob_day) <- gene_names[,2]
+
+prob_sp_1 <- rownames(gene_prob_day[(gene_prob_day[,1] < 0.5 & gene_prob_day[,2] <0.5 & gene_prob_day[,3] <0.5 & gene_prob_day[,4] <0.5),])
+length(prob_sp_1)
+
+prob_sp_2 <- rownames(gene_prob_day[(gene_prob_day[,1] >0.5 & gene_prob_day[,2] >0.7 & gene_prob_day[,3] <0.5 & gene_prob_day[,4] <0.5),])
+length(prob_sp_2)
+
+prob_sp_3 <- rownames(gene_prob_day[(gene_prob_day[,1] >0.9 & gene_prob_day[,2] >0.9 & gene_prob_day[,3] > 0.9 & gene_prob_day[,4] > 0.9),])
+length(prob_sp_3)
+
+prob_sp_4 <- rownames(gene_prob_day[(gene_prob_day[,1] <0.5& gene_prob_day[,2] <0.5 & gene_prob_day[,3]>0.7 & gene_prob_day[,4] >0.9),])
+length(prob_sp_4)
+
+prob_sp_5 <- rownames(gene_prob_day[(gene_prob_day[,1] >0.9 & gene_prob_day[,2] >0.9 & gene_prob_day[,3] < 0.5 & gene_prob_day[,4] <0.5),])
+length(prob_sp_5)
+
+3866+438+3207+346+294
+
+cor_collect <- cbind.fill(prob_sp_1, prob_sp_2, prob_sp_3, prob_sp_4, prob_sp_5, fill=NA)
+
+
+write.table(cor_collect, file = "corcollect.txt")
+write.table(prob_sp_1, file="pr1.txt", row.names=FALSE)
+write.table(prob_sp_2, file="pr2.txt", row.names=FALSE)
+write.table(prob_sp_3, file="pr3.txt", row.names=FALSE)
+write.table(prob_sp_4, file="pr4.txt", row.names=FALSE)
+write.table(prob_sp_5, file="pr5.txt", row.names=FALSE)
+all_genes <- rownames(gene_prob_day)
+write.csv(all_genes, file="all_genes.txt", row.names=FALSE)
+
+```
+
+### Identifying genes showing differences during differentiation
+
+```{r}
+#differences during diffentiation
+set.seed(12345)
+cormotif_tran <- cormotiffit(exprs = cpm_in_cutoff, groupid = groupid,
+                        compid = compid_tran, K = 5:10)
+gene_prob_tran <- cormotif_tran$bestmotif$p.post
+rownames(gene_prob_tran) <- rownames( cpm_in_cutoff)
+plotIC(cormotif_tran)
+plotMotif(cormotif_tran)
+dim(gene_prob_tran)
+
+# See note in previous chunk about the archive date
+
+ensembl <- useMart(host = "dec2013.archive.ensembl.org",
+                   biomart = "ENSEMBL_MART_ENSEMBL",
+                   dataset = "hsapiens_gene_ensembl")
+gene_names <- getBM(filters= "ensembl_gene_id", attributes= c("ensembl_gene_id","hgnc_symbol") ,values=rownames(gene_prob_tran),mart= ensembl)
+
+gene_prob_tran <- gene_prob_tran[rownames(gene_prob_tran) %in% gene_names[,1],]
+for (i in 1:nrow(gene_prob_tran)) {
+if(rownames(gene_prob_tran)[i] == gene_names[i,1]) {
+rownames(gene_prob_tran)[i] <- gene_names[i,2]
+}
+}
+
+########
+
+prob_day_1  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
+length(prob_day_1)
+
+write.table(prob_day_1, file="prob_cluster_1.txt")
+
+prob_day_2  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] >0.7 & gene_prob_tran[,3] >0.9 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
+length(prob_day_2)
+write.table(prob_day_2, file="prob_cluster_2.txt")
+
+prob_day_3  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] >0.9 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.9),])
+length(prob_day_3)
+write.table(prob_day_3, file="prob_cluster_3.txt")
+
+prob_day_4  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.9 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.9 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
+length(prob_day_4)
+write.table(prob_day_4, file="prob_cluster_4.txt")
+
+prob_day_5  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.9 & gene_prob_tran[,2] >0.9 & gene_prob_tran[,3] >0.9 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
+length(prob_day_5)
+write.table(prob_day_5, file="prob_cluster_5.txt")
+
+prob_day_6  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] >0.9 & gene_prob_tran[,3] >0.9 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] > 0.9 & gene_prob_tran[,6]>0.9),])
+length(prob_day_6)
+write.table(prob_day_6, file="prob_cluster_6.txt")
+
+prob_day_7  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.7 & gene_prob_tran[,5] < 0.9 & gene_prob_tran[,6]<0.9),])
+length(prob_day_7)
+write.table(prob_day_7, file="prob_cluster_7.txt")
+
+prob_day_8  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.9 & gene_prob_tran[,2] >0.9 & gene_prob_tran[,3] >0.9 & gene_prob_tran[,4] >0.9 & gene_prob_tran[,5] > 0.9 & gene_prob_tran[,6]>0.9),])
+length(prob_day_8)
+write.table(prob_day_8, file="prob_cluster_8.txt")
+
+
+
+
+
+####### SPLINES ##########
+
+#prob_day_1  <- rownames(ENSG_gene_prob_tran[(ENSG_gene_prob_tran[,1] <0.5 & ENSG_gene_prob_tran[,2] <0.5 & ENSG_gene_prob_tran[,3] <0.5 & ENSG_gene_prob_tran[,4] <0.5 & ENSG_gene_prob_tran[,5] < 0.5 & ENSG_gene_prob_tran[,6]<0.5),])
+
+#prob_day_1  <- as.data.frame(prob_day_1)
+
+#inshared_lists = row.names(cpm_in_cutoff) %in% prob_day_1[,1]
+#inshared_lists_data <- as.data.frame(inshared_lists)
+#counts_in <- cbind(cpm_in_cutoff, inshared_lists_data)
+#counts_in_2_of_4 <- as.data.frame(theme_bw()(counts_in, inshared_lists_data == "TRUE"))
+#counts_in_2_of_4_col1 <- as.data.frame(counts_in_2_of_4[,1:63])
+#rownames(counts_in_2_of_4_col1) <- rownames(counts_in_2_of_4)
+#dim(counts_in_2_of_4_col1)
+#write.table(counts_in_2_of_4_col1, file="ENSG_prob_cluster_1_cpm.txt")
+
+
+#human_day0 <- apply(counts_in_2_of_4_col1[,1:7], 1, median)
+#chimp_day0 <- apply(counts_in_2_of_4_col1[,8:15], 1, median)
+#human_day1 <- apply(counts_in_2_of_4_col1[,16:23], 1, median)
+#chimp_day1 <- apply(counts_in_2_of_4_col1[,24:31], 1, median)
+#human_day2 <- apply(counts_in_2_of_4_col1[,32:39], 1, median)
+#chimp_day2 <- apply(counts_in_2_of_4_col1[,40:47], 1, median)
+#human_day3 <- apply(counts_in_2_of_4_col1[,48:55], 1, median)
+#chimp_day3 <- apply(counts_in_2_of_4_col1[,56:63], 1, median)
+
+#med <- cbind(human_day0, chimp_day0, human_day1, chimp_day1,  human_day2,  chimp_day2,   human_day3, chimp_day3 )
+
+#time <- c(0,0,1,1,2,2,3,3)
+#species <- c(1,2,1,2,1,2,1,2)
+#med2 <- rbind(time, species, med)
+#med3 <- as.data.frame(t(med2))
+
+
+
+
+
+
+#prob_day_2  <- rownames(ENSG_gene_prob_tran[(ENSG_gene_prob_tran[,1] <0.5 & ENSG_gene_prob_tran[,2] >0.7 & ENSG_gene_prob_tran[,3] >0.9 & ENSG_gene_prob_tran[,4] <0.5 & ENSG_gene_prob_tran[,5] < 0.5 & ENSG_gene_prob_tran[,6]<0.5),])
+#length(prob_day_2)
+
+#prob_day_2  <- as.data.frame(prob_day_2)
+
+#inshared_lists = row.names(cpm_in_cutoff) %in% prob_day_2[,1]
+#inshared_lists_data <- as.data.frame(inshared_lists)
+#counts_in <- cbind(cpm_in_cutoff, inshared_lists_data)
+#counts_in_2_of_4 <- as.data.frame(subset(counts_in, inshared_lists_data == "TRUE"))
+#counts_in_2_of_4_col2 <- as.data.frame(counts_in_2_of_4[,1:63])
+#rownames(counts_in_2_of_4_col2) <- rownames(counts_in_2_of_4)
+
+#write.table(counts_in_2_of_4_col2, file="ENSG_prob_cluster_2.txt")
+
+#prob_day_3  <- rownames(ENSG_gene_prob_tran[(ENSG_gene_prob_tran[,1] <0.5 & ENSG_gene_prob_tran[,2] <0.5 & ENSG_gene_prob_tran[,3] >0.9 & ENSG_gene_prob_tran[,4] <0.5 & ENSG_gene_prob_tran[,5] < 0.5 & ENSG_gene_prob_tran[,6]>0.9),])
+#length(prob_day_3)
+
+#prob_day_3  <- as.data.frame(prob_day_3)
+#dim(prob_day_3)
+
+#inshared_lists = row.names(cpm_in_cutoff) %in% prob_day_3[,1]
+#inshared_lists_data <- as.data.frame(inshared_lists)
+#counts_in <- cbind(cpm_in_cutoff, inshared_lists_data)
+#counts_in_2_of_4 <- as.data.frame(subset(counts_in, inshared_lists_data == "TRUE"))
+#counts_in_2_of_4_col3 <- as.data.frame(counts_in_2_of_4[,1:63])
+#rownames(counts_in_2_of_4_col3) <- rownames(counts_in_2_of_4)
+#dim(counts_in_2_of_4_col3)
+
+#write.table(counts_in_2_of_4_col3, file="ENSG_prob_cluster_3.txt")
+
+#prob_day_4  <- rownames(ENSG_gene_prob_tran[(ENSG_gene_prob_tran[,1] >0.9 & ENSG_gene_prob_tran[,2] <0.5 & ENSG_gene_prob_tran[,3] <0.5 & ENSG_gene_prob_tran[,4] >0.9 & ENSG_gene_prob_tran[,5] < 0.5 & ENSG_gene_prob_tran[,6]<0.5),])
+
+#prob_day_4  <- as.data.frame(prob_day_4)
+#dim(prob_day_4)
+
+#inshared_lists = row.names(cpm_in_cutoff) %in% prob_day_4[,1]
+#inshared_lists_data <- as.data.frame(inshared_lists)
+#counts_in <- cbind(cpm_in_cutoff, inshared_lists_data)
+#counts_in_2_of_4 <- as.data.frame(subset(counts_in, inshared_lists_data == "TRUE"))
+#counts_in_2_of_4_col4 <- as.data.frame(counts_in_2_of_4[,1:63])
+#rownames(counts_in_2_of_4_col4) <- rownames(counts_in_2_of_4)
+#dim(counts_in_2_of_4_col4)
+
+#write.table(counts_in_2_of_4_col4, file="ENSG_prob_cluster_4.txt")
+
+#prob_day_5  <- rownames(ENSG_gene_prob_tran[(ENSG_gene_prob_tran[,1] >0.9 & ENSG_gene_prob_tran[,2] >0.9 & ENSG_gene_prob_tran[,3] >0.9 & ENSG_gene_prob_tran[,4] >0.5 & ENSG_gene_prob_tran[,5] < 0.5 & ENSG_gene_prob_tran[,6]<0.5),])
+
+#prob_day_5  <- as.data.frame(prob_day_5)
+#dim(prob_day_5)
+
+#inshared_lists = row.names(cpm_in_cutoff) %in% prob_day_5[,1]
+#inshared_lists_data <- as.data.frame(inshared_lists)
+#counts_in <- cbind(cpm_in_cutoff, inshared_lists_data)
+#counts_in_2_of_4 <- as.data.frame(subset(counts_in, inshared_lists_data == "TRUE"))
+#counts_in_2_of_4_col5 <- as.data.frame(counts_in_2_of_4[,1:63])
+#rownames(counts_in_2_of_4_col5) <- rownames(counts_in_2_of_4)
+#dim(counts_in_2_of_4_col5)
+
+#write.table(counts_in_2_of_4_col5, file="ENSG_prob_cluster_5.txt")
+
+#prob_day_6  <- rownames(ENSG_gene_prob_tran[(ENSG_gene_prob_tran[,1] <0.5 & ENSG_gene_prob_tran[,2] >0.9 & ENSG_gene_prob_tran[,3] >0.9 & ENSG_gene_prob_tran[,4] <0.5 & ENSG_gene_prob_tran[,5] > 0.9 & ENSG_gene_prob_tran[,6]>0.9),])
+#prob_day_6  <- as.data.frame(prob_day_6)
+#dim(prob_day_6)
+
+#inshared_lists = row.names(cpm_in_cutoff) %in% prob_day_6[,1]
+#inshared_lists_data <- as.data.frame(inshared_lists)
+#counts_in <- cbind(cpm_in_cutoff, inshared_lists_data)
+#counts_in_2_of_4 <- as.data.frame(subset(counts_in, inshared_lists_data == "TRUE"))
+#counts_in_2_of_4_col6 <- as.data.frame(counts_in_2_of_4[,1:63])
+#rownames(counts_in_2_of_4_col6) <- rownames(counts_in_2_of_4)
+#dim(counts_in_2_of_4_col6)
+
+#write.table(counts_in_2_of_4_col6, file="ENSG_prob_cluster_6.txt")
+
+#prob_day_7  <- rownames(ENSG_gene_prob_tran[(ENSG_gene_prob_tran[,1] >0.5 & ENSG_gene_prob_tran[,2] <0.5 & ENSG_gene_prob_tran[,3] <0.5 & ENSG_gene_prob_tran[,4] >0.7 & ENSG_gene_prob_tran[,5] > 0.9 & ENSG_gene_prob_tran[,6]>0.9),])
+#length(prob_day_7)
+
+#prob_day_7  <- as.data.frame(prob_day_7)
+#dim(prob_day_7)
+
+#inshared_lists = row.names(cpm_in_cutoff) %in% prob_day_7[,1]
+#inshared_lists_data <- as.data.frame(inshared_lists)
+#counts_in <- cbind(cpm_in_cutoff, inshared_lists_data)
+#counts_in_2_of_4 <- as.data.frame(subset(counts_in, inshared_lists_data == "TRUE"))
+#counts_in_2_of_4_col7 <- as.data.frame(counts_in_2_of_4[,1:63])
+#rownames(counts_in_2_of_4_col7) <- rownames(counts_in_2_of_4)
+#dim(counts_in_2_of_4_col7)
+
+#write.table(counts_in_2_of_4_col7, file="ENSG_prob_cluster_7.txt")
+
+
+#prob_day_8  <- rownames(ENSG_gene_prob_tran[(ENSG_gene_prob_tran[,1] >0.9 & ENSG_gene_prob_tran[,2] >0.9 & ENSG_gene_prob_tran[,3] >0.9 & ENSG_gene_prob_tran[,4] >0.9 & ENSG_gene_prob_tran[,5] > 0.9 & ENSG_gene_prob_tran[,6]>0.9),])
+
+#prob_day_8  <- as.data.frame(prob_day_8)
+
+#inshared_lists = row.names(cpm_in_cutoff) %in% prob_day_8[,1]
+#inshared_lists_data <- as.data.frame(inshared_lists)
+#counts_in <- cbind(cpm_in_cutoff, inshared_lists_data)
+#counts_in_2_of_4 <- as.data.frame(subset(counts_in, inshared_lists_data == "TRUE"))
+#counts_in_2_of_4_col8 <- as.data.frame(counts_in_2_of_4[,1:63])
+#rownames(counts_in_2_of_4_col8) <- rownames(counts_in_2_of_4)
+#dim(counts_in_2_of_4_col8)
+
+
+#write.table(counts_in_2_of_4_col8, file="ENSG_prob_cluster_8.txt")
+
+#plot(counts_in_2_of_4_col8[5,])
+
+
+
+
+
+
+
+
+```
+
+### Combined interspecies and diffentiation differences
+
+```{r}
+set.seed(12345)
+cormotif_all <- cormotiffit(exprs = cpm_in_cutoff, groupid = groupid,
+                            compid = compid_all, K = 9:15)
+
+gene_prob_all <- cormotif_all$bestmotif$p.post
+rownames(gene_prob_all) <- rownames(cpm_in_cutoff)                            
+plotIC(cormotif_all)
+plotMotif(cormotif_all)
+
+```
+
+# Differences during differentiation in each species separately
+```{r}
+
+set.seed(12345)
+cormotif_chimp <- cormotiffit(exprs = cpm_in_cutoff, groupid = groupid,
+                            compid = compid_chimp, K = 5:15)
+gene_prob_chimp <- cormotif_chimp$bestmotif$p.post
+rownames(gene_prob_chimp) <- rownames(cpm_in_cutoff)                            
+plotIC(cormotif_chimp)
+plotMotif(cormotif_chimp)
+
+cormotif_human <- cormotiffit(exprs = cpm_in_cutoff, groupid = groupid,
+                            compid = compid_human, K = 5:15)
+                            
+gene_prob_human <- cormotif_human$bestmotif$p.post
+rownames(gene_prob_human) <- rownames(cpm_in_cutoff)
+plotIC(cormotif_human)
+plotMotif(cormotif_human)
+
+```
+
+## Evaluation of variance 
+
+```{r}
+
+# Pull cpm for different combinations of species and day
+
+
+
+d0b <- cpm_in_cutoff[,day=="0"]
+d1b <- cpm_in_cutoff[,day=="1"]
+d2b <- cpm_in_cutoff[,day=="2"]
+d3b <- cpm_in_cutoff[,day=="3"]
+
+d0H <- cpm_in_cutoff[,day=="0" & species=="H"]
+dim(d0H)
+d0C <- cpm_in_cutoff[,day=="0" & species=="C"]
+dim(d0C)
+
+d1H <- cpm_in_cutoff[,day=="1" & species=="H"]
+dim(d1H)
+d1C <- cpm_in_cutoff[,day=="1" & species=="C"]
+dim(d1C)
+
+
+d2H <- cpm_in_cutoff[,day=="2" & species=="H"]
+dim(d2H)
+d2C <- cpm_in_cutoff[,day=="2" & species=="C"]
+dim(d2C)
+
+
+d3H <- cpm_in_cutoff[,day=="3" & species=="H"]
+dim(d3H)
+d3C <- cpm_in_cutoff[,day=="3" & species=="C"]
+dim(d3C)
+
+var_d0b <- apply(d0b, 1, var)
+var_d1b <- apply(d1b, 1, var)
+var_d2b <- apply(d2b, 1, var)
+var_d3b <- apply(d3b, 1, var)
+
+m0b <- mean(var_d0b)
+m1b <- mean(var_d1b)
+m2b <- mean(var_d2b)
+m3b <- mean(var_d3b)
+meansb <- c(m0b, m1b, m2b, m3b)
+plot(meansb)
+variance <- data.frame(var=c(var_d0b, var_d1b, var_d2b, var_d3b), day = rep(c("D0", "D1", "D2", "D3"), times =c(length(var_d0b), length(var_d1b), length(var_d2b), length(var_d3b))))
+
+# Make density plot 
+ggplot(variance, aes(x=var, fill=day)) + geom_density(alpha=0.5)+xlab("Variance") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18)) +xlim(c(-0.1,1))+ theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank())
+t.test(var_d1b, var_d3b)
+
+
+```
+
+```{r}
+var_d0H <- apply(d0H, 1, var)
+hist(var_d0H)
+m0h <- mean(var_d0H)
+var_d1H <- apply(d1H, 1, var)
+hist(var_d1H)
+m1h <- mean(var_d1H)
+var_d2H <- apply(d2H, 1, var)
+hist(var_d2H)
+m2h <- mean(var_d2H)
+var_d3H <- apply(d3H, 1, var)
+hist(var_d3H)
+m3h <- mean(var_d3H)
+
+var_d0C <- apply(d0C, 1, var)
+hist(var_d0C)
+m0c <- mean(var_d0C)
+var_d1C <- apply(d1C, 1, var)
+hist(var_d1C)
+m1c <- mean(var_d1C)
+var_d2C <- apply(d2C, 1, var)
+hist(var_d2C)
+m2c <- mean(var_d2C)
+var_d3C <- apply(d3C, 1, var)
+hist(var_d3C)
+m3c <- mean(var_d3C)
+
+means <- c(m0h, m1h, m2h, m3h, m0c, m1c, m2c, m3c)
+plot(means)
+boxplot(var_d0H, var_d0C, var_d1H, var_d1C, var_d2H, var_d2C, var_d3H, var_d3C, ylim=c(0,4)) 
+
+variance_humans <- data.frame(var=c(var_d0H, var_d1H, var_d2H, var_d3H), day = rep(c("D0","D1", "D2", "D3"), times =c(length(var_d0H), length(var_d1H), length(var_d2H), length(var_d3H))))
+
+ggplot(variance_humans, aes(x=var, fill=day)) + geom_density(alpha=0.5) +xlim(-.25,8.0)+xlab("Variance") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18)) +xlim(-.01, 2) + labs(title = "Density plot of variance for humans")
+
+variance_chimps <- data.frame(var=c(var_d0C, var_d1C, var_d2C, var_d3C), day = rep(c("D0","D1", "D2", "D3"), times =c(length(var_d0C), length(var_d1C), length(var_d2C), length(var_d3C))))
+t.test(var_d0C, var_d1C)
+mean(var_d0H)
+
+ggplot(variance_chimps, aes(x=var, fill=day)) + geom_density(alpha=0.5) +xlim(-.25,8.0)+xlab("Variance") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18)) +xlim(-.01, 2) + theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank()) + labs(title = "Density plot of variance for chimps")
+
+t.test(var_d1H, var_d0H)
+```
+
+## Iplot
+```{r}
+### Iplot ###
+
+# iplotCorr(substitute(cpm_in_cutoff))
+# iplotCorr(as.character(expr))
+```
+
+## ASH
+
+It appears from Sammy's original file that this method for calculating a p-value cutoff was never implemented. 
+
+## Pairwise correlations 
+
+```{r}
+library("tidyr")
+library("dplyr")
+
+# Run the same samples as Sammy
+bio_rep <- c(1:5, 7, 8, 10, 12, 14, 16, 18:21, 23, 24, 26, 28, 30, 32, 34:37, 39, 40, 42, 44, 46, 48, 50:53, 55, 56, 58, 60, 62)
+
+bio_rep_cpm_in_cutoff <- cpm_in_cutoff[,bio_rep]
+
+# Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors <- read.delim("~/Downloads/samplefactors-filtered.txt", stringsAsFactors=FALSE) 
+
+pair_cor <- cor(bio_rep_cpm_in_cutoff, method = "spearman")
+pair_cor <- as.data.frame(pair_cor)
+pair_cor$sample1 <- rownames(pair_cor)
+
+pair_cor_long <- gather(pair_cor, key = "sample2", value = "r", -sample1) %>%
+  mutate(sample2 = as.character(sample2)) %>%
+  filter(sample1 < sample2) %>% # ensures only one of the two entries is
+  arrange(sample1, sample2)    # maintained
+stopifnot(pair_cor_long$r < 1,
+          nrow(pair_cor_long) == (40*40 - 40) / 2)
+head(pair_cor_long)
+
+rownames(bio_rep_samplefactors) <- colnames(bio_rep_cpm_in_cutoff)
+pair_cor_long$day1 <- ""
+pair_cor_long$day2 <- ""
+pair_cor_long$species1 <- ""
+pair_cor_long$species2 <- ""
+
+for (i in 1:nrow(pair_cor_long)) {
+  pair_cor_long$day1[i] <- bio_rep_samplefactors[pair_cor_long$sample1[i], "Day"]
+  pair_cor_long$day2[i] <- bio_rep_samplefactors[pair_cor_long$sample2[i], "Day"]
+  pair_cor_long$species1[i] <- bio_rep_samplefactors[pair_cor_long$sample1[i], "Species"]
+  pair_cor_long$species2[i] <- bio_rep_samplefactors[pair_cor_long$sample2[i], "Species"]
+}
+head(pair_cor_long)
+
+pair_cor_long$human <- NA
+pair_cor_long$chimp <- NA
+pair_cor_long$cross <- NA
+pair_cor_long$all <- NA
+for (i in 1:nrow(pair_cor_long)) {
+  # Do not include comparisons across days
+  if (pair_cor_long$day1[i] != pair_cor_long$day2[i]) {
+    next
+  }
+  pair_cor_long$all[i] <- pair_cor_long$r[i]
+  if (pair_cor_long$species1[i] == "H" &
+      pair_cor_long$species2[i] == "H") {
+    pair_cor_long$human[i] <- pair_cor_long$r[i]
+  } else if (pair_cor_long$species1[i] == "C" &
+             pair_cor_long$species2[i] == "C") {
+    pair_cor_long$chimp[i] <- pair_cor_long$r[i]
+  } else {
+    pair_cor_long$cross[i] <- pair_cor_long$r[i]
+  }
+}
+head(pair_cor_long)
+
+df_plot <- gather(pair_cor_long, key = "comparison", value = "correlation",
+                  human, chimp, cross, all, na.rm = TRUE)
+stopifnot(sum(df_plot$comparison == "all") ==
+            sum(df_plot$comparison == "human") +
+            sum(df_plot$comparison == "chimp") +
+            sum(df_plot$comparison == "cross"),
+          df_plot$day1 == df_plot$day2)
+head(df_plot)
+
+df_plot$comparison <- factor(df_plot$comparison,
+                             levels = c("chimp", "human", "cross", "all"),
+                             labels = c("Within chimps", "Within humans",
+                                        "Between species", "All comparisons"))
+table(df_plot$comparison)
+
+ggplot(df_plot, aes(x = day1, y = correlation)) +
+  geom_boxplot() +
+  facet_wrap(~comparison) +
+  labs(x = "Day", y = "Spearman's r", title = "When original samples used (mostly from batch 1")
+  
+  day1cor_cross <- pair_cor_long[pair_cor_long$day1==1,]$cross
+  day0cor_cross <- pair_cor_long[pair_cor_long$day1==0,]$cross
+  day2cor_cross <- pair_cor_long[pair_cor_long$day1==2,]$cross
+  day3cor_cross <- pair_cor_long[pair_cor_long$day1==3,]$cross
+    day1cor_H <- pair_cor_long[pair_cor_long$day1==1,]$human
+  day0cor_H <- pair_cor_long[pair_cor_long$day1==0,]$human
+  day2cor_H <- pair_cor_long[pair_cor_long$day1==2,]$human
+  day3cor_H <- pair_cor_long[pair_cor_long$day1==3,]$human
+     day1cor_C <- pair_cor_long[pair_cor_long$day1==1,]$chimp
+  day0cor_C <- pair_cor_long[pair_cor_long$day1==0,]$chimp
+  day2cor_C <- pair_cor_long[pair_cor_long$day1==2,]$chimp
+  day3cor_C <- pair_cor_long[pair_cor_long$day1==3,]$chimp
+  t.test(na.omit(day1cor_cross), na.omit(day3cor_cross))
+  t.test(na.omit(day1cor_H), na.omit(day0cor_H))
+  t.test(na.omit(day1cor_C), na.omit(day0cor_C))
+mean(na.omit(day1cor_cross))
+mean(na.omit(day0cor_cross))
+
+# Real statistics with the correlations
+
+# Within species
+#Make all the correlations
+
+cor_D0H <- as.data.frame(na.omit(day0cor_H))
+colnames(cor_D0H) <- c("correlations")
+cor_D0C <- as.data.frame(na.omit(day0cor_C))
+colnames(cor_D0C) <- c("correlations")
+cor_D1H <- as.data.frame(na.omit(day1cor_H)) 
+colnames(cor_D1H) <- c("correlations")
+cor_D1C <- as.data.frame(na.omit(day1cor_C))
+colnames(cor_D1C) <- c("correlations")
+cor_D2H <- as.data.frame(na.omit(day2cor_H))
+colnames(cor_D2H) <- c("correlations")
+cor_D2C <- as.data.frame(na.omit(day2cor_C))
+colnames(cor_D2C) <- c("correlations")
+cor_D3H <- as.data.frame(na.omit(day3cor_H))
+colnames(cor_D3H) <- c("correlations")
+cor_D3C <- as.data.frame(na.omit(day3cor_C))
+colnames(cor_D3C) <- c("correlations")
+
+
+corr_day_species <- rbind(cor_D0H, cor_D0C, cor_D1H, cor_D1C, cor_D2H, cor_D2C, cor_D3H, cor_D3C)
+
+D0H <- as.data.frame(rep("D0H", each = 15))
+colnames(D0H) <- c("Sample")
+
+D0C <- as.data.frame(rep("D0C", each = 6))
+colnames(D0C) <- c("Sample")
+D1H <- as.data.frame(rep("D1H", each = 15))
+colnames(D1H) <- c("Sample")
+D1C <- as.data.frame(rep("D1C", each = 6))
+colnames(D1C) <- c("Sample")
+D2H <- as.data.frame(rep("D2H", each = 15))
+colnames(D2H) <- c("Sample")
+D2C <- as.data.frame(rep("D2C", each = 6))
+colnames(D2C) <- c("Sample")
+D3H <- as.data.frame(rep("D3H", each = 15))
+colnames(D3H) <- c("Sample")
+D3C <- as.data.frame(rep("D3C", each = 6))
+colnames(D3C) <- c("Sample")
+
+
+
+#### For within species chimps
+
+group <- rbind(D0C,D1C, D2C,  D3C)
+
+corr_day_species <- rbind(cor_D0C,  cor_D1C,  cor_D2C, cor_D3C)
+
+aov_groups <- cbind(corr_day_species, group)
+
+dim(aov_groups)
+
+oneway.test(aov_groups$correlations ~ aov_groups$Sample)
+
+
+t.test(cor_D0C, cor_D1C) 
+t.test(cor_D2C, cor_D1C)
+t.test(cor_D3C, cor_D1C) 
+
+#### For within species humans
+
+group <- rbind(D0H,D1H, D2H,  D3H)
+
+corr_day_species <- rbind(cor_D0H,  cor_D1H,  cor_D2H, cor_D3H)
+
+aov_groups <- cbind(corr_day_species, group)
+
+dim(aov_groups)
+
+aov_bet <- oneway.test(aov_groups$correlations ~ aov_groups$Sample)
+
+t.test(cor_D0H, cor_D1H) 
+t.test(cor_D2H, cor_D1H)
+t.test(cor_D3H, cor_D1H) 
+
+
+# For between species 
+
+#Make all the correlations
+
+cor_D0H <- as.data.frame(na.omit(day0cor_H))
+colnames(cor_D0H) <- c("correlations")
+cor_D0C <- as.data.frame(na.omit(day0cor_C))
+colnames(cor_D0C) <- c("correlations")
+
+cor_D0 <- rbind(cor_D0H, cor_D0C)
+
+cor_D1H <- as.data.frame(na.omit(day1cor_H)) 
+colnames(cor_D1H) <- c("correlations")
+cor_D1C <- as.data.frame(na.omit(day1cor_C))
+colnames(cor_D1C) <- c("correlations")
+cor_D1 <- rbind(cor_D1H, cor_D1C)
+
+cor_D2H <- as.data.frame(na.omit(day2cor_H))
+colnames(cor_D2H) <- c("correlations")
+cor_D2C <- as.data.frame(na.omit(day2cor_C))
+colnames(cor_D2C) <- c("correlations")
+cor_D2 <- rbind(cor_D2H, cor_D2C)
+colnames(cor_D2) <- c("correlations")
+
+cor_D3H <- as.data.frame(na.omit(day3cor_H))
+colnames(cor_D3H) <- c("correlations")
+cor_D3C <- as.data.frame(na.omit(day3cor_C))
+colnames(cor_D3C) <- c("correlations")
+cor_D3 <- rbind(cor_D3H, cor_D3C)
+
+
+corr_day_species <- rbind(cor_D0H, cor_D0C, cor_D1H, cor_D1C, cor_D2H, cor_D2C, cor_D3H, cor_D3C)
+
+D0 <- as.data.frame(rep("D0", each = 21))
+colnames(D0) <- c("Sample")
+
+D1 <- as.data.frame(rep("D1", each = 21))
+colnames(D1) <- c("Sample")
+
+D2 <- as.data.frame(rep("D2", each = 21))
+colnames(D2) <- c("Sample")
+
+D3 <- as.data.frame(rep("D3", each = 21))
+colnames(D3) <- c("Sample")
+
+
+group <- rbind(D0, D1, D2, D3)
+
+aov_groups <- cbind(corr_day_species, group)
+
+# Perform the ANOVA
+
+oneway.test(aov_groups$correlations ~ aov_groups$Sample)  
+
+t.test(cor_D0, cor_D1)
+t.test(cor_D2, cor_D1) 
+t.test(cor_D3, cor_D1) 
+
+
+```
+
+```{r}
+# Run samples from batch 2 when available
+bio_rep <- c(1:4, 6, 7, 9, 11, 13, 15, 17, 18:20, 22, 23, 25, 27, 29, 31, 33, 34:36, 38, 39, 41, 43, 45, 47, 49, 50:52,54, 55, 57, 59, 61, 63)
+
+bio_rep_cpm_in_cutoff <- cpm_in_cutoff[,bio_rep]
+
+# Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors <- read.delim("~/Downloads/samplefactors-filtered.txt", stringsAsFactors=FALSE) 
+
+pair_cor <- cor(bio_rep_cpm_in_cutoff, method = "spearman")
+pair_cor <- as.data.frame(pair_cor)
+pair_cor$sample1 <- rownames(pair_cor)
+
+pair_cor_long <- gather(pair_cor, key = "sample2", value = "r", -sample1) %>%
+  mutate(sample2 = as.character(sample2)) %>%
+  filter(sample1 < sample2) %>% # ensures only one of the two entries is
+  arrange(sample1, sample2)    # maintained
+stopifnot(pair_cor_long$r < 1,
+          nrow(pair_cor_long) == (40*40 - 40) / 2)
+head(pair_cor_long)
+
+rownames(bio_rep_samplefactors) <- colnames(bio_rep_cpm_in_cutoff)
+pair_cor_long$day1 <- ""
+pair_cor_long$day2 <- ""
+pair_cor_long$species1 <- ""
+pair_cor_long$species2 <- ""
+
+for (i in 1:nrow(pair_cor_long)) {
+  pair_cor_long$day1[i] <- bio_rep_samplefactors[pair_cor_long$sample1[i], "Day"]
+  pair_cor_long$day2[i] <- bio_rep_samplefactors[pair_cor_long$sample2[i], "Day"]
+  pair_cor_long$species1[i] <- bio_rep_samplefactors[pair_cor_long$sample1[i], "Species"]
+  pair_cor_long$species2[i] <- bio_rep_samplefactors[pair_cor_long$sample2[i], "Species"]
+}
+head(pair_cor_long)
+
+pair_cor_long$human <- NA
+pair_cor_long$chimp <- NA
+pair_cor_long$cross <- NA
+pair_cor_long$all <- NA
+for (i in 1:nrow(pair_cor_long)) {
+  # Do not include comparisons across days
+  if (pair_cor_long$day1[i] != pair_cor_long$day2[i]) {
+    next
+  }
+  pair_cor_long$all[i] <- pair_cor_long$r[i]
+  if (pair_cor_long$species1[i] == "H" &
+      pair_cor_long$species2[i] == "H") {
+    pair_cor_long$human[i] <- pair_cor_long$r[i]
+  } else if (pair_cor_long$species1[i] == "C" &
+             pair_cor_long$species2[i] == "C") {
+    pair_cor_long$chimp[i] <- pair_cor_long$r[i]
+  } else {
+    pair_cor_long$cross[i] <- pair_cor_long$r[i]
+  }
+}
+head(pair_cor_long)
+
+df_plot <- gather(pair_cor_long, key = "comparison", value = "correlation",
+                  human, chimp, cross, all, na.rm = TRUE)
+stopifnot(sum(df_plot$comparison == "all") ==
+            sum(df_plot$comparison == "human") +
+            sum(df_plot$comparison == "chimp") +
+            sum(df_plot$comparison == "cross"),
+          df_plot$day1 == df_plot$day2)
+head(df_plot)
+
+df_plot$comparison <- factor(df_plot$comparison,
+                             levels = c("chimp", "human", "cross", "all"),
+                             labels = c("Within chimps", "Within humans",
+                                        "Between species", "All comparisons"))
+table(df_plot$comparison)
+
+ggplot(df_plot, aes(x = day1, y = correlation)) +
+  geom_boxplot() +
+  facet_wrap(~comparison) +
+  labs(x = "Day", y = "Spearman's r", title = "When original samples used (mostly from batch 1")
+  
+  day1cor_cross <- pair_cor_long[pair_cor_long$day1==1,]$cross
+  day0cor_cross <- pair_cor_long[pair_cor_long$day1==0,]$cross
+  day2cor_cross <- pair_cor_long[pair_cor_long$day1==2,]$cross
+  day3cor_cross <- pair_cor_long[pair_cor_long$day1==3,]$cross
+    day1cor_H <- pair_cor_long[pair_cor_long$day1==1,]$human
+  day0cor_H <- pair_cor_long[pair_cor_long$day1==0,]$human
+  day2cor_H <- pair_cor_long[pair_cor_long$day1==2,]$human
+  day3cor_H <- pair_cor_long[pair_cor_long$day1==3,]$human
+     day1cor_C <- pair_cor_long[pair_cor_long$day1==1,]$chimp
+  day0cor_C <- pair_cor_long[pair_cor_long$day1==0,]$chimp
+  day2cor_C <- pair_cor_long[pair_cor_long$day1==2,]$chimp
+  day3cor_C <- pair_cor_long[pair_cor_long$day1==3,]$chimp
+  t.test(na.omit(day1cor_cross), na.omit(day3cor_cross))
+  t.test(na.omit(day1cor_H), na.omit(day0cor_H))
+  t.test(na.omit(day1cor_C), na.omit(day0cor_C))
+mean(na.omit(day1cor_cross))
+mean(na.omit(day0cor_cross))
+
+# Real statistics with the correlations
+
+# Within species
+#Make all the correlations
+
+cor_D0H <- as.data.frame(na.omit(day0cor_H))
+colnames(cor_D0H) <- c("correlations")
+cor_D0C <- as.data.frame(na.omit(day0cor_C))
+colnames(cor_D0C) <- c("correlations")
+cor_D1H <- as.data.frame(na.omit(day1cor_H)) 
+colnames(cor_D1H) <- c("correlations")
+cor_D1C <- as.data.frame(na.omit(day1cor_C))
+colnames(cor_D1C) <- c("correlations")
+cor_D2H <- as.data.frame(na.omit(day2cor_H))
+colnames(cor_D2H) <- c("correlations")
+cor_D2C <- as.data.frame(na.omit(day2cor_C))
+colnames(cor_D2C) <- c("correlations")
+cor_D3H <- as.data.frame(na.omit(day3cor_H))
+colnames(cor_D3H) <- c("correlations")
+cor_D3C <- as.data.frame(na.omit(day3cor_C))
+colnames(cor_D3C) <- c("correlations")
+
+
+corr_day_species <- rbind(cor_D0H, cor_D0C, cor_D1H, cor_D1C, cor_D2H, cor_D2C, cor_D3H, cor_D3C)
+
+D0H <- as.data.frame(rep("D0H", each = 15))
+colnames(D0H) <- c("Sample")
+
+D0C <- as.data.frame(rep("D0C", each = 6))
+colnames(D0C) <- c("Sample")
+D1H <- as.data.frame(rep("D1H", each = 15))
+colnames(D1H) <- c("Sample")
+D1C <- as.data.frame(rep("D1C", each = 6))
+colnames(D1C) <- c("Sample")
+D2H <- as.data.frame(rep("D2H", each = 15))
+colnames(D2H) <- c("Sample")
+D2C <- as.data.frame(rep("D2C", each = 6))
+colnames(D2C) <- c("Sample")
+D3H <- as.data.frame(rep("D3H", each = 15))
+colnames(D3H) <- c("Sample")
+D3C <- as.data.frame(rep("D3C", each = 6))
+colnames(D3C) <- c("Sample")
+
+
+
+#### For within species chimps
+
+group <- rbind(D0C,D1C, D2C,  D3C)
+
+corr_day_species <- rbind(cor_D0C,  cor_D1C,  cor_D2C, cor_D3C)
+
+aov_groups <- cbind(corr_day_species, group)
+
+dim(aov_groups)
+
+oneway.test(aov_groups$correlations ~ aov_groups$Sample)
+
+
+t.test(cor_D0C, cor_D1C) 
+t.test(cor_D2C, cor_D1C)
+t.test(cor_D3C, cor_D1C) 
+
+#### For within species humans
+
+group <- rbind(D0H,D1H, D2H,  D3H)
+
+corr_day_species <- rbind(cor_D0H,  cor_D1H,  cor_D2H, cor_D3H)
+
+aov_groups <- cbind(corr_day_species, group)
+
+dim(aov_groups)
+
+aov_bet <- oneway.test(aov_groups$correlations ~ aov_groups$Sample)
+
+t.test(cor_D0H, cor_D1H) 
+t.test(cor_D2H, cor_D1H)
+t.test(cor_D3H, cor_D1H) 
+
+
+# For between species 
+
+#Make all the correlations
+
+cor_D0H <- as.data.frame(na.omit(day0cor_H))
+colnames(cor_D0H) <- c("correlations")
+cor_D0C <- as.data.frame(na.omit(day0cor_C))
+colnames(cor_D0C) <- c("correlations")
+
+cor_D0 <- rbind(cor_D0H, cor_D0C)
+
+cor_D1H <- as.data.frame(na.omit(day1cor_H)) 
+colnames(cor_D1H) <- c("correlations")
+cor_D1C <- as.data.frame(na.omit(day1cor_C))
+colnames(cor_D1C) <- c("correlations")
+cor_D1 <- rbind(cor_D1H, cor_D1C)
+
+cor_D2H <- as.data.frame(na.omit(day2cor_H))
+colnames(cor_D2H) <- c("correlations")
+cor_D2C <- as.data.frame(na.omit(day2cor_C))
+colnames(cor_D2C) <- c("correlations")
+cor_D2 <- rbind(cor_D2H, cor_D2C)
+colnames(cor_D2) <- c("correlations")
+
+cor_D3H <- as.data.frame(na.omit(day3cor_H))
+colnames(cor_D3H) <- c("correlations")
+cor_D3C <- as.data.frame(na.omit(day3cor_C))
+colnames(cor_D3C) <- c("correlations")
+cor_D3 <- rbind(cor_D3H, cor_D3C)
+
+
+corr_day_species <- rbind(cor_D0H, cor_D0C, cor_D1H, cor_D1C, cor_D2H, cor_D2C, cor_D3H, cor_D3C)
+
+D0 <- as.data.frame(rep("D0", each = 21))
+colnames(D0) <- c("Sample")
+
+D1 <- as.data.frame(rep("D1", each = 21))
+colnames(D1) <- c("Sample")
+
+D2 <- as.data.frame(rep("D2", each = 21))
+colnames(D2) <- c("Sample")
+
+D3 <- as.data.frame(rep("D3", each = 21))
+colnames(D3) <- c("Sample")
+
+
+group <- rbind(D0, D1, D2, D3)
+
+aov_groups <- cbind(corr_day_species, group)
+
+# Perform the ANOVA
+
+oneway.test(aov_groups$correlations ~ aov_groups$Sample)  
+
+t.test(cor_D0, cor_D1)
+t.test(cor_D2, cor_D1) 
+t.test(cor_D3, cor_D1) 
+```
+
+```{r}
+# Make the endoderm-counts-filtered document
+
+
+# Find the cpm for the biological replicates (no technical replicates)
+#bio_rep <- c(1:4,6, 7, 8, 10, 12, 14, 17:20, 22, 23, 24, 26, 28, 30, 33:36,38, 39, 40, 42, 44, 46, 49:52, 53, 54, 56, 58, 60, 62)
+#bio_rep <- c(1:4,6, 7, 9, 11, 13, 15, 17:20, 22, 23, 25, 27, 29, 31, 33:36,38, 39, 41, 43, 45, 47, 49:52, 54, 55, 57, 59, 61, 63)
+
+# # Note: unlike in Sammy's original script, we are going to use log2(CPM) values instead of count data and we are going to take the means of the technical replicates
+
+
+################# ATTEMPT #1 ##########################
+
+# First, we are going to try this with the means of all available technical replicates (except D0_20157, which we removed way upstream of this)
+  # Day 0 technical replicates
+D0_28815 <- as.data.frame(apply(cpm_in_cutoff[,5:6], 1, mean))
+D0_3647 <- as.data.frame(apply(cpm_in_cutoff[,8:9], 1, mean))
+D0_3649 <- as.data.frame(apply(cpm_in_cutoff[,10:11], 1, mean))
+D0_40300 <- as.data.frame(apply(cpm_in_cutoff[,12:13], 1, mean))
+D0_4955 <- as.data.frame(apply(cpm_in_cutoff[,14:15], 1, mean))
+  # Day 1 technical replicates
+D1_20157 <- as.data.frame(apply(cpm_in_cutoff[,16:17], 1, mean))
+D1_28815 <- as.data.frame(apply(cpm_in_cutoff[,21:22], 1, mean))
+D1_3647 <- as.data.frame(apply(cpm_in_cutoff[,24:25], 1, mean))
+D1_3649 <- as.data.frame(apply(cpm_in_cutoff[,26:27], 1, mean))
+D1_40300 <- as.data.frame(apply(cpm_in_cutoff[,28:29], 1, mean))
+D1_4955 <- as.data.frame(apply(cpm_in_cutoff[,30:31], 1, mean))
+  # Day 2 technical replicates
+D2_20157 <- as.data.frame(apply(cpm_in_cutoff[,32:33], 1, mean))
+D2_28815 <- as.data.frame(apply(cpm_in_cutoff[,37:38], 1, mean))
+D2_3647 <- as.data.frame(apply(cpm_in_cutoff[,40:41], 1, mean))
+D2_3649 <- as.data.frame(apply(cpm_in_cutoff[,42:43], 1, mean))
+D2_40300 <- as.data.frame(apply(cpm_in_cutoff[,44:45], 1, mean))
+D2_4955 <- as.data.frame(apply(cpm_in_cutoff[,46:47], 1, mean))
+  # Day 3 technical replicates
+D3_20157 <- as.data.frame(apply(cpm_in_cutoff[,48:49], 1, mean))
+D3_28815 <- as.data.frame(apply(cpm_in_cutoff[,53:54], 1, mean))
+D3_3647 <- as.data.frame(apply(cpm_in_cutoff[,56:57], 1, mean))
+D3_3649 <- as.data.frame(apply(cpm_in_cutoff[,58:59], 1, mean))
+D3_40300 <- as.data.frame(apply(cpm_in_cutoff[,60:61], 1, mean))
+D3_4955 <- as.data.frame(apply(cpm_in_cutoff[,62:63], 1, mean))
+
+# Create a new data frame with all of the combined technical replicates
+mean_tech_reps <- cbind(cpm_in_cutoff[,1:4], D0_28815, cpm_in_cutoff[,7], D0_3647, D0_3649, D0_40300, D0_4955, D1_20157, cpm_in_cutoff[,18:20], D1_28815, cpm_in_cutoff[,23], D1_3647, D1_3649, D1_40300, D1_4955, D2_20157, cpm_in_cutoff[,34:36], D2_28815, cpm_in_cutoff[,39], D2_3647, D2_3649, D2_40300, D2_4955, D3_20157, cpm_in_cutoff[,50:52], D3_28815, cpm_in_cutoff[,55], D3_3647, D3_3649, D3_40300, D3_4955)
+
+
+bio_rep_cpm_in_cutoff <- mean_tech_reps
+
+colnames(bio_rep_cpm_in_cutoff) <- c("D0_20157", "D0_20961", "D0_21792", "D0_28162", "D0_28815", "D0_29089", "D0_3647", "D0_3649", "D0_40300", "D0_4955", "D1_20157", "D1_20961", "D1_21792", "D1_28162", "D1_28815", "D1_29089", "D1_3647", "D1_3649", "D1_40300", "D1_4955", "D2_20157", "D2_20961", "D2_21792", "D2_28162", "D2_28815", "D2_29089", "D2_3647", "D2_3649", "D2_40300", "D2_4955", "D3_20157", "D3_20961", "D3_21792", "D3_28162", "D3_28815", "D3_29089", "D3_3647", "D3_3649", "D3_40300", "D3_4955")
+
+
+# Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors <- read.delim("~/Downloads/samplefactors-filtered.txt", stringsAsFactors=FALSE) 
+
+# Find the correlations between the individuals
+
+pair_cor <- cor(bio_rep_cpm_in_cutoff, method = "spearman")
+pair_cor <- as.data.frame(pair_cor)
+pair_cor$sample1 <- rownames(pair_cor)
+
+pair_cor_long <- gather(pair_cor, key = "sample2", value = "r", -sample1) %>%
+  mutate(sample2 = as.character(sample2)) %>%
+  filter(sample1 < sample2) %>% # ensures only one of the two entries is
+  arrange(sample1, sample2)    # maintained
+stopifnot(pair_cor_long$r < 1,
+          nrow(pair_cor_long) == (40*40 - 40) / 2)
+head(pair_cor_long)
+
+rownames(bio_rep_samplefactors) <- colnames(bio_rep_cpm_in_cutoff)
+pair_cor_long$day1 <- ""
+pair_cor_long$day2 <- ""
+pair_cor_long$species1 <- ""
+pair_cor_long$species2 <- ""
+
+for (i in 1:nrow(pair_cor_long)) {
+  pair_cor_long$day1[i] <- bio_rep_samplefactors[pair_cor_long$sample1[i], "Day"]
+  pair_cor_long$day2[i] <- bio_rep_samplefactors[pair_cor_long$sample2[i], "Day"]
+  pair_cor_long$species1[i] <- bio_rep_samplefactors[pair_cor_long$sample1[i], "Species"]
+  pair_cor_long$species2[i] <- bio_rep_samplefactors[pair_cor_long$sample2[i], "Species"]
+}
+head(pair_cor_long)
+
+pair_cor_long$human <- NA
+pair_cor_long$chimp <- NA
+pair_cor_long$cross <- NA
+pair_cor_long$all <- NA
+for (i in 1:nrow(pair_cor_long)) {
+  # Do not include comparisons across days
+  if (pair_cor_long$day1[i] != pair_cor_long$day2[i]) {
+    next
+  }
+  pair_cor_long$all[i] <- pair_cor_long$r[i]
+  if (pair_cor_long$species1[i] == "H" &
+      pair_cor_long$species2[i] == "H") {
+    pair_cor_long$human[i] <- pair_cor_long$r[i]
+  } else if (pair_cor_long$species1[i] == "C" &
+             pair_cor_long$species2[i] == "C") {
+    pair_cor_long$chimp[i] <- pair_cor_long$r[i]
+  } else {
+    pair_cor_long$cross[i] <- pair_cor_long$r[i]
+  }
+}
+head(pair_cor_long)
+
+df_plot <- gather(pair_cor_long, key = "comparison", value = "correlation",
+                  human, chimp, cross, all, na.rm = TRUE)
+stopifnot(sum(df_plot$comparison == "all") ==
+            sum(df_plot$comparison == "human") +
+            sum(df_plot$comparison == "chimp") +
+            sum(df_plot$comparison == "cross"),
+          df_plot$day1 == df_plot$day2)
+head(df_plot)
+
+df_plot$comparison <- factor(df_plot$comparison,
+                             levels = c("chimp", "human", "cross", "all"),
+                             labels = c("Within chimps", "Within humans",
+                                        "Between species", "All comparisons"))
+table(df_plot$comparison)
+
+ggplot(df_plot, aes(x = day1, y = correlation)) +
+  geom_boxplot() +
+  facet_wrap(~comparison) +
+  labs(x = "Day", y = "Spearman's r", title = "When technical replicates available, mean used except for D0_20157")
+  
+  day1cor_cross <- pair_cor_long[pair_cor_long$day1==1,]$cross
+  day0cor_cross <- pair_cor_long[pair_cor_long$day1==0,]$cross
+  day2cor_cross <- pair_cor_long[pair_cor_long$day1==2,]$cross
+  day3cor_cross <- pair_cor_long[pair_cor_long$day1==3,]$cross
+    day1cor_H <- pair_cor_long[pair_cor_long$day1==1,]$human
+  day0cor_H <- pair_cor_long[pair_cor_long$day1==0,]$human
+  day2cor_H <- pair_cor_long[pair_cor_long$day1==2,]$human
+  day3cor_H <- pair_cor_long[pair_cor_long$day1==3,]$human
+     day1cor_C <- pair_cor_long[pair_cor_long$day1==1,]$chimp
+  day0cor_C <- pair_cor_long[pair_cor_long$day1==0,]$chimp
+  day2cor_C <- pair_cor_long[pair_cor_long$day1==2,]$chimp
+  day3cor_C <- pair_cor_long[pair_cor_long$day1==3,]$chimp
+  t.test(na.omit(day1cor_cross), na.omit(day3cor_cross))
+  t.test(na.omit(day1cor_H), na.omit(day0cor_H))
+  t.test(na.omit(day1cor_C), na.omit(day0cor_C))
+mean(na.omit(day1cor_cross))
+mean(na.omit(day0cor_cross))
+
+# Real statistics with the correlations
+
+# Within species
+#Make all the correlations
+
+cor_D0H <- as.data.frame(na.omit(day0cor_H))
+colnames(cor_D0H) <- c("correlations")
+cor_D0C <- as.data.frame(na.omit(day0cor_C))
+colnames(cor_D0C) <- c("correlations")
+cor_D1H <- as.data.frame(na.omit(day1cor_H)) 
+colnames(cor_D1H) <- c("correlations")
+cor_D1C <- as.data.frame(na.omit(day1cor_C))
+colnames(cor_D1C) <- c("correlations")
+cor_D2H <- as.data.frame(na.omit(day2cor_H))
+colnames(cor_D2H) <- c("correlations")
+cor_D2C <- as.data.frame(na.omit(day2cor_C))
+colnames(cor_D2C) <- c("correlations")
+cor_D3H <- as.data.frame(na.omit(day3cor_H))
+colnames(cor_D3H) <- c("correlations")
+cor_D3C <- as.data.frame(na.omit(day3cor_C))
+colnames(cor_D3C) <- c("correlations")
+
+
+corr_day_species <- rbind(cor_D0H, cor_D0C, cor_D1H, cor_D1C, cor_D2H, cor_D2C, cor_D3H, cor_D3C)
+
+D0H <- as.data.frame(rep("D0H", each = 15))
+colnames(D0H) <- c("Sample")
+
+D0C <- as.data.frame(rep("D0C", each = 6))
+colnames(D0C) <- c("Sample")
+D1H <- as.data.frame(rep("D1H", each = 15))
+colnames(D1H) <- c("Sample")
+D1C <- as.data.frame(rep("D1C", each = 6))
+colnames(D1C) <- c("Sample")
+D2H <- as.data.frame(rep("D2H", each = 15))
+colnames(D2H) <- c("Sample")
+D2C <- as.data.frame(rep("D2C", each = 6))
+colnames(D2C) <- c("Sample")
+D3H <- as.data.frame(rep("D3H", each = 15))
+colnames(D3H) <- c("Sample")
+D3C <- as.data.frame(rep("D3C", each = 6))
+colnames(D3C) <- c("Sample")
+
+
+
+#### For within species chimps
+
+group <- rbind(D0C,D1C, D2C,  D3C)
+
+corr_day_species <- rbind(cor_D0C,  cor_D1C,  cor_D2C, cor_D3C)
+
+aov_groups <- cbind(corr_day_species, group)
+
+dim(aov_groups)
+
+oneway.test(aov_groups$correlations ~ aov_groups$Sample)
+
+#### For within species humans
+
+group <- rbind(D0H,D1H, D2H,  D3H)
+
+corr_day_species <- rbind(cor_D0H,  cor_D1H,  cor_D2H, cor_D3H)
+
+aov_groups <- cbind(corr_day_species, group)
+
+dim(aov_groups)
+
+aov_bet <- oneway.test(aov_groups$correlations ~ aov_groups$Sample)
+
+t.test(cor_D0H, cor_D1H) # 0.0004748
+t.test(cor_D2H, cor_D1H) # 0.0009124
+t.test(cor_D3H, cor_D1H) # 4.172e-05
+
+
+# For between species 
+
+#Make all the correlations
+
+cor_D0H <- as.data.frame(na.omit(day0cor_H))
+colnames(cor_D0H) <- c("correlations")
+cor_D0C <- as.data.frame(na.omit(day0cor_C))
+colnames(cor_D0C) <- c("correlations")
+
+cor_D0 <- rbind(cor_D0H, cor_D0C)
+
+cor_D1H <- as.data.frame(na.omit(day1cor_H)) 
+colnames(cor_D1H) <- c("correlations")
+cor_D1C <- as.data.frame(na.omit(day1cor_C))
+colnames(cor_D1C) <- c("correlations")
+cor_D1 <- rbind(cor_D1H, cor_D1C)
+
+cor_D2H <- as.data.frame(na.omit(day2cor_H))
+colnames(cor_D2H) <- c("correlations")
+cor_D2C <- as.data.frame(na.omit(day2cor_C))
+colnames(cor_D2C) <- c("correlations")
+cor_D2 <- rbind(cor_D2H, cor_D2C)
+colnames(cor_D2) <- c("correlations")
+
+cor_D3H <- as.data.frame(na.omit(day3cor_H))
+colnames(cor_D3H) <- c("correlations")
+cor_D3C <- as.data.frame(na.omit(day3cor_C))
+colnames(cor_D3C) <- c("correlations")
+cor_D3 <- rbind(cor_D3H, cor_D3C)
+
+
+corr_day_species <- rbind(cor_D0H, cor_D0C, cor_D1H, cor_D1C, cor_D2H, cor_D2C, cor_D3H, cor_D3C)
+
+D0 <- as.data.frame(rep("D0", each = 21))
+colnames(D0) <- c("Sample")
+
+D1 <- as.data.frame(rep("D1", each = 21))
+colnames(D1) <- c("Sample")
+
+D2 <- as.data.frame(rep("D2", each = 21))
+colnames(D2) <- c("Sample")
+
+D3 <- as.data.frame(rep("D3", each = 21))
+colnames(D3) <- c("Sample")
+
+
+group <- rbind(D0, D1, D2, D3)
+
+aov_groups <- cbind(corr_day_species, group)
+
+# Perform the ANOVA
+
+oneway.test(aov_groups$correlations ~ aov_groups$Sample)  # 1.632e-06
+
+t.test(cor_D0, cor_D1) # 0.001695
+t.test(cor_D2, cor_D1) # 0.0006723
+t.test(cor_D3, cor_D1) # 1.091e-05
+
+##### Variance density plot 
+
+
+
+##### Plot the correlations genewise
+
+humans_day0_var <- apply(as.data.frame(mean_tech_reps[,1:6]),1, var) 
+chimps_day0_var <- apply(as.data.frame(mean_tech_reps[,7:10]),1, var)
+humans_day1_var <- apply(as.data.frame(mean_tech_reps[,11:16]),1, var)
+chimps_day1_var <- apply(as.data.frame(mean_tech_reps[,17:20]),1, var)
+humans_day2_var <- apply(as.data.frame(mean_tech_reps[,21:26]),1, var)
+chimps_day2_var <- apply(as.data.frame(mean_tech_reps[,27:30]),1, var)
+humans_day3_var <- apply(as.data.frame(mean_tech_reps[,31:36]),1, var)
+chimps_day3_var <- apply(as.data.frame(mean_tech_reps[,37:40]),1, var)
+
+HC_var <- cbind(humans_day0_var, chimps_day0_var, humans_day1_var, chimps_day1_var, humans_day2_var, chimps_day2_var, humans_day3_var, chimps_day3_var)
+boxplot(HC_var, ylim = c(0,0.5))
+ 
+humans_day0_mean <- apply(as.data.frame(mean_tech_reps[,1:6]),1, mean)
+chimps_day0_mean <- apply(as.data.frame(mean_tech_reps[,7:10]),1, mean)
+humans_day1_mean <- apply(as.data.frame(mean_tech_reps[,11:16]),1, mean)
+chimps_day1_mean <- apply(as.data.frame(mean_tech_reps[,17:20]),1, mean)
+humans_day2_mean <- apply(as.data.frame(mean_tech_reps[,21:26]),1, mean)
+chimps_day2_mean <- apply(as.data.frame(mean_tech_reps[,27:30]),1, mean)
+humans_day3_mean <- apply(as.data.frame(mean_tech_reps[,31:36]),1, mean)
+chimps_day3_mean <- apply(as.data.frame(mean_tech_reps[,37:40]),1, mean)
+ 
+HC_var_mean <- cbind((humans_day0_var/humans_day0_mean), (chimps_day0_var/chimps_day0_mean), (humans_day1_var/humans_day1_mean), (chimps_day1_var/chimps_day1_mean), (humans_day2_var/humans_day2_mean), (chimps_day2_var/chimps_day2_mean), (humans_day3_var/humans_day3_mean), (chimps_day3_var/chimps_day3_mean))
+boxplot(HC_var_mean, ylim = c(0,0.1))
+
+plot(log10(humans_day0_var), log10(humans_day1_var))
+abline(0,1, col = "red", v = 0, h = 0)
+# Make density plot 
+#ggplot(variance, aes(x=var, fill=day)) + geom_density(alpha=0.5)+xlab("Variance") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18)) +xlim(c(-0.1,1))+ theme(panel.grid.major=element_blank(), panel.grid.minor=element_blank())
+#t.test(var_d1b, var_d3b)
+
+
+
+
+
+```
+
+### Assessing differential gene expression using Limma
+
+Here, the model for expression has fixed effects for day, species, and a day-by-species interaction term. 
+
+```{r}
+species <- c("H", "H","H","H","H","H","H", "C", "C","C","C","C","C","C","C","H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C","H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C","H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C")
+
+day <- factor(day)
+
+# Make the design matrix with an interaction term between species and day
+design <- model.matrix(~species+day+species:day)
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom <- voom(dge_in_cutoff, design, normalize.method="none")
+
+# We want a random effect term for individual
+#corfit <- duplicateCorrelation(cpm.voom, design,block=individual)
+corfit.correlation = 0.1947084
+
+cpm.voom.corfit <- voom(dge_in_cutoff, design, plot = TRUE, normalize.method="none", block=individual, correlation = corfit.correlation )
+
+# Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)
+
+# Run lmFit and eBayes in limma
+
+fit <- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+fit <- eBayes(fit)
+
+#cont.matrix <- cbind(HvC = c(1,0,0,0,0,0,0),  levels=design)
+#try <- contrasts.fit(fit, cont.matrix)
+
+# See DE genes
+pv_list <- fit$p.value
+output_all <- topTable(fit, number=Inf, sort.by="none")
+
+head(output_all)
+dim(output_all)
+
+mean(abs(output_all$speciesH.day2))
+
+# Find the top hits by BH adjusted p-value
+#top2 <- list(speciesdiff = topTable(fit2, coeff = 2, adjust="BH", number = Inf, sort.by = "none"), day01diff = topTable(fit2, coeff = 3, adjust="BH",number = Inf, sort.by = "none"), day02sdiff = topTable(fit2, coeff = 4, adjust="BH",number = Inf, sort.by = "none"), day03diff = topTable(fit2, coeff = 5, adjust="BH",number = Inf, sort.by = "none"), Hday1inter = topTable(fit2, coeff = 6, adjust="BH",number = Inf, sort.by = "none"), Hday2inter = topTable(fit2, coeff = 7, adjust="BH",number = Inf, sort.by = "none"), Hday3diff = topTable(fit2, coeff = 8, adjust="BH",number = Inf, sort.by = "none"))
+
+
+# Find genes DE between species (BH-adjusted p-value of 5%)
+Bspecies <- output_all$speciesH
+Bspecies_chimpref <- Bspecies
+Bspecies_humanref <- Bspecies
+
+names(Bspecies) <- rownames(output_all)
+Bspecies <- Bspecies[order(Bspecies)]
+Pspecies <- pv_list[,2]
+adjPspecies <- p.adjust(Pspecies, method = "BH")
+sigspecies <- adjPspecies[adjPspecies < 0.05]
+sigspecies <- sigspecies[order(sigspecies)]
+sigspeciesnames <- names(sigspecies)
+length(sigspecies)
+
+# Make plots for genes with this significant coefficient
+sig <- cpm_in_cutoff[sigspeciesnames,]
+for (i in 1:10) {
+  play <- sig[i,]
+  playdf <- data.frame(play,day,species)
+  print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig)[i])) + ylab("log2(CPM) expression value"))
+}
+
+# Differentially expressed genes between days 0 and 1
+
+BD1 <- output_all$day1
+Chimp_ref_BD1 <- BD1
+Human_ref_BD1 <- BD1
+BD1_comp <- cbind(Chimp_ref_BD1, Human_ref_BD1)
+cor(BD1_comp)
+names(BD1) <- rownames(output_all)
+BD1 <- BD1[order(BD1)]
+PBD1 <- pv_list[,3]
+adjPBD1 <- p.adjust(PBD1, method = "BH")
+sigBD1 <- adjPBD1[adjPBD1 < 0.05]
+sigBD1 <- sigBD1[order(sigBD1)]
+sigBD1names <- names(sigBD1)
+length(sigBD1)
+
+# Make plots for genes with this significant coefficient
+sig3 <- cpm_in_cutoff[sigBD1names,]
+for (i in 1:10) {
+  play <- sig3[i,]
+  playdf <- data.frame(play,day,species)
+  print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig3)[i])) + ylab("log2(CPM) expression value"))
+}
+
+# Differentially expressed genes between days 0 and 2
+
+BD2 <- output_all$day2
+names(BD2) <- rownames(output_all)
+BD2 <- BD2[order(BD2)]
+PBD2 <- pv_list[,4]
+adjPBD2 <- p.adjust(PBD2, method = "BH")
+sigBD2 <- adjPBD2[adjPBD2 < 0.05]
+sigBD2 <- sigBD2[order(sigBD2)]
+sigBD2names <- names(sigBD2)
+length(sigBD2)
+
+# Make plots for genes with this significant coefficient
+sig3 <- cpm_in_cutoff[sigBD2names,]
+for (i in 1:10) {
+  play <- sig3[i,]
+  playdf <- data.frame(play,day,species)
+  print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig3)[i])) + ylab("log2(CPM) expression value"))
+}
+
+# Differentially expressed genes between days 0 and 3
+
+BD3 <- output_all$day3
+names(BD3) <- rownames(output_all)
+BD3 <- BD3[order(BD3)]
+PBD3 <- pv_list[,5]
+adjPBD3 <- p.adjust(PBD3, method = "BH")
+sigBD3 <- adjPBD1[adjPBD3 < 0.05]
+sigBD3 <- sigBD3[order(sigBD3)]
+sigBD3names <- names(sigBD3)
+length(sigBD3)
+
+# Make plots for genes with this significant coefficient
+sig3 <- cpm_in_cutoff[sigBD3names,]
+for (i in 1:10) {
+  play <- sig3[i,]
+  playdf <- data.frame(play,day,species)
+  print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig3)[i])) + ylab("log2(CPM) expression value"))
+}
+# Genes with a significant species by day interaction term, Human-by-day1
+
+BspeciesD1 <- output_all$speciesH.day1
+names(BspeciesD1) <- rownames(output_all)
+BspeciesD1 <- BspeciesD1[order(BspeciesD1)]
+Pspecies1 <- pv_list[,6]
+adjPspecies1 <- p.adjust(Pspecies1, method = "BH")
+sigspecies1 <- adjPspecies1[adjPspecies1 < 0.05]
+sigspecies1 <- sigspecies1[order(sigspecies1)]
+sigspecies1names <- names(sigspecies1)
+length(sigspecies1)
+
+# Genes with a significant species by day interaction term, Human-by-day1
+
+BspeciesD1 <- output_all$speciesH.day1
+names(BspeciesD1) <- rownames(output_all)
+BspeciesD1 <- BspeciesD1[order(BspeciesD1)]
+Pspecies1 <- pv_list[,6]
+adjPspecies1 <- p.adjust(Pspecies1, method = "BH")
+sigspecies1 <- adjPspecies1[adjPspecies1 < 0.05]
+sigspecies1 <- sigspecies1[order(sigspecies1)]
+sigspecies1names <- names(sigspecies1)
+length(sigspecies1)
+
+ensembl <- useMart(host = "dec2013.archive.ensembl.org",
+                   biomart = "ENSEMBL_MART_ENSEMBL",
+                   dataset = "hsapiens_gene_ensembl")
+gene_names <- getBM(filters= "ensembl_gene_id", attributes= c("ensembl_gene_id","hgnc_symbol"),values=sigspecies1names,mart= ensembl)
+sigspd1names <- sigspecies1names[sigspecies1names %in% gene_names[,1]]
+#sigspd1names_add <- names(sigspd1names)
+#all(sigspd1names == gene_names[,1])
+#sigspd1names == gene_names[,1]
+#sigspd1names <- gene_names[,2]
+write.table(sigspd1names, file="sigspd1names.txt")
+
+# Make plots for genes with this significant coefficient
+sig1 <- cpm_in_cutoff[sigspd1names,]
+
+for (i in 1:10) {
+  play <- sig1[i,]
+  playdf <- data.frame(play,day,species)
+  print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig1)[i])) + ylab("log2(CPM) expression value"))
+}
+
+# Genes with a significant species by day interaction term, Human-by-day2
+
+BspeciesD2 <- output_all$speciesH.day2
+names(BspeciesD2) <- rownames(output_all)
+BspeciesD2 <- BspeciesD2[order(BspeciesD2)]
+Pspecies2 <- pv_list[,7]
+adjPspecies2 <- p.adjust(Pspecies2, method = "BH")
+sigspecies2 <- adjPspecies2[adjPspecies2 < 0.05]
+sigspecies2 <- sigspecies2[order(sigspecies2)]
+sigspecies2names <- names(sigspecies2)
+length(sigspecies2)
+
+# Make plots for genes with this significant coefficient
+sig2 <- cpm_in_cutoff[sigspecies2names,]
+for (i in 1:10) {
+  play <- sig2[i,]
+  playdf <- data.frame(play,day,species)
+  print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig2)[i])) + ylab("log2(CPM) expression value"))
+}
+
+# Genes with a significant species by day interaction term, Human-by-day3
+
+BspeciesD3 <- output_all$speciesH.day3
+names(BspeciesD3) <- rownames(output_all)
+BspeciesD3 <- BspeciesD3[order(BspeciesD3)]
+Pspecies3 <- pv_list[,8]
+adjPspecies3 <- p.adjust(Pspecies3, method = "BH")
+sigspecies3 <- adjPspecies3[adjPspecies3 < 0.05]
+sigspecies3 <- sigspecies3[order(sigspecies3)]
+sigspecies3names <- names(sigspecies3)
+length(sigspecies3)
+
+# Make plots for genes with this significant coefficient
+sig3 <- cpm_in_cutoff[sigspecies3names,]
+for (i in 1:10) {
+  play <- sig3[i,]
+  playdf <- data.frame(play,day,species)
+  print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig3)[i])) + ylab("log2(CPM) expression value"))
+}
+
+```
+
+#### Make a Venn Diagrams
+
+```{r}
+library("R.utils")
+venn(list(d1=sigBD1names, d2=sigBD2names, d3=sigBD3names))
+
+# Significant between days
+
+mylist <- list()
+mylist[["Days 0 and 1"]] <- sigBD1names
+mylist[["Days 0 and 2"]] <- sigBD2names
+mylist[["Days 0 and 3"]] <- sigBD3names
+
+
+# Make as png file
+species_by_day <- venn.diagram(mylist, filename=NULL,  main="Genes with Significant Day Coefficients", cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=2500)
+
+pdf(file = "Figure 3.6A.pdf")
+  grid.draw(species_by_day)
+dev.off()
+
+
+# Significant day-interaction term
+
+venn(list(spd1=sigspecies1names, spd2=sigspecies2names, spd3=sigspecies3names))
+
+mylist <- list()
+mylist[["Human x Day 1"]] <- sigspecies1names
+mylist[["Human x Day 2"]] <- sigspecies2names
+mylist[["Human x Day 3"]] <- sigspecies3names
+
+
+
+# Make as png file
+venn.diagram(mylist, filename="Genes with Significant Interaction Terms.png", imagetype = "png", main="Genes with Significant Interaction Terms", cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+       
+# Differences between genes with significant day terms and significant day by species interaction terms
+
+mylist_day1 <- list()
+mylist_day1[["Human x Day 1"]] <- sigspecies1names
+mylist_day1[["Day 1"]] <- sigBD1names
+
+venn.diagram(mylist_day1, filename="Day 1 Comparison.png", imagetype = "png", main="Day 1 Comparison", cex=1.5 , fill = pal[1:2], lty=1, height=2000, width=3000)
+
+mylist_day2 <- list()
+mylist_day2[["Human x Day 2"]] <- sigspecies2names
+mylist_day2[["Day 2"]] <- sigBD2names
+
+venn.diagram(mylist_day2, filename="Day 2 Comparison.png", imagetype = "png", main="Day 2 Comparison", cex=1.5 , fill = pal[1:2], lty=1, height=2000, width=3000)
+
+mylist_day3 <- list()
+mylist_day3[["Human x Day 3"]] <- sigspecies3names
+mylist_day3[["Day 3"]] <- sigBD3names
+
+venn.diagram(mylist_day3, filename="Day 3 Comparison.png", imagetype = "png", main="Day 3 Comparison", cex=1.5 , fill = pal[1:2], lty=1, height=2000, width=3000)
+
+rl <- lapply(list("Day 1 Comparison.png", "Day 2 Comparison.png", "Day 3 Comparison.png"), png::readPNG)
+gl <- lapply(rl, grid::rasterGrob)
+do.call(gridExtra::grid.arrange, gl)
+
+
+par(mfrow = c(1,1)) 
+length_days <- c(length(sigBD1names), length(sigBD2names), length(sigBD3names))
+length_interaction <- c(length(sigspecies1names), length(sigspecies2names), length(sigspecies3names))
+meets1 <- 
+length_both <- rbind(length_days, length_interaction)
+colnames(length_both)<- c("Day 1", "Day 2", "Day 3")
+barplot(length_both, col=c("darkblue", "red"), ylim = c(0,17000), ylab = ("Number of DE genes"), legend=rownames(length_both))
+
+
+```
+
+#### Plots for the effect sizes
+
+```{r}
+Betas <- cbind(Bspecies, BD1, BD2, BD3, BspeciesD1, BspeciesD2, BspeciesD3)
+head(Betas)
+rownames(Betas) <- rownames(output_all)
+rownames(Betas)
+heatmap(Betas)
+hist(Bspecies)
+hist(abs(BD1))
+hist(abs(BD2))
+hist(abs(BD3))
+hist(BspeciesD1)
+hist(BspeciesD2)
+hist(BspeciesD3)
+t.test(abs(BD3), abs(BD2))
+effect_size <- data.frame(ef=c(abs(BD1), abs(BD2), abs(BD3)), day = rep(c("D1", "D2", "D3"), times =c(length(BD1), length(BD2), length(BD3))))
+
+ggplot(effect_size, aes(x=ef, fill=day)) + geom_density(alpha=0.5) +xlim(-.25,8.0)+xlab("Effect size") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18))  
+
+
+effect_size_intrxn <- data.frame(ef=c(abs(BspeciesD1), abs(BspeciesD2), abs(BspeciesD3)), day = rep(c("sp.D1", "sp.D2", "sp.D3"), times =c(length(BspeciesD1), length(BspeciesD2), length(BspeciesD3))))
+
+ggplot(effect_size_intrxn, aes(x=ef, fill=day)) + geom_density(alpha=0.5) +xlim(-.25,8.0)+xlab("Effect size") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18))  +xlim(c(-0.1,5))
+t.test(BspeciesD2,BspeciesD3)
+
+#for (coef in 2:5) {
+#  stats_list[[coef]] <- topTable(fit2, coef = coef, number = nrow(counts),
+#                                 sort.by = "none")
+#}
+#stats_list <- llply(stats_list, function(x) cbind(gene = rownames(x), x))
+#stats <- ldply(stats_list, .id = "test")
+#stats$gene <- as.character(stats$gene)
+
+```
+
+### Differentially expressed genes using a model with no interaction term
+
+Here, the model for expression has fixed effects for day and species. 
+
+```{r}
+# To make contrasts easier to formulate, we rename factors species and day in a single factor 
+
+# Label the species-day pairs
+species <- c("H", "H","H","H","H","H","H", "C", "C","C","C","C","C","C","C","H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C",
+             "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C",
+             "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C")
+condition <- factor(paste(species, day, sep="."))
+
+# Make the design matrix
+
+design <- model.matrix(~ 0+condition)
+colnames(design) <- gsub("condition", "", dput(colnames(design)))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom <- voom(dge_in_cutoff, design, normalize.method="none")
+
+# We want a random effect term for individual
+#corfit <- duplicateCorrelation(cpm.voom, design,block=individual)
+corfit.correlation = 0.1947084
+
+cpm.voom.corfit <- voom(dge_in_cutoff, design, plot = TRUE, normalize.method="none", block=individual, correlation = corfit.correlation )
+
+# Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day+1)], legend = F)
+
+# Run lmFit and eBayes in limma
+
+fit1 <- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+fit1 <- eBayes(fit1)
+```
+
+## Differences between species at each time points
+
+```{r}
+# Make the contrast matrix
+
+cont_matrix<-makeContrasts(HvsC_D0=H.0-C.0, HvsC_D1 = H.1-C.1, HvsC_D2 = H.2-C.2, HvsC_D3 = H.3-C.3, levels=design)
+
+# Test on contrast matrix
+fit2 <- contrasts.fit(fit1, cont_matrix)
+fit2 <- eBayes(fit2)
+head(fit2$t)
+
+stats_list <- list()
+pv_list <- fit2$p.value
+
+output_all_0 <- topTable(fit2, coef="HvsC_D0", number=Inf, sort.by="none")
+output_all_1 <- topTable(fit2, coef="HvsC_D1", number=Inf, sort.by="none")
+output_all_2 <- topTable(fit2, coef="HvsC_D2", number=Inf, sort.by="none")
+output_all_3 <- topTable(fit2, coef="HvsC_D3", number=Inf, sort.by="none")
+head(output_all_0)
+
+# Make a heatmap
+#df.norm <- data.frame(output_all_0$B, output_all_1$B, output_all_2$B, output_all_3$B)
+#for(i in 1:nrow(df.norm)){df.norm[i,]=df.norm[i,]/max(abs(df.norm[i,]))}
+#colnames(df.norm)=c("d0","d1","d2","d3")
+#heatmap(as.matrix(df.norm))
+
+# Use hclust
+
+#hclustfunc <- function(x, method = "complete", dmeth = "euclidean") {    
+#    hclust(dist(x, method = dmeth), method = method)
+#}
+
+#df.norm.hclust=hclustfunc(as.matrix(df.norm[1:500,]))
+
+#dist.pear <- as.dist(1-cor(t(df.norm[1:500,])))
+
+#heatmap.2(as.matrix(df.norm[1:500,]), trace="none", dist.pear, df.norm.hclust)
+
+#dev.off()
+
+effect_size_spday <- data.frame(ef=c(abs(output_all_0$logFC), abs(output_all_1$logFC), abs(output_all_2$logFC), abs(output_all_3$logFC)), day = rep(c("D0", "D1", "D2", "D3"), times =c(length(output_all_0$logFC), length(output_all_1$logFC), length(output_all_2$logFC), length(output_all_3$logFC))))
+
+ggplot(effect_size_spday, aes(x=ef, fill=day)) + geom_density(alpha=0.5)+xlab("Effect size") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18)) +xlim(c(-0.1,2))
+t.test(BspeciesD2,BspeciesD3)
+```
+
+#### Find non-significant genes between species for each day
+
+```{r}
+# Set FDR level at 5% 
+
+FDR_level <- 0.05
+
+# HvsC at Day 0
+notsig0 <- output_all_0[(output_all_0$adj.P.Val)>FDR_level,]
+dim(notsig0)
+
+# HvsC at Day 1
+
+notsig1 <- output_all_1[(output_all_1$adj.P.Val)>FDR_level,]
+dim(notsig1)
+
+# HvsC at Day 2
+
+notsig2 <- output_all_2[(output_all_2$adj.P.Val)>FDR_level,]
+dim(notsig2)
+
+# HvsC at Day 3
+
+notsig3 <- output_all_3[(output_all_3$adj.P.Val)>FDR_level,]
+dim(notsig3)
+
+# Not significant between species in any of the days
+
+notsig_any <- intersect(intersect(intersect(rownames(notsig0), rownames(notsig1)), rownames(notsig2)), rownames(notsig3))
+
+notsig_any <- as.data.frame(notsig_any)
+dim(notsig_any)
+
+```
+
+#### Find genes between species for each day
+
+```{r}
+# Significant between species in all of the days
+
+sig_D0 <- output_all_0[(output_all_0$adj.P.Val)<FDR_level,]
+dim(sig_D0)
+sig_D1 <- output_all_1[(output_all_1$adj.P.Val)<FDR_level,]
+dim(sig_D1)
+sig_D2 <- output_all_2[(output_all_2$adj.P.Val)<FDR_level,] 
+dim(sig_D2)
+sig_D3 <- output_all_3[(output_all_3$adj.P.Val)<FDR_level,]
+dim(sig_D3)
+
+# Mean of the absolute value of the fold change
+mean_effect_D0 <- mean(abs(output_all_0$logFC))
+mean_effect_D1 <- mean(abs(output_all_1$logFC))
+mean_effect_D2 <- mean(abs(output_all_2$logFC))
+mean_effect_D3 <- mean(abs(output_all_3$logFC))
+
+# Plot mean log FC for all genes
+
+library("vioplot")
+
+mean_effects_0 <- output_all_0$logFC
+mean_effects_1 <- output_all_1$logFC
+mean_effects_2 <- output_all_2$logFC
+mean_effects_3 <- output_all_3$logFC
+vioplot(mean_effects_0, mean_effects_1, mean_effects_2, mean_effects_3, names=c("Day 0", "Day 1", "Day 2", "Day 3"), col = "red")
+title("Violin Plots of Fold Change for Each Gene at Each Day")
+
+# Plot log fold change for all significant genes
+
+mean_effects_0 <- sig_D0$logFC
+mean_effects_1 <- sig_D1$logFC
+mean_effects_2 <- sig_D2$logFC
+mean_effects_3 <- sig_D3$logFC
+vioplot(mean_effects_0, mean_effects_1, mean_effects_2, mean_effects_3, names=c("Day 0", "Day 1", "Day 2", "Day 3"), col = "gold")
+title("Violin Plots of Fold Change for Differently Expressed Genes at Each Day")
+
+# Plot effect size for all significant genes
+
+effect_size_spday <- data.frame(ef=c(abs(sig_D0$B), abs(sig_D1$B), abs(sig_D2$B), abs(sig_D3$B)), day = rep(c("Day 0", "Day 1", "Day 2", "Day 3"), times =c(length(sig_D0$logFC), length(sig_D1$logFC), length(sig_D2$logFC), length(sig_D3$logFC))))
+
+ggplot(effect_size_spday, aes(x=ef, fill=day)) + geom_density(alpha=0.5)+xlab("Effect size") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18)) +xlim(c(-1.5,15)) + labs(title = "Effect Sizes for Significant Genes by Day")
+#t.test(abs(output_D1$logFC), abs(output_D3$logFC))
+
+# Make a Venn diagram
+
+par(mfrow=c(1,1))
+
+mylist <- list()
+mylist[["DE Day 0"]] <- rownames(sig_D0)
+mylist[["DE Day 1"]] <- rownames(sig_D1)
+mylist[["DE Day 2"]] <- rownames(sig_D2)
+mylist[["DE Day 3"]] <- rownames(sig_D3)
+
+# Make as pdf 
+Four_comp <- venn.diagram(mylist, filename= NULL, main="DE genes between species per day", cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = "Figure 3.7C.pdf")
+  grid.draw(Four_comp)
+dev.off()
+```
+
+#### Find genes that are significant between species only for one day
+
+```{r}
+# Get the rownames for the genes
+sig_d0 <- rownames(sig_D0)
+sig_d1 <- rownames(sig_D1)
+sig_d2 <- rownames(sig_D2)
+sig_d3 <- rownames(sig_D3)
+
+# Only significant in day 0
+sig_d0_only <- sig_d0[!(sig_d0 %in% sig_d1)]
+sig_d0_only <- sig_d0_only[!(sig_d0_only %in% sig_d2)]
+sig_d0_only <- sig_d0_only[!(sig_d0_only %in% sig_d3)]
+length(sig_d0_only)
+
+# Only significant in day 1
+
+sig_d1_only <- sig_d1[!(sig_d1 %in% sig_d0)]
+sig_d1_only <- sig_d1_only[!(sig_d1_only %in% sig_d2)]
+sig_d1_only <- sig_d1_only[!(sig_d1_only %in% sig_d3)]
+length(sig_d1_only)
+
+# Only significant in day 2
+
+sig_d2_only <- sig_d2[!(sig_d2 %in% sig_d0)]
+sig_d2_only <- sig_d2_only[!(sig_d2_only %in% sig_d3)]
+sig_d2_only <- sig_d2_only[!(sig_d2_only %in% sig_d1)]
+length(sig_d2_only)
+
+
+# Only significant in day 3
+
+sig_d3_only <- sig_d3[!(sig_d3 %in% sig_d0)]
+sig_d3_only <- sig_d3_only[!(sig_d3_only %in% sig_d2)]
+sig_d3_only <- sig_d3_only[!(sig_d3_only %in% sig_d1)]
+length(sig_d3_only)
+
+# Significant in all 4 days
+
+sig_all <- sig_d2[(sig_d2 %in% sig_d0)]
+sig_all <- sig_all[(sig_all %in% sig_d3)]
+sig_all <- sig_all[(sig_all %in% sig_d1)]
+length(sig_all)
+
+
+# Unclear what you are trying to do here
+#dfs <- data.frame(sig_D0$logFC, sig_D1$logFC, sig_D2$logFC, sig_D3$logFC)
+#dfs <- stack(dfs)
+#head(dfs)
+
+```
+
+#### Plot the number of genes DE between species at each day
+
+```{r}
+dev.off()
+# Numbers for non-unique DE genes
+collect_total_barplot <- c(length(sig_d0)-length(sig_d0_only), length(sig_d1)-length(sig_d1_only), length(sig_d2)-length(sig_d2_only), length(sig_d3)-length(sig_d3_only), nrow(notsig_any), length(sig_all))
+
+# Numbers for unique DE genes
+collect_only <- c(length(sig_d0_only), length(sig_d1_only), length(sig_d2_only), length(sig_d3_only), 0, 0)
+
+# Combine the unique and non-unique DE genes
+msig <- rbind(collect_total_barplot, collect_only)
+colnames(msig) <- c("Day 0", "Day 1", "Day 2", "Day 3", "Never DE", "Always DE")
+
+# Make a stacked barplot
+
+barplot(msig, ylab="Number of DE genes", ylim = c(0, 6000), main = "Differentially Expressed Genes between Humans and Chimps Across Days")
+
+```
+
+#Find significant genes arising at a given day
+
+```{r}
+  # Arise at Day 0
+sig_d0_arise <- sig_d0
+length(sig_d0_arise)
+  # Arise at Day 1
+sig_d1_arise <- sig_d1[!(sig_d1 %in% sig_d0)]
+length(sig_d1_arise)
+  # Arise at Day 2
+sig_d2_arise <- sig_d2[!(sig_d2 %in% sig_d0)]
+sig_d2_arise <- sig_d2_arise[!(sig_d2_arise %in% sig_d1)]
+length(sig_d2_arise)
+  # Arise at Day 3
+sig_d3_arise <- sig_d3_only
+length(sig_d3_arise)
+
+collect_arise <- c(length(sig_d0_arise), length(sig_d1_arise), length(sig_d2_arise), length(sig_d3_arise))
+
+plot(collect_arise, xaxt="n", ylab="Number of DE genes arising", main=" Significant Genes Arising At Each Day", ylim = c(0, 5000), pch = 19)
+axis(side=1, at=1:4, labels=c("Day 0", "Day 1", "Day 2", "Day 3"))
+
+### TO DO: PLOT EFFECT SIZE OF THESE
+
+```
+
+#### Plot distributions of signficant DE genes between species at each day (line 946)
+
+```{r}
+# Here is the function to find the normalized cpm of a subset of genes
+subset_func <- function(subset_genes){
+  
+  inshared_lists = row.names(cpm_in_cutoff) %in% subset_genes
+  inshared_lists_data <- as.data.frame(inshared_lists)
+  cpm_genes_in <- cbind(cpm_in_cutoff, inshared_lists_data)
+  cpm_genes_in_sig <- subset(cpm_genes_in, inshared_lists_data == "TRUE")
+
+  return(cpm_genes_in_sig[,1:63])
+}
+
+# Find the normalized cpm of all of the significant genes
+
+  # Significant at day 0 
+cpm_sig0 <- subset_func(sig_d0)
+dim(cpm_sig0)
+
+
+### TO DO: PLOT EFFECT SIZE OF THESE
+
+
+  # Significant at day 1
+
+cpm_sig1 <- subset_func(sig_d1)
+dim(cpm_sig1)
+
+  # Significant at day 2
+
+cpm_sig2 <- subset_func(sig_d2)
+dim(cpm_sig2)
+
+  # Significant at day 3
+
+cpm_sig3 <- subset_func(sig_d3)
+dim(cpm_sig3)
+
+```
+
+
+#### Plot distributions of non-signficant DE genes between species at each day
+
+```{r}
+###Plot nonsignificant genes###
+
+cpm_notsig_any <- subset_func(notsig_any)
+dim(notsig_any)
+
+```
+
+### Expression values for individual genes
+
+```{r}
+# Get day and species information
+day <- as.data.frame(day)
+Species <- as.data.frame(After_removal_sample_info$Species)
+
+# Trial
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000000003", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("ENSG00000000003 Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+# EOMES (ENSG00000163508)
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000163508", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("EOMES Expression") + xlab("Day") + ylab("Log2(CPM) expression") +  theme_bw() 
+
+# HHEX (ENSG00000152804)
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000152804", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("HHEX Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+# CXCR4 (ENSG00000121966)
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000121966", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("CXCR4 Expression") + xlab("Day") + ylab("Log2(CPM) expression") + theme_bw()
+
+# Potentially not needed: OTX2 (ENSG00000165588)
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000165588", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("OTX2 Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+# FOXH1 (ENSG00000160973)
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000160973", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("FOXH1 Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+# Brian suggested using BRACHYURY (ENSG00000164458) instead of FOXH1
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000164458", rownames(cpm_in_cutoff)), ])
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("BRACHYURY Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+# WNT3 (ENSG00000108379)
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000108379", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("WNT3A Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+# ISOC1 (ENSG00000066583)
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000066583", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("ISOC1 Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+# TLE4 (ENSG00000106829)
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000106829", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("TLE4 Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+# APOE
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000130203", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("ApoE Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+# TMEM65 (ENSG00000164983)
+
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000164983", rownames(cpm_in_cutoff)), ])
+
+
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("TMEM65 Expression") + xlab("Day") + ylab("Log2(CPM) expression")
+
+```
+
+#### Make heatmap of all the markers
+
+```{r}
+# PRDM1 ENSG00000057657
+
+exp_PRDM1 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000057657", rownames(cpm_in_cutoff)), ])
+
+# HHEX (ENSG00000152804)
+
+exp_HHEX <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000152804", rownames(cpm_in_cutoff)), ])
+
+# CXCR4 (ENSG00000121966)
+
+exp_CXCR4 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000121966", rownames(cpm_in_cutoff)), ])
+
+# SOX17 (ENSG00000164736)
+
+exp_SOX17 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000164736", rownames(cpm_in_cutoff)), ])
+
+# GSC (ENSG00000133937)
+
+exp_GSC <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000133937", rownames(cpm_in_cutoff)), ])
+
+# OTX2 (ENSG00000165588)
+
+exp_OTX2 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000165588", rownames(cpm_in_cutoff)), ])
+
+
+# EOMES (ENSG00000163508)
+
+exp_EOMES <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000163508", rownames(cpm_in_cutoff)), ])
+
+
+# SOX2 (ENSG00000181449)
+
+exp_SOX2 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000181449", rownames(cpm_in_cutoff)), ])
+
+# PRDM14 (ENSG00000147596)
+
+exp_PRDM14 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000147596", rownames(cpm_in_cutoff)), ])
+
+
+# WNT3 (ENSG00000108379)
+
+exp_WNT3 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000108379", rownames(cpm_in_cutoff)), ])
+
+# FGF8 (ENSG00000107831)
+
+exp_FGF8 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000107831", rownames(cpm_in_cutoff)), ])
+
+
+# PDGFRA (ENSG00000134853)
+
+exp_PDGFRA <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000134853", rownames(cpm_in_cutoff)), ])
+
+# FOXA1 (ENSG00000129514)
+  # This is a lowly expressed gene and therefore has been filtered
+
+exp_FOXA1 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000129514", rownames(cpm_in_cutoff)), ])
+
+# FOXA2 (ENSG00000125798)
+
+exp_FOXA2 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000125798", rownames(cpm_in_cutoff)), ])
+
+# BRACHYURY (ENSG00000164458)
+
+exp_BRACHYURY <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000164458", rownames(cpm_in_cutoff)), ])
+
+# FGF4 (ENSG00000075388)
+  # This is a lowly expressed gene and therefore has been filtered
+
+exp_FGF4 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000075388", rownames(cpm_in_cutoff)), ])
+
+# Combine expression values for the different markers
+
+TF_heatmap <- cbind(exp_PRDM1, exp_HHEX, exp_CXCR4, exp_SOX17, exp_GSC, exp_OTX2, exp_EOMES, exp_SOX2, exp_PRDM14, exp_WNT3, exp_FGF8, exp_PDGFRA, exp_FOXA2, exp_BRACHYURY)
+colnames(TF_heatmap) <- c("PRDM1", "HHEX", "CXCR4", "SOX17", "GSC", "OTX2", "EOMES", "SOX2", "PRDM14", "WNT3", "FGF8", "PDGFRA", "FOXA2", "BRACHYURY")
+
+dim(TF_heatmap)  
+View(TF_heatmap)
+
+# Find the correlations and then plot the results
+Species <- After_removal_sample_info$Species
+#Day <- After_removal_sample_info$Day
+
+# Get a library
+library("colorspace")
+library("magrittr")
+library("dendextend")
+
+#dend_r <- cor(t(TF_heatmap)) %>% dist(method = "euclidean") %>% #hclust(method = "average") 
+#dend1 <- as.dendrogram(dend_r)
+#plot(dend1)
+
+
+#dend_c <- cor(TF_heatmap) %>% dist(method = "euclidean") %>% hclust(method = "average")
+#dend2 <- as.dendrogram(dend_c)
+#plot(dend2)
+
+
+gplots::heatmap.2(x=as.matrix(t(TF_heatmap)),
+#                  , distfun = dist(x, method = "euclidean"), 
+                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, col=colors, denscol="white", labCol= labels, ColSideColors=pal[as.integer(as.factor(Species))]) #RowSideColors=pal[as.integer(as.factor(Day))+9])
+
+```
+
+

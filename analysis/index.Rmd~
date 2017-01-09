@@ -13,3 +13,6 @@ title: "Home"
 
 *  [Plots of unmapped and mapped reads](../analysis/Unmapped_mapped_plots.html)
 *  [Normalization steps](../analysis/Normalize_again.html)
+*  [Differentiation Batch](../analysis/Endoderm_TC_core_runs.html)
+*  [Differential Expression](../analysis/DE_exp_limma_only.html)
+*  [Cormotif_avg_log2_CPM_files](../analysis/Cormotif_avg_log2_CPM_.html)

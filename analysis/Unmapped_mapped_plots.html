@@ -20,6 +20,9 @@
 <script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
 
 <style type="text/css">
 
@@ -57,10 +60,6 @@ body {
 <link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="libs/highlight/textmate.css"
-      type="text/css" />
-<script src="libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -135,7 +134,6 @@ button.code-folding-btn:focus {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script src="libs/navigation-1.1/tabsets.js"></script>
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
@@ -157,14 +155,14 @@ $(document).ready(function () {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="index.html">ashlar</a>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
         <li><a href="index.html">Home</a></li>
         <li><a href="about.html">About</a></li>
         <li><a href="license.html">License</a></li>
-        <li><a href="https://github.com/jhsiao999/ashlar">GitHub</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -299,14 +297,14 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] scales_0.4.0  ggplot2_2.1.0 knitr_1.14   
+[1] scales_0.4.0  ggplot2_2.1.0 knitr_1.15.1 
 
 loaded via a namespace (and not attached):
- [1] Rcpp_0.12.7      digest_0.6.10    assertthat_0.1   plyr_1.8.4      
- [5] grid_3.2.2       gtable_0.2.0     formatR_1.4      magrittr_1.5    
- [9] evaluate_0.10    stringi_1.1.2    rmarkdown_1.1    labeling_0.3    
-[13] tools_3.2.2      stringr_1.1.0    munsell_0.4.3    yaml_2.1.13     
-[17] colorspace_1.2-7 htmltools_0.3.5  tibble_1.2      </code></pre>
+ [1] Rcpp_0.12.7      digest_0.6.11    rprojroot_1.1    plyr_1.8.4      
+ [5] grid_3.2.2       gtable_0.2.0     backports_1.0.4  magrittr_1.5    
+ [9] evaluate_0.10    stringi_1.1.2    rmarkdown_1.3    labeling_0.3    
+[13] tools_3.2.2      stringr_1.1.0    munsell_0.4.3    yaml_2.1.14     
+[17] colorspace_1.2-7 htmltools_0.3.5 </code></pre>
 </div>
 
 
@@ -342,8 +340,11 @@ $(document).ready(function () {
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
 
 

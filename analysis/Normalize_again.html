@@ -20,6 +20,9 @@
 <script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
 
 <style type="text/css">
 
@@ -57,10 +60,6 @@ body {
 <link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
 
 <style type="text/css">code{white-space: pre;}</style>
-<link rel="stylesheet"
-      href="libs/highlight/textmate.css"
-      type="text/css" />
-<script src="libs/highlight/highlight.js"></script>
 <style type="text/css">
   pre:not([class]) {
     background-color: white;
@@ -135,7 +134,6 @@ button.code-folding-btn:focus {
 <div class="container-fluid main-container">
 
 <!-- tabsets -->
-<script src="libs/navigation-1.1/tabsets.js"></script>
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
@@ -186,12 +184,10 @@ $(document).ready(function () {
 <li><a href="#filtering-lowly-expressed-genes">Filtering lowly expressed genes</a></li>
 </ul></li>
 <li><a href="#about-gc-content-normalization">About GC Content Normalization</a></li>
-<li><a href="#roux-and-blakes-comparative-analysis-httplauren-blake.github.ioreg_evo_primatesanalysisgc_content_normalization_cht.html-showed-that-gc-content-normalization-does-not-substantially-impact-gene-counts.-therefore-we-will-not-perform-it-in-this-analysis.">Roux and Blake’s comparative analysis (<a href="http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html" class="uri">http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html</a>) showed that GC content normalization does not substantially impact gene counts. Therefore, we will not perform it in this analysis.</a><ul>
 <li><a href="#correction-for-library-size">Correction for library size</a></li>
 <li><a href="#visualizing-the-filtered-data">Visualizing the filtered data</a></li>
 <li><a href="#normalization-after-removal-of-sample-d0201570116">Normalization after removal of Sample D0201570116</a><ul>
 <li><a href="#what-if-we-just-looked-at-days-0-1-and-3">What if we just looked at Days 0, 1, and 3?</a></li>
-</ul></li>
 </ul></li>
 </ul>
 </div>
@@ -458,9 +454,8 @@ hist(as.numeric(unlist(genes_in_cutoff)), main = &quot;log2(CPM) values in filte
 </div>
 <div id="about-gc-content-normalization" class="section level2">
 <h2>About GC Content Normalization</h2>
+<p>Roux and Blake’s comparative analysis (<a href="http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html" class="uri">http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html</a>) showed that GC content normalization does not substantially impact gene counts. Therefore, we will not perform it in this analysis.</p>
 </div>
-<div id="roux-and-blakes-comparative-analysis-httplauren-blake.github.ioreg_evo_primatesanalysisgc_content_normalization_cht.html-showed-that-gc-content-normalization-does-not-substantially-impact-gene-counts.-therefore-we-will-not-perform-it-in-this-analysis." class="section level1">
-<h1>Roux and Blake’s comparative analysis (<a href="http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html" class="uri">http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html</a>) showed that GC content normalization does not substantially impact gene counts. Therefore, we will not perform it in this analysis.</h1>
 <div id="correction-for-library-size" class="section level2">
 <h2>Correction for library size</h2>
 <pre class="r"><code># Find the original counts of all of the genes that fit the criteria 
@@ -983,7 +978,6 @@ heatmap.2( cors, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trac
 <p><img src="figure/Normalize_again.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-</div>
 
 
 <!-- some extra javascript for older browsers -->
@@ -1018,8 +1012,11 @@ $(document).ready(function () {
 <script>
 
 // add bootstrap table styles to pandoc tables
-$(document).ready(function () {
+function bootstrapStylePandocTables() {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
 });
 
 

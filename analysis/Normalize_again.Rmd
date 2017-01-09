@@ -175,7 +175,7 @@ hist(as.numeric(unlist(genes_in_cutoff)), main = "log2(CPM) values in filtered d
 
 ## About GC Content Normalization
 
-# Roux and Blake's comparative analysis (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html) showed that GC content normalization does not substantially impact gene counts. Therefore, we will not perform it in this analysis. 
+Roux and Blake's comparative analysis (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html) showed that GC content normalization does not substantially impact gene counts. Therefore, we will not perform it in this analysis. 
 
 ## Correction for library size
 

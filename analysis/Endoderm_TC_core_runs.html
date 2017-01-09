@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2016-10-27" />
+
+<title>Endoderm_TC_core_runs</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Endoderm_TC_core_runs</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>October 27, 2016</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#plots-of-unmapped-and-mapped-reads">PLOTS OF UNMAPPED AND MAPPED READS</a></li>
+<li><a href="#visualization-of-the-raw-data">VISUALIZATION OF THE RAW DATA</a></li>
+<li><a href="#initialize-normalization">INITIALIZE NORMALIZATION</a><ul>
+<li><a href="#filtering-lowly-expressed-genes">Filtering lowly expressed genes</a></li>
+</ul></li>
+<li><a href="#about-gc-content-normalization">About GC Content Normalization</a></li>
+<li><a href="#correction-for-library-size">Correction for library size</a></li>
+<li><a href="#visualizing-the-filtered-data">Visualizing the filtered data</a></li>
+<li><a href="#normalization-after-removal-of-sample-d0201570116">Normalization after removal of Sample D0201570116</a></li>
+</ul>
+</div>
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>The goal of this script is to process the data from the 2 core runs of our endoderm time course project. The data was sequenced on an Illumina 4000 at the University of Chicago Genomics Core Facility. There are 2 species (humans and chimps) with 6 human iPSC lines with 2 replicates and 4 chimp iPSC lines with 4 replicates. RNA was extracted from the iPSCs for each day of the differentation into endoderm for a total of 4 days.</p>
+</div>
+<div id="plots-of-unmapped-and-mapped-reads" class="section level2">
+<h2>PLOTS OF UNMAPPED AND MAPPED READS</h2>
+<pre class="r"><code># Load necessary libraries
+library(ggplot2)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.3
+library(scales)</code></pre>
+<pre><code>## Warning: package &#39;scales&#39; was built under R version 3.2.3</code></pre>
+<pre class="r"><code># Get data for unmapped and mapped reads
+Endoderm_mapping_2_core_runs &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/Endoderm_mapping_2_core_runs.csv&quot;)
+
+
+
+# Plot mapped reads per sample with a line at 10 million reads
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (2 core runs)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped_post_subsample, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (2 core runs, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run1, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 1)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-1-3.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 1 AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run1, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 1, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-1-4.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run2, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 2)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-1-5.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run2, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 2, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-1-6.png" width="672" /></p>
+<pre class="r"><code># Plot for unmapped reads/sample for both core runs
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_unmapped, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Unmapped reads for all samples (2 core runs)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code># Plot for unmapped reads/sample
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_unmapped_run1, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Unmapped reads for all samples  (core run 1)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+<pre class="r"><code># Plot for unmapped reads/lane in core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Lane_run1), y = Reads_unmapped_run1, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Lane number&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;)  + ggtitle(&quot;Unmapped reads for all samples  (core run 1)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-2-3.png" width="672" /></p>
+<pre class="r"><code># Plot for unmapped reads/sample
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_unmapped_run2, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Unmapped reads for all samples  (core run 2)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-2-4.png" width="672" /></p>
+<pre class="r"><code># Plot for unmapped reads/lane in core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Lane_run2), y = Reads_unmapped_run2, fill = Species)) + ylab(&quot;Number of unmapped reads&quot;) + xlab(&quot;Lane number&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + ggtitle(&quot;Unmapped reads for all samples  (core run 2)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-2-5.png" width="672" /></p>
+<p>Originally, we had considered subsampling to the median.</p>
+<pre class="r"><code># Originally, we had considered subsampling to the median. Find the median of the mapped reads (not including sample D0_3647_0116)
+
+median_test &lt;- as.data.frame(Endoderm_mapping_2_core_runs$Total_mapped)
+median_run &lt;- as.data.frame(median_test[-10,])
+
+median(as.numeric(t(median_run)))</code></pre>
+<pre><code>## [1] 35953173</code></pre>
+<pre class="r"><code>#We will subsample Sample D036470116 to the median number of reads, 35953173 reads.
+#Actual number of reads in  SampleD036470116 post subsampling: 35644778 reads.</code></pre>
+<p>Given the distribution of the mapped reads, we will subsample to the second highest value.</p>
+<pre class="r"><code># Plot mapped reads per sample with a line at 10 million reads
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (2 core runs)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_mapped_post_subsample, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (2 core runs, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 1
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run1, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 1)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 1 AFTER subsampling D0_3649_0116
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run1, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 1, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-4-4.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_run2, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 2)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-4-5.png" width="672" /></p>
+<pre class="r"><code># Plot mapped reads per sample for core run 2
+
+ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_post_subsample_run2, fill = Species)) + ylab(&quot;Number of mapped reads&quot;) + xlab(&quot;Sample name&quot;) + geom_bar(stat = &quot;identity&quot;, colour = &quot;black&quot;) + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab(&quot;Sample name&quot;) + ggtitle(&quot;Mapped reads for all samples  (core run 2, post-subsampling)&quot;) + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-4-6.png" width="672" /></p>
+</div>
+<div id="visualization-of-the-raw-data" class="section level2">
+<h2>VISUALIZATION OF THE RAW DATA</h2>
+<pre class="r"><code># Load libraries
+
+library(&quot;gplots&quot;)</code></pre>
+<pre><code>## Warning: package &#39;gplots&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;scales&quot;)
+library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre><code>## Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code># Load colors 
+
+colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Set expression cutoff
+
+expr_cutoff &lt;- 1.5
+
+# Load count data
+
+gene_counts_combined_raw_data &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/gene_counts_combined.txt&quot;)
+#gene_counts_combined_raw_data &lt;- read.delim(&quot;~/Dropbox/Endoderm TC/gene_counts_combined_raw_data.txt&quot;, header=FALSE, stringsAsFactors=FALSE)
+counts_genes &lt;- gene_counts_combined_raw_data[1:30030,2:65]
+rownames(counts_genes) &lt;- gene_counts_combined_raw_data[1:30030,1]
+#counts_genes &lt;- gene_counts
+
+# Load sample info
+
+Endoderm_mapping_core_1 &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/Endoderm_mapping_core_1.csv&quot;)
+
+# Make labels with species and day
+species &lt;- Endoderm_mapping_core_1$Species
+day &lt;- Endoderm_mapping_core_1$Day
+individual &lt;- Endoderm_mapping_core_1$Individual
+Sample_ID &lt;- Endoderm_mapping_core_1$Sample_ID
+
+labels &lt;- paste(species, day, sep=&quot; &quot;)</code></pre>
+<pre class="r"><code># Hierarchical clustering on raw data
+
+cors &lt;- cor(counts_genes, method=&quot;spearman&quot;, use=&quot;pairwise.complete.obs&quot;)
+
+heatmap.2( cors, scale=&quot;column&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;, labCol=labels, ColSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Species))], RowSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>#PCA function (original code from Julien Roux)
+#Load in the plot_scores function
+plot_scores &lt;- function(pca, scores, n, m, cols, points=F, pchs =20, legend=F){
+  xmin &lt;- min(scores[,n]) - (max(scores[,n]) - min(scores[,n]))*0.05
+  if (legend == T){ ## let some room (35%) for a legend                                                                                                                                                 
+    xmax &lt;- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.50
+  }
+  else {
+    xmax &lt;- max(scores[,n]) + (max(scores[,n]) - min(scores[,n]))*0.05
+  }
+  ymin &lt;- min(scores[,m]) - (max(scores[,m]) - min(scores[,m]))*0.05
+  ymax &lt;- max(scores[,m]) + (max(scores[,m]) - min(scores[,m]))*0.05
+  plot(scores[,n], scores[,m], xlab=paste(&quot;PC&quot;, n, &quot;: &quot;, round(summary(pca)$importance[2,n],3)*100, &quot;% variance explained&quot;, sep=&quot;&quot;), ylab=paste(&quot;PC&quot;, m, &quot;: &quot;, round(summary(pca)$importance[2,m],3)*100, &quot;% variance explained&quot;, sep=&quot;&quot;), xlim=c(xmin, xmax), ylim=c(ymin, ymax), type=&quot;n&quot;)
+  if (points == F){
+    text(scores[,n],scores[,m], rownames(scores), col=cols, cex=1)
+  }
+  else {
+    points(scores[,n],scores[,m], col=cols, pch=pchs, cex=1.3)
+  }
+}
+
+# Run the PCA 
+
+# Check that there&#39;s no &quot;NAs&quot; in the data
+select &lt;- counts_genes
+summary(apply(select, 1, var) == 0)</code></pre>
+<pre><code>##    Mode   FALSE    TRUE    NA&#39;s 
+## logical   25466    4564       0</code></pre>
+<pre class="r"><code>row_sub = apply(counts_genes, 1, function(row) all(row !=0 ))
+counts_genes_no0 &lt;- counts_genes[row_sub,]
+
+# Perform PCA
+
+pca_genes &lt;- prcomp(t(counts_genes_no0), scale = T)
+scores &lt;- pca_genes$x
+
+#Make PCA plots with the factors colored by day
+
+### PCs 1 and 2 Raw Data
+for (n in 1:1){
+  col.v &lt;- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+for (n in 1:1){
+  col.v &lt;- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
+<div id="initialize-normalization" class="section level2">
+<h2>INITIALIZE NORMALIZATION</h2>
+<pre class="r"><code># Let&#39;s see what happens when we take the log2 of the raw counts
+
+log_counts_genes &lt;- as.data.frame(log2(counts_genes))
+head(log_counts_genes)</code></pre>
+<pre><code>##                  D0_20157 D0_20157_0116  D0_20961  D0_21792  D0_28162
+## ENSG00000000003 11.521110     10.709945 12.048487 12.100662 12.897278
+## ENSG00000000005  5.321928      2.807355  5.169925  4.807355  7.228819
+## ENSG00000000419 10.456354     10.198445 10.961450 11.321364 12.038919
+## ENSG00000000457  7.357552      5.643856  8.588715  8.076816  9.111136
+## ENSG00000000460  9.440869      7.189825 10.786270 10.148477 10.680360
+## ENSG00000000938  1.584963      0.000000  4.584963  3.321928  4.954196
+##                  D0_28815 D0_28815_0116  D0_29089   D0_3647 D0_36470116
+## ENSG00000000003 11.989040     12.155451 11.224002 12.154818   13.254881
+## ENSG00000000005  5.857981      7.087463  2.584963  3.169925    4.169925
+## ENSG00000000419 10.718533     11.145932 10.459432  9.905387   11.949827
+## ENSG00000000457  8.076816      9.002815  7.988685  8.668885   10.129283
+## ENSG00000000460  9.829723     10.291171  9.479780  9.882643   10.920353
+## ENSG00000000938  2.807355      3.906891  1.000000      -Inf    1.000000
+##                   D0_3649 D0_3649_0116  D0_40300 D0_40300_0116  D0_4955
+## ENSG00000000003 11.194141    10.038919 11.894818     11.224002 13.39460
+## ENSG00000000005  2.321928     0.000000  3.807355      2.321928  4.70044
+## ENSG00000000419  8.980140     8.515700  9.663558      9.596190 11.24555
+## ENSG00000000457  8.294621     6.918863  8.930737      8.672425 10.37504
+## ENSG00000000460  8.888743     7.569856  9.554589      9.703904 10.82655
+## ENSG00000000938      -Inf     0.000000  1.000000          -Inf  1.00000
+##                 D0_4955_0116  D1_20157 D1_20157_0116  D1_20961  D1_21792
+## ENSG00000000003    11.038233 12.735133     11.849014 11.160502 11.843529
+## ENSG00000000005     2.584963  7.700440      7.169925  6.794416  7.658211
+## ENSG00000000419     9.177420 11.967226     11.147841 10.714246 11.277287
+## ENSG00000000457     8.299208  8.778077      7.787903  7.357552  7.748193
+## ENSG00000000460     9.290019 10.556506      9.923327  9.503826 10.049849
+## ENSG00000000938     0.000000  1.584963      0.000000  0.000000  0.000000
+##                  D1_28162  D1_28815 D1_28815_0116  D1_29089   D1_3647
+## ENSG00000000003 12.377211 12.658435     12.395534 11.656872 11.034799
+## ENSG00000000005  6.832890  8.294621      8.422065  6.357552  3.459432
+## ENSG00000000419 11.536247 11.971184     11.871135 11.176173  9.377211
+## ENSG00000000457  8.262095  8.894818      9.014020  7.832890  8.290019
+## ENSG00000000460 10.370687 10.694358     11.091435 10.005625  9.052568
+## ENSG00000000938  2.807355  1.000000      0.000000  1.000000      -Inf
+##                 D1_3647_0116   D1_3649 D1_3649_0116  D1_40300
+## ENSG00000000003    10.550747 11.401413    11.483312 12.233919
+## ENSG00000000005     1.000000  2.000000     0.000000  2.000000
+## ENSG00000000419     9.411511  9.649256    10.040290 10.350939
+## ENSG00000000457     7.977280  8.717676     8.554589  9.162391
+## ENSG00000000460     8.693487  9.335390     9.142107  9.977280
+## ENSG00000000938     0.000000  0.000000         -Inf      -Inf
+##                 D1_40300_0116   D1_4955 D1_4955_0116  D2_20157
+## ENSG00000000003     11.051209 11.438272    12.670878 11.876133
+## ENSG00000000005      2.321928  3.584963     2.321928  5.209453
+## ENSG00000000419      9.465566  9.870365    11.398209 11.547377
+## ENSG00000000457      8.479780  8.614710     9.840778  8.573647
+## ENSG00000000460      9.537218  9.068778    10.904635  9.583083
+## ENSG00000000938          -Inf      -Inf         -Inf      -Inf
+##                 D2_20157_0116  D2_20961  D2_21792  D2_28162  D2_28815
+## ENSG00000000003     10.650154 10.291171 11.325868 12.052908 10.650154
+## ENSG00000000005      3.321928  4.459432  4.857981  2.807355  6.375039
+## ENSG00000000419     10.421013 10.130571 11.186114 11.620220 11.627990
+## ENSG00000000457      7.159871  7.321928  8.049849  8.885696  9.802516
+## ENSG00000000460      8.507795  8.599913  9.719389 10.086136 10.209453
+## ENSG00000000938      0.000000      -Inf  0.000000  2.584963  2.000000
+##                 D2_28815_0116  D2_29089   D2_3647 D2_3647_0116   D2_3649
+## ENSG00000000003     11.740202 11.353698 11.174926    10.471675 11.527966
+## ENSG00000000005      6.845490  4.954196  0.000000         -Inf      -Inf
+## ENSG00000000419     11.273213 11.032046  9.596190     9.184875  9.784635
+## ENSG00000000457      9.296916  8.285402  8.622052     8.388017  8.930737
+## ENSG00000000460     10.491853  9.831307  9.134426     8.487840  9.071462
+## ENSG00000000938      1.584963  1.000000      -Inf         -Inf  0.000000
+##                 D2_3649_0116  D2_40300 D2_40300_0116   D2_4955
+## ENSG00000000003    10.803324 11.479275     10.381543 10.807355
+## ENSG00000000005     0.000000  0.000000      0.000000  2.807355
+## ENSG00000000419     9.211888  9.909893      9.025140  9.328675
+## ENSG00000000457     8.400879  9.111136      8.388017  8.266787
+## ENSG00000000460     8.060696  9.139551      8.479780  8.164907
+## ENSG00000000938     0.000000      -Inf          -Inf      -Inf
+##                 D2_4955_0116  D3_20157 D3_20157_0116  D3_20961  D3_21792
+## ENSG00000000003    11.355351 11.591522     10.720244 10.552669 11.376668
+## ENSG00000000005         -Inf  3.700440      2.321928  4.169925  4.700440
+## ENSG00000000419    10.149747 11.239599      9.906891 10.210671 11.446566
+## ENSG00000000457     9.283088  8.643856      7.442943  7.636625  8.945444
+## ENSG00000000460     9.601771  9.714246      8.129283  8.744834 10.103288
+## ENSG00000000938         -Inf      -Inf          -Inf      -Inf  0.000000
+##                  D3_28162  D3_28815 D3_28815_0116  D3_29089   D3_3647
+## ENSG00000000003 11.734710 11.029287     12.028597 11.053926 10.936638
+## ENSG00000000005  2.321928  4.000000      8.794416  4.169925  3.000000
+## ENSG00000000419 11.327553 10.564149     11.224002 10.551708  9.473706
+## ENSG00000000457  8.679480  8.164907      9.142107  7.845490  8.918863
+## ENSG00000000460  9.204571  8.361944     10.221587  9.011227  8.581201
+## ENSG00000000938  1.000000      -Inf      0.000000  0.000000      -Inf
+##                 D3_3647_0116   D3_3649 D3_3649_0116  D3_40300
+## ENSG00000000003    11.250891 11.122181     9.661778 10.505812
+## ENSG00000000005     1.000000  0.000000         -Inf  2.000000
+## ENSG00000000419     9.719389  9.436712     7.672425  9.016808
+## ENSG00000000457     9.047124  9.149747     7.000000  8.848623
+## ENSG00000000460     8.103288  7.894818     5.392317  7.988685
+## ENSG00000000938     0.000000  0.000000     2.000000      -Inf
+##                 D3_40300_0116   D3_4955 D3_4955_0116
+## ENSG00000000003     11.142107 10.512740    10.627534
+## ENSG00000000005          -Inf  1.000000         -Inf
+## ENSG00000000419      9.726218  9.259743     9.162391
+## ENSG00000000457      8.965784  8.903882     8.647458
+## ENSG00000000460      8.787903  7.523562     8.022368
+## ENSG00000000938          -Inf      -Inf         -Inf</code></pre>
+<pre class="r"><code># Plot density (a) by species and (b) by day
+plotDensities(log_counts_genes, col=pal[as.numeric(Endoderm_mapping_core_1$Species)], legend=&quot;topright&quot;)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>plotDensities(log_counts_genes, col=pal[as.numeric(Endoderm_mapping_core_1$Day)], legend=&quot;topright&quot;)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-8-2.png" width="672" /></p>
+<pre class="r"><code># Log2(CPM)
+
+cpm &lt;- cpm(counts_genes, log=TRUE)
+
+# Make plot 
+hist(cpm, main = &quot;log2(CPM) values in unfiltered data (n = 64 samples)&quot;, breaks = 100, ylim = c(0, 50000), xlab = &quot;log2(CPM) values&quot;)
+abline(v = expr_cutoff, col = &quot;red&quot;, lwd = 3)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-8-3.png" width="672" /></p>
+<pre class="r"><code># Plot density (a) by species and (b) by day
+plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Species)], legend=&quot;topright&quot;)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-8-4.png" width="672" /></p>
+<pre class="r"><code>plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Day)], legend=&quot;topright&quot;)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-8-5.png" width="672" /></p>
+<pre class="r"><code># Plot library size
+
+#boxplot_library_size &lt;- ggplot(dge_original$samples, aes(x = as.factor(Endoderm_mapping_core_1$Day), y = dge_original$samples$lib.size, fill = Endoderm_mapping_core_1$Species)) + geom_boxplot()
+
+#boxplot_library_size + labs(title = &quot;Library size by day&quot;) + labs(y = &quot;Library size&quot;) + labs(x = &quot;Day&quot;) + guides(fill=guide_legend(title=&quot;Species&quot;))</code></pre>
+<div id="filtering-lowly-expressed-genes" class="section level3">
+<h3>Filtering lowly expressed genes</h3>
+<p>We are beginning with 30030 genes and 64 samples (8 samples/species x 4 timepoints/species x 2 species) Based on what we have learned from Roux and Blake (<a href="http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html" class="uri">http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html</a>), we will use a cutoff of log2(CPM) &gt; 1.5 in at least 16 of the human samples and 16 of the chimp samples.</p>
+<pre class="r"><code>expr_cutoff &lt;- 1.5
+
+# Make plot 
+hist(cpm, main = &quot;log2(CPM) values in unfiltered data (n = 64 samples)&quot;, breaks = 100, ylim = c(0, 50000), xlab = &quot;log2(CPM) values&quot;)
+abline(v = expr_cutoff, col = &quot;red&quot;, lwd = 3)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code># Filter data
+
+humans &lt;- c(1:8, 17:24, 33:40, 49:56)
+chimps &lt;- c(9:16, 25:32, 41:48, 57:64 )
+
+
+cpm_filtered &lt;- (rowSums(cpm[,humans] &gt; 1.5) &gt; 16 &amp; rowSums(cpm[,chimps] &gt; 1.5) &gt; 16)
+
+genes_in_cutoff &lt;- cpm[cpm_filtered==TRUE,]
+dim(genes_in_cutoff)</code></pre>
+<pre><code>## [1] 10270    64</code></pre>
+<pre class="r"><code># Make a histogram of the filtered data 
+
+hist(as.numeric(unlist(genes_in_cutoff)), main = &quot;log2(CPM) values in filtered data (n = 64 samples, 10,270 genes)&quot;, breaks = 100, ylim = c(0, 50000), xlab = &quot;log2(CPM) values&quot;)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-9-2.png" width="672" /></p>
+</div>
+</div>
+<div id="about-gc-content-normalization" class="section level2">
+<h2>About GC Content Normalization</h2>
+<p>Roux and Blake’s comparative analysis (<a href="http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html" class="uri">http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html</a>) showed that GC content normalization does not substantially impact gene counts. Therefore, we will not perform it in this analysis.</p>
+</div>
+<div id="correction-for-library-size" class="section level2">
+<h2>Correction for library size</h2>
+<pre class="r"><code># Find the original counts of all of the genes that fit the criteria 
+
+counts_genes_in_cutoff &lt;- counts_genes[cpm_filtered==TRUE,]
+dim(counts_genes_in_cutoff)</code></pre>
+<pre><code>## [1] 10270    64</code></pre>
+<pre class="r"><code># Take the TMM of the counts only for the genes that remain after filtering
+
+dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff &lt;- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
+
+head(summary(cpm_in_cutoff))</code></pre>
+<pre><code>##     D0_20157         D0_20157_0116         D0_20961       
+##  &quot;Min.   :-0.9894  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-3.625  &quot;
+##  &quot;1st Qu.: 3.9680  &quot; &quot;1st Qu.: 3.066  &quot; &quot;1st Qu.: 4.048  &quot;
+##  &quot;Median : 5.3500  &quot; &quot;Median : 5.165  &quot; &quot;Median : 5.354  &quot;
+##  &quot;Mean   : 5.2974  &quot; &quot;Mean   : 4.839  &quot; &quot;Mean   : 5.308  &quot;
+##  &quot;3rd Qu.: 6.5794  &quot; &quot;3rd Qu.: 6.874  &quot; &quot;3rd Qu.: 6.575  &quot;
+##  &quot;Max.   :12.7214  &quot; &quot;Max.   :14.024  &quot; &quot;Max.   :12.545  &quot;
+##     D0_21792           D0_28162           D0_28815       
+##  &quot;Min.   :-3.906  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot;
+##  &quot;1st Qu.: 3.840  &quot; &quot;1st Qu.: 4.030  &quot; &quot;1st Qu.: 3.981  &quot;
+##  &quot;Median : 5.292  &quot; &quot;Median : 5.396  &quot; &quot;Median : 5.345  &quot;
+##  &quot;Mean   : 5.206  &quot; &quot;Mean   : 5.311  &quot; &quot;Mean   : 5.277  &quot;
+##  &quot;3rd Qu.: 6.600  &quot; &quot;3rd Qu.: 6.591  &quot; &quot;3rd Qu.: 6.574  &quot;
+##  &quot;Max.   :12.780  &quot; &quot;Max.   :12.369  &quot; &quot;Max.   :12.697  &quot;
+##  D0_28815_0116         D0_29089           D0_3647        
+##  &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-3.847  &quot;
+##  &quot;1st Qu.: 3.983  &quot; &quot;1st Qu.: 4.058  &quot; &quot;1st Qu.: 3.919  &quot;
+##  &quot;Median : 5.350  &quot; &quot;Median : 5.357  &quot; &quot;Median : 5.308  &quot;
+##  &quot;Mean   : 5.286  &quot; &quot;Mean   : 5.313  &quot; &quot;Mean   : 5.251  &quot;
+##  &quot;3rd Qu.: 6.564  &quot; &quot;3rd Qu.: 6.584  &quot; &quot;3rd Qu.: 6.596  &quot;
+##  &quot;Max.   :12.859  &quot; &quot;Max.   :12.393  &quot; &quot;Max.   :12.686  &quot;
+##   D0_36470116          D0_3649          D0_3649_0116     
+##  &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot;
+##  &quot;1st Qu.: 3.708  &quot; &quot;1st Qu.: 3.895  &quot; &quot;1st Qu.: 3.757  &quot;
+##  &quot;Median : 5.246  &quot; &quot;Median : 5.299  &quot; &quot;Median : 5.267  &quot;
+##  &quot;Mean   : 5.164  &quot; &quot;Mean   : 5.222  &quot; &quot;Mean   : 5.168  &quot;
+##  &quot;3rd Qu.: 6.608  &quot; &quot;3rd Qu.: 6.578  &quot; &quot;3rd Qu.: 6.610  &quot;
+##  &quot;Max.   :12.476  &quot; &quot;Max.   :12.764  &quot; &quot;Max.   :12.925  &quot;
+##     D0_40300        D0_40300_0116         D0_4955        
+##  &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-4.746  &quot;
+##  &quot;1st Qu.: 3.952  &quot; &quot;1st Qu.: 3.897  &quot; &quot;1st Qu.: 3.850  &quot;
+##  &quot;Median : 5.327  &quot; &quot;Median : 5.325  &quot; &quot;Median : 5.286  &quot;
+##  &quot;Mean   : 5.246  &quot; &quot;Mean   : 5.255  &quot; &quot;Mean   : 5.205  &quot;
+##  &quot;3rd Qu.: 6.590  &quot; &quot;3rd Qu.: 6.603  &quot; &quot;3rd Qu.: 6.582  &quot;
+##  &quot;Max.   :12.897  &quot; &quot;Max.   :12.788  &quot; &quot;Max.   :12.819  &quot;
+##   D0_4955_0116         D1_20157        D1_20157_0116     
+##  &quot;Min.   :-6.277  &quot; &quot;Min.   :-2.359  &quot; &quot;Min.   :-2.563  &quot;
+##  &quot;1st Qu.: 3.870  &quot; &quot;1st Qu.: 3.950  &quot; &quot;1st Qu.: 3.958  &quot;
+##  &quot;Median : 5.314  &quot; &quot;Median : 5.350  &quot; &quot;Median : 5.348  &quot;
+##  &quot;Mean   : 5.234  &quot; &quot;Mean   : 5.303  &quot; &quot;Mean   : 5.301  &quot;
+##  &quot;3rd Qu.: 6.604  &quot; &quot;3rd Qu.: 6.608  &quot; &quot;3rd Qu.: 6.593  &quot;
+##  &quot;Max.   :12.687  &quot; &quot;Max.   :12.742  &quot; &quot;Max.   :12.874  &quot;
+##     D1_20961           D1_21792           D1_28162       
+##  &quot;Min.   :-1.452  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-3.585  &quot;
+##  &quot;1st Qu.: 3.995  &quot; &quot;1st Qu.: 3.940  &quot; &quot;1st Qu.: 4.023  &quot;
+##  &quot;Median : 5.357  &quot; &quot;Median : 5.351  &quot; &quot;Median : 5.380  &quot;
+##  &quot;Mean   : 5.312  &quot; &quot;Mean   : 5.293  &quot; &quot;Mean   : 5.315  &quot;
+##  &quot;3rd Qu.: 6.587  &quot; &quot;3rd Qu.: 6.603  &quot; &quot;3rd Qu.: 6.590  &quot;
+##  &quot;Max.   :12.358  &quot; &quot;Max.   :12.642  &quot; &quot;Max.   :12.838  &quot;
+##     D1_28815        D1_28815_0116         D1_29089       
+##  &quot;Min.   :-6.277  &quot; &quot;Min.   :-4.527  &quot; &quot;Min.   :-3.943  &quot;
+##  &quot;1st Qu.: 3.913  &quot; &quot;1st Qu.: 3.965  &quot; &quot;1st Qu.: 4.016  &quot;
+##  &quot;Median : 5.344  &quot; &quot;Median : 5.353  &quot; &quot;Median : 5.365  &quot;
+##  &quot;Mean   : 5.285  &quot; &quot;Mean   : 5.307  &quot; &quot;Mean   : 5.317  &quot;
+##  &quot;3rd Qu.: 6.601  &quot; &quot;3rd Qu.: 6.596  &quot; &quot;3rd Qu.: 6.600  &quot;
+##  &quot;Max.   :12.705  &quot; &quot;Max.   :12.724  &quot; &quot;Max.   :12.346  &quot;
+##     D1_3647          D1_3647_0116         D1_3649        
+##  &quot;Min.   :-2.492  &quot; &quot;Min.   :-2.163  &quot; &quot;Min.   :-6.277  &quot;
+##  &quot;1st Qu.: 3.932  &quot; &quot;1st Qu.: 3.912  &quot; &quot;1st Qu.: 3.841  &quot;
+##  &quot;Median : 5.324  &quot; &quot;Median : 5.329  &quot; &quot;Median : 5.306  &quot;
+##  &quot;Mean   : 5.285  &quot; &quot;Mean   : 5.293  &quot; &quot;Mean   : 5.240  &quot;
+##  &quot;3rd Qu.: 6.617  &quot; &quot;3rd Qu.: 6.643  &quot; &quot;3rd Qu.: 6.618  &quot;
+##  &quot;Max.   :12.896  &quot; &quot;Max.   :12.942  &quot; &quot;Max.   :12.758  &quot;
+##   D1_3649_0116         D1_40300        D1_40300_0116     
+##  &quot;Min.   :-3.535  &quot; &quot;Min.   :-4.028  &quot; &quot;Min.   :-1.474  &quot;
+##  &quot;1st Qu.: 3.749  &quot; &quot;1st Qu.: 3.813  &quot; &quot;1st Qu.: 3.947  &quot;
+##  &quot;Median : 5.260  &quot; &quot;Median : 5.290  &quot; &quot;Median : 5.356  &quot;
+##  &quot;Mean   : 5.195  &quot; &quot;Mean   : 5.206  &quot; &quot;Mean   : 5.306  &quot;
+##  &quot;3rd Qu.: 6.613  &quot; &quot;3rd Qu.: 6.580  &quot; &quot;3rd Qu.: 6.615  &quot;
+##  &quot;Max.   :12.607  &quot; &quot;Max.   :13.001  &quot; &quot;Max.   :12.780  &quot;
+##     D1_4955          D1_4955_0116         D2_20157       
+##  &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-1.643  &quot;
+##  &quot;1st Qu.: 3.759  &quot; &quot;1st Qu.: 3.813  &quot; &quot;1st Qu.: 4.034  &quot;
+##  &quot;Median : 5.281  &quot; &quot;Median : 5.311  &quot; &quot;Median : 5.383  &quot;
+##  &quot;Mean   : 5.189  &quot; &quot;Mean   : 5.243  &quot; &quot;Mean   : 5.348  &quot;
+##  &quot;3rd Qu.: 6.612  &quot; &quot;3rd Qu.: 6.643  &quot; &quot;3rd Qu.: 6.572  &quot;
+##  &quot;Max.   :12.896  &quot; &quot;Max.   :12.712  &quot; &quot;Max.   :13.725  &quot;
+##  D2_20157_0116         D2_20961            D2_21792       
+##  &quot;Min.   :-1.862  &quot; &quot;Min.   :-0.2512  &quot; &quot;Min.   :-1.138  &quot;
+##  &quot;1st Qu.: 3.977  &quot; &quot;1st Qu.: 4.0231  &quot; &quot;1st Qu.: 4.019  &quot;
+##  &quot;Median : 5.370  &quot; &quot;Median : 5.3629  &quot; &quot;Median : 5.366  &quot;
+##  &quot;Mean   : 5.316  &quot; &quot;Mean   : 5.3503  &quot; &quot;Mean   : 5.349  &quot;
+##  &quot;3rd Qu.: 6.594  &quot; &quot;3rd Qu.: 6.5847  &quot; &quot;3rd Qu.: 6.580  &quot;
+##  &quot;Max.   :13.646  &quot; &quot;Max.   :13.2244  &quot; &quot;Max.   :12.932  &quot;
+##     D2_28162           D2_28815        D2_28815_0116     
+##  &quot;Min.   :-2.997  &quot; &quot;Min.   :-2.890  &quot; &quot;Min.   :-3.607  &quot;
+##  &quot;1st Qu.: 4.030  &quot; &quot;1st Qu.: 4.096  &quot; &quot;1st Qu.: 4.021  &quot;
+##  &quot;Median : 5.386  &quot; &quot;Median : 5.415  &quot; &quot;Median : 5.383  &quot;
+##  &quot;Mean   : 5.334  &quot; &quot;Mean   : 5.381  &quot; &quot;Mean   : 5.339  &quot;
+##  &quot;3rd Qu.: 6.583  &quot; &quot;3rd Qu.: 6.669  &quot; &quot;3rd Qu.: 6.569  &quot;
+##  &quot;Max.   :13.897  &quot; &quot;Max.   :12.443  &quot; &quot;Max.   :13.251  &quot;
+##     D2_29089           D2_3647           D2_3647_0116     
+##  &quot;Min.   :-1.372  &quot; &quot;Min.   :-0.9076  &quot; &quot;Min.   :-1.522  &quot;
+##  &quot;1st Qu.: 4.092  &quot; &quot;1st Qu.: 3.9531  &quot; &quot;1st Qu.: 4.039  &quot;
+##  &quot;Median : 5.370  &quot; &quot;Median : 5.3625  &quot; &quot;Median : 5.390  &quot;
+##  &quot;Mean   : 5.357  &quot; &quot;Mean   : 5.3251  &quot; &quot;Mean   : 5.342  &quot;
+##  &quot;3rd Qu.: 6.560  &quot; &quot;3rd Qu.: 6.6357  &quot; &quot;3rd Qu.: 6.619  &quot;
+##  &quot;Max.   :12.522  &quot; &quot;Max.   :13.1232  &quot; &quot;Max.   :13.607  &quot;
+##     D2_3649          D2_3649_0116         D2_40300        
+##  &quot;Min.   :-2.161  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-0.7417  &quot;
+##  &quot;1st Qu.: 4.003  &quot; &quot;1st Qu.: 3.881  &quot; &quot;1st Qu.: 3.9560  &quot;
+##  &quot;Median : 5.366  &quot; &quot;Median : 5.340  &quot; &quot;Median : 5.3484  &quot;
+##  &quot;Mean   : 5.317  &quot; &quot;Mean   : 5.234  &quot; &quot;Mean   : 5.3038  &quot;
+##  &quot;3rd Qu.: 6.601  &quot; &quot;3rd Qu.: 6.610  &quot; &quot;3rd Qu.: 6.6030  &quot;
+##  &quot;Max.   :13.594  &quot; &quot;Max.   :12.862  &quot; &quot;Max.   :13.2013  &quot;
+##  D2_40300_0116         D2_4955          D2_4955_0116     
+##  &quot;Min.   :-1.791  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot;
+##  &quot;1st Qu.: 3.960  &quot; &quot;1st Qu.: 3.940  &quot; &quot;1st Qu.: 3.931  &quot;
+##  &quot;Median : 5.359  &quot; &quot;Median : 5.329  &quot; &quot;Median : 5.364  &quot;
+##  &quot;Mean   : 5.314  &quot; &quot;Mean   : 5.271  &quot; &quot;Mean   : 5.290  &quot;
+##  &quot;3rd Qu.: 6.648  &quot; &quot;3rd Qu.: 6.577  &quot; &quot;3rd Qu.: 6.655  &quot;
+##  &quot;Max.   :13.587  &quot; &quot;Max.   :13.100  &quot; &quot;Max.   :13.514  &quot;
+##     D3_20157        D3_20157_0116         D3_20961        
+##  &quot;Min.   :-2.060  &quot; &quot;Min.   :-2.545  &quot; &quot;Min.   :-0.5907  &quot;
+##  &quot;1st Qu.: 4.114  &quot; &quot;1st Qu.: 4.091  &quot; &quot;1st Qu.: 4.1101  &quot;
+##  &quot;Median : 5.409  &quot; &quot;Median : 5.414  &quot; &quot;Median : 5.3860  &quot;
+##  &quot;Mean   : 5.379  &quot; &quot;Mean   : 5.361  &quot; &quot;Mean   : 5.3744  &quot;
+##  &quot;3rd Qu.: 6.606  &quot; &quot;3rd Qu.: 6.606  &quot; &quot;3rd Qu.: 6.5787  &quot;
+##  &quot;Max.   :13.317  &quot; &quot;Max.   :14.284  &quot; &quot;Max.   :13.1152  &quot;
+##     D3_21792           D3_28162           D3_28815       
+##  &quot;Min.   :-0.958  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-2.907  &quot;
+##  &quot;1st Qu.: 4.106  &quot; &quot;1st Qu.: 4.031  &quot; &quot;1st Qu.: 3.981  &quot;
+##  &quot;Median : 5.395  &quot; &quot;Median : 5.431  &quot; &quot;Median : 5.388  &quot;
+##  &quot;Mean   : 5.379  &quot; &quot;Mean   : 5.346  &quot; &quot;Mean   : 5.316  &quot;
+##  &quot;3rd Qu.: 6.580  &quot; &quot;3rd Qu.: 6.613  &quot; &quot;3rd Qu.: 6.611  &quot;
+##  &quot;Max.   :12.253  &quot; &quot;Max.   :14.448  &quot; &quot;Max.   :13.826  &quot;
+##  D3_28815_0116         D3_29089           D3_3647         
+##  &quot;Min.   :-3.671  &quot; &quot;Min.   :-3.900  &quot; &quot;Min.   :-0.9919  &quot;
+##  &quot;1st Qu.: 4.034  &quot; &quot;1st Qu.: 4.173  &quot; &quot;1st Qu.: 4.0378  &quot;
+##  &quot;Median : 5.402  &quot; &quot;Median : 5.405  &quot; &quot;Median : 5.3931  &quot;
+##  &quot;Mean   : 5.354  &quot; &quot;Mean   : 5.388  &quot; &quot;Mean   : 5.3686  &quot;
+##  &quot;3rd Qu.: 6.590  &quot; &quot;3rd Qu.: 6.541  &quot; &quot;3rd Qu.: 6.6459  &quot;
+##  &quot;Max.   :13.294  &quot; &quot;Max.   :12.500  &quot; &quot;Max.   :13.5213  &quot;
+##   D3_3647_0116         D3_3649          D3_3649_0116     
+##  &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot;
+##  &quot;1st Qu.: 4.021  &quot; &quot;1st Qu.: 4.083  &quot; &quot;1st Qu.: 3.917  &quot;
+##  &quot;Median : 5.409  &quot; &quot;Median : 5.412  &quot; &quot;Median : 5.384  &quot;
+##  &quot;Mean   : 5.312  &quot; &quot;Mean   : 5.323  &quot; &quot;Mean   : 5.222  &quot;
+##  &quot;3rd Qu.: 6.646  &quot; &quot;3rd Qu.: 6.595  &quot; &quot;3rd Qu.: 6.641  &quot;
+##  &quot;Max.   :14.144  &quot; &quot;Max.   :14.109  &quot; &quot;Max.   :13.168  &quot;
+##     D3_40300        D3_40300_0116         D3_4955        
+##  &quot;Min.   :-6.277  &quot; &quot;Min.   :-3.749  &quot; &quot;Min.   :-6.277  &quot;
+##  &quot;1st Qu.: 4.070  &quot; &quot;1st Qu.: 4.016  &quot; &quot;1st Qu.: 4.038  &quot;
+##  &quot;Median : 5.410  &quot; &quot;Median : 5.403  &quot; &quot;Median : 5.429  &quot;
+##  &quot;Mean   : 5.353  &quot; &quot;Mean   : 5.314  &quot; &quot;Mean   : 5.336  &quot;
+##  &quot;3rd Qu.: 6.606  &quot; &quot;3rd Qu.: 6.629  &quot; &quot;3rd Qu.: 6.631  &quot;
+##  &quot;Max.   :13.482  &quot; &quot;Max.   :14.081  &quot; &quot;Max.   :13.279  &quot;
+##   D3_4955_0116     
+##  &quot;Min.   :-6.277  &quot;
+##  &quot;1st Qu.: 3.977  &quot;
+##  &quot;Median : 5.398  &quot;
+##  &quot;Mean   : 5.285  &quot;
+##  &quot;3rd Qu.: 6.646  &quot;
+##  &quot;Max.   :14.189  &quot;</code></pre>
+<pre class="r"><code># Make density plots of the filtered data
+
+plotDensities(cpm_in_cutoff, col=pal[as.numeric(species)], legend=&quot;topright&quot;)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>plotDensities(cpm_in_cutoff, col=pal[as.numeric(day)], legend=&quot;topright&quot;)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-10-2.png" width="672" /></p>
+<pre class="r"><code>#gplots::heatmap.2(x=as.matrix(t(cpm_in_cutoff)),
+#                  , distfun = dist(x, method = &quot;euclidean&quot;), 
+#                  hclustfun = function(x) hclust(dist(x), method = &quot;average&quot;), tracecol=NA, col=colors, denscol=&quot;white&quot;, ColSideColors=pal[as.integer(as.factor(Day))+9])
+
+cors &lt;- cor(cpm_in_cutoff, method=&quot;spearman&quot;, use=&quot;pairwise.complete.obs&quot;)
+
+heatmap.2( cors, scale=&quot;column&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;, labCol=labels, ColSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Species))], RowSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-10-3.png" width="672" /></p>
+</div>
+<div id="visualizing-the-filtered-data" class="section level2">
+<h2>Visualizing the filtered data</h2>
+<pre class="r"><code># Make PCA plots with the factors colored by day
+
+pca_genes &lt;- prcomp(t(cpm_in_cutoff), scale = T)
+scores &lt;- pca_genes$x
+
+### PCs 1 and 2 
+for (n in 1:1){
+  col.v &lt;- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>for (n in 2:2){
+  col.v &lt;- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-11-2.png" width="672" /></p>
+<p>From the PCA plot, we see that Sample D0201570116 is a clear outlier and doesn’t cluster with anything, including its technical replicate. We will remove this sample and then go through the same process as above to visualize the data.</p>
+</div>
+<div id="normalization-after-removal-of-sample-d0201570116" class="section level2">
+<h2>Normalization after removal of Sample D0201570116</h2>
+<pre class="r"><code># Get data and sample info
+
+counts_genes63 &lt;- counts_genes[,-2]
+dim(counts_genes63)</code></pre>
+<pre><code>## [1] 30030    63</code></pre>
+<pre class="r"><code>After_removal_sample_info &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/After_removal_sample_info.csv&quot;)
+
+Species &lt;- After_removal_sample_info$Species
+species &lt;- After_removal_sample_info$Species
+day &lt;- After_removal_sample_info$Day
+individual &lt;- After_removal_sample_info$Individual
+Sample_ID &lt;- After_removal_sample_info$Sample_ID
+labels &lt;- paste(Sample_ID, day, sep=&quot; &quot;)
+rep_batch &lt;- After_removal_sample_info$Reprogramming_batch
+
+# Log2(CPM)
+
+cpm &lt;- cpm(counts_genes63, log=TRUE)
+
+# Make plot 
+hist(cpm, main = &quot;log2(CPM) values in unfiltered data (n = 64 samples)&quot;, breaks = 100, ylim = c(0, 50000), xlab = &quot;log2(CPM) values&quot;)
+abline(v = 1.5, col = &quot;red&quot;, lwd = 3)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code># Filter lowly expressed genes
+
+humans &lt;- c(1:7, 16:23, 32:39, 48:55)
+chimps &lt;- c(8:15, 24:31, 40:47, 56:63)
+
+cpm_filtered &lt;- (rowSums(cpm[,humans] &gt; 1.5) &gt; 15 &amp; rowSums(cpm[,chimps] &gt; 1.5) &gt; 16)
+
+genes_in_cutoff &lt;- cpm[cpm_filtered==TRUE,]
+dim(genes_in_cutoff)</code></pre>
+<pre><code>## [1] 10304    63</code></pre>
+<pre class="r"><code># Find the original counts of all of the genes that fit the criteria 
+
+counts_genes_in_cutoff &lt;- counts_genes63[cpm_filtered==TRUE,]
+dim(counts_genes_in_cutoff)</code></pre>
+<pre><code>## [1] 10304    63</code></pre>
+<pre class="r"><code># Take the TMM of the counts only for the genes that remain after filtering
+
+dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff &lt;- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
+
+head(summary(cpm_in_cutoff))</code></pre>
+<pre><code>##     D0_20157           D0_20961           D0_21792       
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-4.394  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 3.969  &quot; &quot;1st Qu.: 4.063  &quot; &quot;1st Qu.: 3.831  &quot;
+##  &quot;Median : 5.358  &quot; &quot;Median : 5.375  &quot; &quot;Median : 5.291  &quot;
+##  &quot;Mean   : 5.294  &quot; &quot;Mean   : 5.320  &quot; &quot;Mean   : 5.196  &quot;
+##  &quot;3rd Qu.: 6.592  &quot; &quot;3rd Qu.: 6.597  &quot; &quot;3rd Qu.: 6.600  &quot;
+##  &quot;Max.   :12.735  &quot; &quot;Max.   :12.572  &quot; &quot;Max.   :12.787  &quot;
+##     D0_28162           D0_28815        D0_28815_0116     
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 4.027  &quot; &quot;1st Qu.: 3.976  &quot; &quot;1st Qu.: 3.979  &quot;
+##  &quot;Median : 5.397  &quot; &quot;Median : 5.355  &quot; &quot;Median : 5.354  &quot;
+##  &quot;Mean   : 5.305  &quot; &quot;Mean   : 5.278  &quot; &quot;Mean   : 5.286  &quot;
+##  &quot;3rd Qu.: 6.597  &quot; &quot;3rd Qu.: 6.584  &quot; &quot;3rd Qu.: 6.576  &quot;
+##  &quot;Max.   :12.377  &quot; &quot;Max.   :12.712  &quot; &quot;Max.   :12.873  &quot;
+##     D0_29089           D0_3647          D0_36470116      
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-3.860  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 4.068  &quot; &quot;1st Qu.: 3.888  &quot; &quot;1st Qu.: 3.759  &quot;
+##  &quot;Median : 5.368  &quot; &quot;Median : 5.284  &quot; &quot;Median : 5.305  &quot;
+##  &quot;Mean   : 5.318  &quot; &quot;Mean   : 5.225  &quot; &quot;Mean   : 5.220  &quot;
+##  &quot;3rd Qu.: 6.599  &quot; &quot;3rd Qu.: 6.577  &quot; &quot;3rd Qu.: 6.671  &quot;
+##  &quot;Max.   :12.413  &quot; &quot;Max.   :12.671  &quot; &quot;Max.   :12.543  &quot;
+##     D0_3649          D0_3649_0116         D0_40300       
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 3.889  &quot; &quot;1st Qu.: 3.790  &quot; &quot;1st Qu.: 3.935  &quot;
+##  &quot;Median : 5.297  &quot; &quot;Median : 5.298  &quot; &quot;Median : 5.322  &quot;
+##  &quot;Mean   : 5.215  &quot; &quot;Mean   : 5.194  &quot; &quot;Mean   : 5.238  &quot;
+##  &quot;3rd Qu.: 6.578  &quot; &quot;3rd Qu.: 6.646  &quot; &quot;3rd Qu.: 6.585  &quot;
+##  &quot;Max.   :12.769  &quot; &quot;Max.   :12.963  &quot; &quot;Max.   :12.901  &quot;
+##  D0_40300_0116         D0_4955          D0_4955_0116     
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-4.729  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 3.876  &quot; &quot;1st Qu.: 3.869  &quot; &quot;1st Qu.: 3.847  &quot;
+##  &quot;Median : 5.311  &quot; &quot;Median : 5.309  &quot; &quot;Median : 5.302  &quot;
+##  &quot;Mean   : 5.236  &quot; &quot;Mean   : 5.222  &quot; &quot;Mean   : 5.216  &quot;
+##  &quot;3rd Qu.: 6.593  &quot; &quot;3rd Qu.: 6.608  &quot; &quot;3rd Qu.: 6.595  &quot;
+##  &quot;Max.   :12.781  &quot; &quot;Max.   :12.848  &quot; &quot;Max.   :12.680  &quot;
+##     D1_20157        D1_20157_0116         D1_20961       
+##  &quot;Min.   :-4.542  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-1.443  &quot;
+##  &quot;1st Qu.: 3.918  &quot; &quot;1st Qu.: 3.939  &quot; &quot;1st Qu.: 3.986  &quot;
+##  &quot;Median : 5.330  &quot; &quot;Median : 5.347  &quot; &quot;Median : 5.359  &quot;
+##  &quot;Mean   : 5.276  &quot; &quot;Mean   : 5.291  &quot; &quot;Mean   : 5.308  &quot;
+##  &quot;3rd Qu.: 6.591  &quot; &quot;3rd Qu.: 6.595  &quot; &quot;3rd Qu.: 6.591  &quot;
+##  &quot;Max.   :12.731  &quot; &quot;Max.   :12.879  &quot; &quot;Max.   :12.367  &quot;
+##     D1_21792           D1_28162           D1_28815       
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-3.571  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 3.910  &quot; &quot;1st Qu.: 4.022  &quot; &quot;1st Qu.: 3.883  &quot;
+##  &quot;Median : 5.330  &quot; &quot;Median : 5.391  &quot; &quot;Median : 5.332  &quot;
+##  &quot;Mean   : 5.269  &quot; &quot;Mean   : 5.320  &quot; &quot;Mean   : 5.266  &quot;
+##  &quot;3rd Qu.: 6.591  &quot; &quot;3rd Qu.: 6.604  &quot; &quot;3rd Qu.: 6.591  &quot;
+##  &quot;Max.   :12.632  &quot; &quot;Max.   :12.857  &quot; &quot;Max.   :12.700  &quot;
+##  D1_28815_0116         D1_29089           D1_3647        
+##  &quot;Min.   :-4.525  &quot; &quot;Min.   :-3.941  &quot; &quot;Min.   :-2.519  &quot;
+##  &quot;1st Qu.: 3.951  &quot; &quot;1st Qu.: 4.010  &quot; &quot;1st Qu.: 3.880  &quot;
+##  &quot;Median : 5.353  &quot; &quot;Median : 5.361  &quot; &quot;Median : 5.290  &quot;
+##  &quot;Mean   : 5.300  &quot; &quot;Mean   : 5.306  &quot; &quot;Mean   : 5.247  &quot;
+##  &quot;3rd Qu.: 6.596  &quot; &quot;3rd Qu.: 6.595  &quot; &quot;3rd Qu.: 6.586  &quot;
+##  &quot;Max.   :12.730  &quot; &quot;Max.   :12.350  &quot; &quot;Max.   :12.868  &quot;
+##   D1_3647_0116         D1_3649          D1_3649_0116     
+##  &quot;Min.   :-2.185  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-3.497  &quot;
+##  &quot;1st Qu.: 3.869  &quot; &quot;1st Qu.: 3.828  &quot; &quot;1st Qu.: 3.779  &quot;
+##  &quot;Median : 5.300  &quot; &quot;Median : 5.295  &quot; &quot;Median : 5.299  &quot;
+##  &quot;Mean   : 5.261  &quot; &quot;Mean   : 5.225  &quot; &quot;Mean   : 5.231  &quot;
+##  &quot;3rd Qu.: 6.615  &quot; &quot;3rd Qu.: 6.608  &quot; &quot;3rd Qu.: 6.655  &quot;
+##  &quot;Max.   :12.919  &quot; &quot;Max.   :12.753  &quot; &quot;Max.   :12.652  &quot;
+##     D1_40300        D1_40300_0116         D1_4955        
+##  &quot;Min.   :-4.004  &quot; &quot;Min.   :-1.499  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 3.830  &quot; &quot;1st Qu.: 3.908  &quot; &quot;1st Qu.: 3.774  &quot;
+##  &quot;Median : 5.317  &quot; &quot;Median : 5.320  &quot; &quot;Median : 5.309  &quot;
+##  &quot;Mean   : 5.228  &quot; &quot;Mean   : 5.270  &quot; &quot;Mean   : 5.211  &quot;
+##  &quot;3rd Qu.: 6.609  &quot; &quot;3rd Qu.: 6.585  &quot; &quot;3rd Qu.: 6.641  &quot;
+##  &quot;Max.   :13.033  &quot; &quot;Max.   :12.755  &quot; &quot;Max.   :12.929  &quot;
+##   D1_4955_0116         D2_20157        D2_20157_0116     
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-4.271  &quot; &quot;Min.   :-3.292  &quot;
+##  &quot;1st Qu.: 3.792  &quot; &quot;1st Qu.: 4.037  &quot; &quot;1st Qu.: 3.999  &quot;
+##  &quot;Median : 5.300  &quot; &quot;Median : 5.395  &quot; &quot;Median : 5.394  &quot;
+##  &quot;Mean   : 5.227  &quot; &quot;Mean   : 5.357  &quot; &quot;Mean   : 5.335  &quot;
+##  &quot;3rd Qu.: 6.633  &quot; &quot;3rd Qu.: 6.588  &quot; &quot;3rd Qu.: 6.619  &quot;
+##  &quot;Max.   :12.707  &quot; &quot;Max.   :13.745  &quot; &quot;Max.   :13.676  &quot;
+##     D2_20961            D2_21792           D2_28162       
+##  &quot;Min.   :-0.8512  &quot; &quot;Min.   :-4.110  &quot; &quot;Min.   :-2.973  &quot;
+##  &quot;1st Qu.: 4.0502  &quot; &quot;1st Qu.: 4.037  &quot; &quot;1st Qu.: 4.043  &quot;
+##  &quot;Median : 5.3955  &quot; &quot;Median : 5.390  &quot; &quot;Median : 5.406  &quot;
+##  &quot;Mean   : 5.3806  &quot; &quot;Mean   : 5.368  &quot; &quot;Mean   : 5.352  &quot;
+##  &quot;3rd Qu.: 6.6221  &quot; &quot;3rd Qu.: 6.607  &quot; &quot;3rd Qu.: 6.605  &quot;
+##  &quot;Max.   :13.2650  &quot; &quot;Max.   :12.962  &quot; &quot;Max.   :13.925  &quot;
+##     D2_28815        D2_28815_0116         D2_29089       
+##  &quot;Min.   :-2.881  &quot; &quot;Min.   :-3.593  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 4.100  &quot; &quot;1st Qu.: 4.024  &quot; &quot;1st Qu.: 4.096  &quot;
+##  &quot;Median : 5.418  &quot; &quot;Median : 5.393  &quot; &quot;Median : 5.378  &quot;
+##  &quot;Mean   : 5.384  &quot; &quot;Mean   : 5.347  &quot; &quot;Mean   : 5.361  &quot;
+##  &quot;3rd Qu.: 6.676  &quot; &quot;3rd Qu.: 6.582  &quot; &quot;3rd Qu.: 6.572  &quot;
+##  &quot;Max.   :12.454  &quot; &quot;Max.   :13.269  &quot; &quot;Max.   :12.539  &quot;
+##     D2_3647           D2_3647_0116         D2_3649        
+##  &quot;Min.   :-0.9384  &quot; &quot;Min.   :-1.542  &quot; &quot;Min.   :-2.164  &quot;
+##  &quot;1st Qu.: 3.9096  &quot; &quot;1st Qu.: 4.018  &quot; &quot;1st Qu.: 3.998  &quot;
+##  &quot;Median : 5.3231  &quot; &quot;Median : 5.363  &quot; &quot;Median : 5.358  &quot;
+##  &quot;Mean   : 5.2865  &quot; &quot;Mean   : 5.316  &quot; &quot;Mean   : 5.307  &quot;
+##  &quot;3rd Qu.: 6.6014  &quot; &quot;3rd Qu.: 6.596  &quot; &quot;3rd Qu.: 6.592  &quot;
+##  &quot;Max.   :13.0918  &quot; &quot;Max.   :13.587  &quot; &quot;Max.   :13.590  &quot;
+##   D2_3649_0116         D2_40300        D2_40300_0116     
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-0.721  &quot; &quot;Min.   :-1.810  &quot;
+##  &quot;1st Qu.: 3.899  &quot; &quot;1st Qu.: 3.966  &quot; &quot;1st Qu.: 3.933  &quot;
+##  &quot;Median : 5.365  &quot; &quot;Median : 5.361  &quot; &quot;Median : 5.334  &quot;
+##  &quot;Mean   : 5.256  &quot; &quot;Mean   : 5.319  &quot; &quot;Mean   : 5.288  &quot;
+##  &quot;3rd Qu.: 6.634  &quot; &quot;3rd Qu.: 6.622  &quot; &quot;3rd Qu.: 6.624  &quot;
+##  &quot;Max.   :12.890  &quot; &quot;Max.   :13.223  &quot; &quot;Max.   :13.569  &quot;
+##     D2_4955          D2_4955_0116         D3_20157       
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-4.450  &quot;
+##  &quot;1st Qu.: 3.967  &quot; &quot;1st Qu.: 3.906  &quot; &quot;1st Qu.: 4.121  &quot;
+##  &quot;Median : 5.359  &quot; &quot;Median : 5.344  &quot; &quot;Median : 5.425  &quot;
+##  &quot;Mean   : 5.303  &quot; &quot;Mean   : 5.269  &quot; &quot;Mean   : 5.391  &quot;
+##  &quot;3rd Qu.: 6.612  &quot; &quot;3rd Qu.: 6.639  &quot; &quot;3rd Qu.: 6.624  &quot;
+##  &quot;Max.   :13.138  &quot; &quot;Max.   :13.500  &quot; &quot;Max.   :13.339  &quot;
+##  D3_20157_0116         D3_20961           D3_21792       
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-2.778  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 4.096  &quot; &quot;1st Qu.: 4.129  &quot; &quot;1st Qu.: 4.113  &quot;
+##  &quot;Median : 5.417  &quot; &quot;Median : 5.409  &quot; &quot;Median : 5.407  &quot;
+##  &quot;Mean   : 5.362  &quot; &quot;Mean   : 5.395  &quot; &quot;Mean   : 5.387  &quot;
+##  &quot;3rd Qu.: 6.614  &quot; &quot;3rd Qu.: 6.602  &quot; &quot;3rd Qu.: 6.595  &quot;
+##  &quot;Max.   :14.296  &quot; &quot;Max.   :13.145  &quot; &quot;Max.   :12.272  &quot;
+##     D3_28162           D3_28815        D3_28815_0116     
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-2.882  &quot; &quot;Min.   :-3.658  &quot;
+##  &quot;1st Qu.: 4.055  &quot; &quot;1st Qu.: 3.998  &quot; &quot;1st Qu.: 4.037  &quot;
+##  &quot;Median : 5.457  &quot; &quot;Median : 5.410  &quot; &quot;Median : 5.413  &quot;
+##  &quot;Mean   : 5.371  &quot; &quot;Mean   : 5.335  &quot; &quot;Mean   : 5.362  &quot;
+##  &quot;3rd Qu.: 6.645  &quot; &quot;3rd Qu.: 6.637  &quot; &quot;3rd Qu.: 6.603  &quot;
+##  &quot;Max.   :14.483  &quot; &quot;Max.   :13.854  &quot; &quot;Max.   :13.312  &quot;
+##     D3_29089           D3_3647          D3_3647_0116     
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-1.014  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 4.166  &quot; &quot;1st Qu.: 4.004  &quot; &quot;1st Qu.: 4.003  &quot;
+##  &quot;Median : 5.402  &quot; &quot;Median : 5.365  &quot; &quot;Median : 5.393  &quot;
+##  &quot;Mean   : 5.381  &quot; &quot;Mean   : 5.340  &quot; &quot;Mean   : 5.293  &quot;
+##  &quot;3rd Qu.: 6.540  &quot; &quot;3rd Qu.: 6.619  &quot; &quot;3rd Qu.: 6.628  &quot;
+##  &quot;Max.   :12.502  &quot; &quot;Max.   :13.499  &quot; &quot;Max.   :14.131  &quot;
+##     D3_3649          D3_3649_0116         D3_40300       
+##  &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 4.062  &quot; &quot;1st Qu.: 3.934  &quot; &quot;1st Qu.: 4.042  &quot;
+##  &quot;Median : 5.393  &quot; &quot;Median : 5.392  &quot; &quot;Median : 5.391  &quot;
+##  &quot;Mean   : 5.304  &quot; &quot;Mean   : 5.233  &quot; &quot;Mean   : 5.334  &quot;
+##  &quot;3rd Qu.: 6.580  &quot; &quot;3rd Qu.: 6.654  &quot; &quot;3rd Qu.: 6.591  &quot;
+##  &quot;Max.   :14.095  &quot; &quot;Max.   :13.184  &quot; &quot;Max.   :13.469  &quot;
+##  D3_40300_0116         D3_4955          D3_4955_0116     
+##  &quot;Min.   :-3.739  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot;
+##  &quot;1st Qu.: 4.025  &quot; &quot;1st Qu.: 4.026  &quot; &quot;1st Qu.: 3.957  &quot;
+##  &quot;Median : 5.413  &quot; &quot;Median : 5.418  &quot; &quot;Median : 5.380  &quot;
+##  &quot;Mean   : 5.321  &quot; &quot;Mean   : 5.325  &quot; &quot;Mean   : 5.268  &quot;
+##  &quot;3rd Qu.: 6.641  &quot; &quot;3rd Qu.: 6.623  &quot; &quot;3rd Qu.: 6.635  &quot;
+##  &quot;Max.   :14.095  &quot; &quot;Max.   :13.274  &quot; &quot;Max.   :14.179  &quot;</code></pre>
+<pre class="r"><code># Make plot 
+hist(cpm_in_cutoff, main = &quot;log2(CPM) values in filtered data (10,304 genes from 63 samples)&quot;, breaks = 100, ylim = c(0, 50000), xlab = &quot;log2(CPM) values&quot;)</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-12-2.png" width="672" /></p>
+<pre class="r"><code># Make table of the normalized data
+
+# write.table(cpm_in_cutoff,file=&quot;~/Dropbox/Endoderm TC/gene_counts_combined_norm_data.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)</code></pre>
+<p>There are 10,304 genes remaining.</p>
+<pre class="r"><code>library(&quot;ggplot2&quot;)
+dev.off()</code></pre>
+<pre><code>## null device 
+##           1</code></pre>
+<pre class="r"><code>sample &lt;- Endoderm_mapping_2_core_runs$Sample[-2]
+
+# Make PCA plots with the factors colored by day
+
+pca_genes &lt;- prcomp(t(cpm_in_cutoff), scale = T, retx = TRUE, center = TRUE)
+scores &lt;- pca_genes$x
+
+### PCs Plots on filtered and normalized data
+# PCs 1 and 2
+for (n in 1:1){
+  col.v &lt;- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+for (n in 1:1){
+  col.v &lt;- pal[as.integer(day)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+pc6 &lt;- matrixpca[,6]
+pc7 &lt;- matrixpca[,7]
+pc8 &lt;- matrixpca[,8]
+pc9 &lt;- matrixpca[,9]
+pc10 &lt;- matrixpca[,10]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5, pc6, pc7, pc8, pc9, pc10)
+
+summary &lt;- summary(pca_genes)
+
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=species, size=2)) +geom_point(aes(text = sample)) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + title(&quot;PCs 1 and 2 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2))  + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) + labs(title = &quot;PCA plot of normalized endoderm time course data&quot;)
+#ggplotly()
+
+# PCs 2 and 3
+for (n in 2:2){
+  col.v &lt;- pal[as.integer(species)]
+  plot_scores(pca_genes, scores, n, n+1, col.v)
+}
+ggplot(data=pcs, aes(x=pc2, y=pc3, color=as.factor(day), shape=Species, size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC2 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC3 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + title(&quot;PCs 2 and 3 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;) + labs(title = &quot;PCA plot of normalized endoderm time course data&quot;)
+#ggplotly()
+
+# PCs 3 and 4
+#for (n in 3:3){
+#  col.v &lt;- pal[as.integer(species)]
+#  plot_scores(pca_genes, scores, n, n+1, col.v)
+#}
+
+ggplot(data=pcs, aes(x=pc3, y=pc4, color=as.factor(day), shape=Species, size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC3 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC4 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + title(&quot;PCs 3 and 4 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;) + labs(title = &quot;PCA plot of normalized endoderm time course data&quot;)
+#ggplotly()
+
+# PCs 4 and 5
+#for (n in 4:4){
+#  col.v &lt;- pal[as.integer(species)]
+#  plot_scores(pca_genes, scores, n, n+1, col.v)
+#}
+
+ggplot(data=pcs, aes(x=pc4, y=pc5, color=as.factor(day), shape=Species, size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC4 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC5 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + title(&quot;PCs 4 and 5 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;) + labs(title = &quot;PCA plot of normalized endoderm time course data&quot;)
+#ggplotly()
+
+
+# Does reprogramming batch correlate with any PCs?
+
+# PCs 1 and 2
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + title(&quot;PCs 1 and 2 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) + scale_shape_discrete(name  =&quot;Reprogramming Batch&quot;, labels=c(&quot;2015&quot;, &quot;2016&quot;)) + labs(title = &quot;PCA plot of normalized endoderm time course data&quot;)
+#ggplotly()
+
+# PCs 9 and 10
+ggplot(data=pcs, aes(x=pc9, y=pc10, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC9 (&quot;,(summary$importance[2,9]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC10 (&quot;,(summary$importance[2,10]*100), &quot;% of variance)&quot;)) + title(&quot;PCs 9 and 10 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) + scale_shape_discrete(name  =&quot;Reprogramming Batch&quot;, labels=c(&quot;2015&quot;, &quot;2016&quot;)) + labs(title = &quot;PCA plot of normalized endoderm time course data&quot;)
+#ggplotly()
+
+
+pvaluesandr2 = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;, &quot;PC8&quot;, &quot;PC9&quot;, &quot;PC10&quot;), c(&quot;Rep_batch p_val&quot;, &quot;Rep_batch R^2&quot;)))
+
+j = 1
+  for (j in 1:10){
+  
+  checkPC1 &lt;- lm(pcs[,j] ~ as.factor(rep_batch))
+
+#Get the summary statistics from it
+  summary(checkPC1)
+
+#Get the p-value of the F-statistic
+  summary(checkPC1)$fstatistic
+
+  fstat &lt;- as.data.frame(summary(checkPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  
+#Fraction of the variance explained by the model
+  r2_value &lt;- summary(checkPC1)$r.squared
+
+#Put the summary statistics into the matrix w
+
+  pvaluesandr2[j, 1] &lt;- p_fstat
+  pvaluesandr2[j, 2] &lt;- r2_value
+  
+}
+
+pvaluesandr2</code></pre>
+<pre><code>##      Rep_batch p_val Rep_batch R^2
+## PC1       0.47072218  0.0085624598
+## PC2       0.06812259  0.0535140379
+## PC3       0.10109465  0.0434574441
+## PC4       0.65511637  0.0032921407
+## PC5       0.06114160  0.0563014590
+## PC6       0.90258790  0.0002475643
+## PC7       0.31342977  0.0166551365
+## PC8       0.61441310  0.0041860738
+## PC9       0.26793651  0.0200803073
+## PC10      0.01379165  0.0953718381</code></pre>
+<pre class="r"><code># Hierarchical clustering on normalized data
+dev.off()</code></pre>
+<pre><code>## null device 
+##           1</code></pre>
+<pre class="r"><code>cors &lt;- cor(cpm_in_cutoff, method=&quot;pearson&quot;, use=&quot;pairwise.complete.obs&quot;)
+
+heatmap.2( cors, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;, labCol= labels,labRow=&#39; &#39;, ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+#gplots::heatmap.2(x=as.matrix(t(cpm_in_cutoff)),
+#                  , distfun = dist(x, method = &quot;euclidean&quot;), 
+#                  hclustfun = function(x) hclust(dist(x), method = &quot;average&quot;), tracecol=NA, col=colors, denscol=&quot;white&quot;, ColSideColors=pal[as.integer(as.factor(Day))+9])</code></pre>
+<p>PC 1 is correlated with day, PC 2 with species, PC 3 is somewhat by species, PC 4 with day, and PC 5 separates one sample (D228815) from the rest of the samples.</p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

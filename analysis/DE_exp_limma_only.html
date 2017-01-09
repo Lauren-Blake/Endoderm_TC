@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>DE_exp_limma</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">DE_exp_limma</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>November 8, 2016</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#assessing-differential-gene-expression-using-limma">Assessing differential gene expression using Limma</a></li>
+<li><a href="#significant-interaction-term">Significant interaction term</a></li>
+</ul>
+</div>
+
+<pre class="r"><code># Load libraries
+
+library(&quot;gplots&quot;)</code></pre>
+<pre><code>## Warning: package &#39;gplots&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;scales&quot;)</code></pre>
+<pre><code>## Warning: package &#39;scales&#39; was built under R version 3.2.3</code></pre>
+<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre><code>## Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;Biobase&quot;)</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:parallel&#39;:
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following object is masked from &#39;package:limma&#39;:
+## 
+##     plotMA</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     IQR, mad, xtabs</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, append, as.data.frame, as.vector, cbind,
+##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
+##     grep, grepl, intersect, is.unsorted, lapply, lengths, Map,
+##     mapply, match, mget, order, paste, pmax, pmax.int, pmin,
+##     pmin.int, Position, rank, rbind, Reduce, rownames, sapply,
+##     setdiff, sort, table, tapply, union, unique, unlist, unsplit</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre class="r"><code>library(&quot;GEOquery&quot;)</code></pre>
+<pre><code>## Setting options(&#39;download.file.method.GEOquery&#39;=&#39;auto&#39;)</code></pre>
+<pre><code>## Setting options(&#39;GEOquery.inmemory.gpl&#39;=FALSE)</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>theme_set(theme_bw(base_size = 16))
+library(&quot;biomaRt&quot;)
+library(&quot;colorfulVennPlot&quot;)</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre class="r"><code>library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>## Warning: package &#39;VennDiagram&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: futile.logger</code></pre>
+<pre><code>## Warning: package &#39;futile.logger&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;gridExtra&quot;)</code></pre>
+<pre><code>## Warning: package &#39;gridExtra&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gridExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Biobase&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following object is masked from &#39;package:BiocGenerics&#39;:
+## 
+##     combine</code></pre>
+<pre class="r"><code>library(&quot;car&quot;)</code></pre>
+<pre><code>## Warning: package &#39;car&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;car&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:VennDiagram&#39;:
+## 
+##     ellipse</code></pre>
+<pre class="r"><code>library(&quot;topGO&quot;)</code></pre>
+<pre><code>## Loading required package: graph</code></pre>
+<pre><code>## 
+## Attaching package: &#39;graph&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     join</code></pre>
+<pre><code>## Loading required package: GO.db</code></pre>
+<pre><code>## Loading required package: AnnotationDbi</code></pre>
+<pre><code>## Warning: package &#39;AnnotationDbi&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Warning: package &#39;IRanges&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## Warning: package &#39;S4Vectors&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     rename</code></pre>
+<pre><code>## 
+## Attaching package: &#39;IRanges&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     desc</code></pre>
+<pre><code>## The following object is masked from &#39;package:gplots&#39;:
+## 
+##     space</code></pre>
+<pre><code>## Loading required package: DBI</code></pre>
+<pre><code>## Warning: package &#39;DBI&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Loading required package: SparseM</code></pre>
+<pre><code>## Warning: package &#39;SparseM&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;SparseM&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     backsolve</code></pre>
+<pre><code>## Warning: replacing previous import by &#39;graph::.__C__dist&#39; when loading
+## &#39;topGO&#39;</code></pre>
+<pre><code>## 
+## groupGOTerms:    GOBPTerm, GOMFTerm, GOCCTerm environments built.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;topGO&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     members</code></pre>
+<pre><code>## The following object is masked from &#39;package:grid&#39;:
+## 
+##     depth</code></pre>
+<pre class="r"><code>library(&quot;rowr&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rowr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     count</code></pre>
+<pre class="r"><code>library(&quot;Cormotif&quot;)</code></pre>
+<pre><code>## Loading required package: affy</code></pre>
+<pre class="r"><code>library(&quot;ggfortify&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggfortify&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;dplyr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:rowr&#39;:
+## 
+##     coalesce, count</code></pre>
+<pre><code>## The following object is masked from &#39;package:AnnotationDbi&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following objects are masked from &#39;package:IRanges&#39;:
+## 
+##     collapse, desc, intersect, setdiff, slice, union</code></pre>
+<pre><code>## The following objects are masked from &#39;package:S4Vectors&#39;:
+## 
+##     intersect, rename, setdiff, union</code></pre>
+<pre><code>## The following object is masked from &#39;package:graph&#39;:
+## 
+##     union</code></pre>
+<pre><code>## The following object is masked from &#39;package:car&#39;:
+## 
+##     recode</code></pre>
+<pre><code>## The following object is masked from &#39;package:gridExtra&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following object is masked from &#39;package:biomaRt&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following objects are masked from &#39;package:plyr&#39;:
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize</code></pre>
+<pre><code>## The following object is masked from &#39;package:Biobase&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following objects are masked from &#39;package:BiocGenerics&#39;:
+## 
+##     combine, intersect, setdiff, union</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(&quot;tidyr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;tidyr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     expand</code></pre>
+<pre class="r"><code>library(&quot;statmod&quot;)</code></pre>
+<pre><code>## Warning: package &#39;statmod&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;qtlcharts&quot;)</code></pre>
+<pre><code>## Warning: package &#39;qtlcharts&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;mygene&quot;)</code></pre>
+<pre><code>## Loading required package: GenomicFeatures</code></pre>
+<pre><code>## Warning: package &#39;GenomicFeatures&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## Loading required package: GenomeInfoDb</code></pre>
+<pre><code>## Warning: package &#39;GenomeInfoDb&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## Loading required package: GenomicRanges</code></pre>
+<pre><code>## Warning: package &#39;GenomicRanges&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;GenomicFeatures&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:topGO&#39;:
+## 
+##     genes</code></pre>
+<pre><code>## 
+## Attaching package: &#39;mygene&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     query</code></pre>
+<pre><code>## The following object is masked from &#39;package:biomaRt&#39;:
+## 
+##     getGene</code></pre>
+<pre class="r"><code>library(&quot;R.utils&quot;)</code></pre>
+<pre><code>## Warning: package &#39;R.utils&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: R.oo</code></pre>
+<pre><code>## Warning: package &#39;R.oo&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: R.methodsS3</code></pre>
+<pre><code>## Warning: package &#39;R.methodsS3&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## R.methodsS3 v1.7.1 (2016-02-15) successfully loaded. See ?R.methodsS3 for help.</code></pre>
+<pre><code>## R.oo v1.21.0 (2016-10-30) successfully loaded. See ?R.oo for help.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;R.oo&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:GenomicRanges&#39;:
+## 
+##     trim</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     trim</code></pre>
+<pre><code>## The following objects are masked from &#39;package:methods&#39;:
+## 
+##     getClasses, getMethods</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     attach, detach, gc, load, save</code></pre>
+<pre><code>## R.utils v2.4.0 (2016-09-13) successfully loaded. See ?R.utils for help.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;R.utils&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     extract</code></pre>
+<pre><code>## The following object is masked from &#39;package:GEOquery&#39;:
+## 
+##     gunzip</code></pre>
+<pre><code>## The following object is masked from &#39;package:utils&#39;:
+## 
+##     timestamp</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cat, commandArgs, getOption, inherits, isOpen, parse, warnings</code></pre>
+<pre class="r"><code>library(&quot;vioplot&quot;)</code></pre>
+<pre><code>## Loading required package: sm</code></pre>
+<pre><code>## Package &#39;sm&#39;, version 2.2-5.4: type help(sm) for summary information</code></pre>
+<pre class="r"><code>library(&quot;colorspace&quot;)</code></pre>
+<pre><code>## Warning: package &#39;colorspace&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;magrittr&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;magrittr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:R.utils&#39;:
+## 
+##     extract</code></pre>
+<pre><code>## The following object is masked from &#39;package:R.oo&#39;:
+## 
+##     equals</code></pre>
+<pre><code>## The following object is masked from &#39;package:tidyr&#39;:
+## 
+##     extract</code></pre>
+<pre class="r"><code>library(&quot;dendextend&quot;)</code></pre>
+<pre><code>## Warning: package &#39;dendextend&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Warning: replacing previous import by &#39;magrittr::%&gt;%&#39; when loading
+## &#39;dendextend&#39;</code></pre>
+<pre><code>## 
+## ---------------------
+## Welcome to dendextend version 1.3.0
+## Type browseVignettes(package = &#39;dendextend&#39;) for the package vignette.
+## The github page is: https://github.com/talgalili/dendextend/
+## 
+## Suggestions and bug-reports can be submitted at: https://github.com/talgalili/dendextend/issues
+## Or contact: &lt;tal.galili@gmail.com&gt;
+## 
+##  To suppress this message use:  suppressPackageStartupMessages(library(dendextend))
+## ---------------------</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dendextend&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:VennDiagram&#39;:
+## 
+##     rotate</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     cutree</code></pre>
+<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code># Load colors 
+
+colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Load normalized data
+
+gene_counts_combined_raw_data &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/gene_counts_combined.txt&quot;)
+counts_genes &lt;- gene_counts_combined_raw_data[1:30030,2:65]
+rownames(counts_genes) &lt;- gene_counts_combined_raw_data[1:30030,1]
+
+# Get data and sample info
+
+counts_genes63 &lt;- counts_genes[,-2]
+dim(counts_genes63)</code></pre>
+<pre><code>## [1] 30030    63</code></pre>
+<pre class="r"><code>After_removal_sample_info &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/After_removal_sample_info.csv&quot;)
+
+Species &lt;- After_removal_sample_info$Species
+species &lt;- After_removal_sample_info$Species
+day &lt;- After_removal_sample_info$Day
+day &lt;- as.factor(day)
+individual &lt;- After_removal_sample_info$Individual
+Sample_ID &lt;- After_removal_sample_info$Sample_ID
+labels &lt;- paste(Sample_ID, day, sep=&quot; &quot;)
+
+
+# Log2(CPM)
+
+cpm &lt;- cpm(counts_genes63, log=TRUE)
+
+# Filter lowly expressed genes
+
+humans &lt;- c(1:7, 16:23, 32:39, 48:55)
+chimps &lt;- c(8:15, 24:31, 40:47, 56:63)
+
+cpm_filtered &lt;- (rowSums(cpm[,humans] &gt; 1.5) &gt; 15 &amp; rowSums(cpm[,chimps] &gt; 1.5) &gt; 16)
+
+genes_in_cutoff &lt;- cpm[cpm_filtered==TRUE,]
+dim(genes_in_cutoff)</code></pre>
+<pre><code>## [1] 10304    63</code></pre>
+<pre class="r"><code># Find the original counts of all of the genes that fit the criteria 
+
+counts_genes_in_cutoff &lt;- counts_genes63[cpm_filtered==TRUE,]
+dim(counts_genes_in_cutoff)</code></pre>
+<pre><code>## [1] 10304    63</code></pre>
+<pre class="r"><code># Take the TMM of the counts only for the genes that remain after filtering
+
+dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff &lt;- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)</code></pre>
+<div id="assessing-differential-gene-expression-using-limma" class="section level3">
+<h3>Assessing differential gene expression using Limma</h3>
+<div id="here-we-want-to-identify-de-genes-across-the-species." class="section level4">
+<h4>Here, we want to identify DE genes across the species.</h4>
+<pre class="r"><code>species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;)
+
+condition &lt;- factor(paste(species,day,sep=&quot;.&quot;))
+design &lt;- model.matrix(~ 0 + condition)
+colnames(design) &lt;- gsub(&quot;condition&quot;, &quot;&quot;, dput(colnames(design)))</code></pre>
+<pre><code>c(&quot;conditionC.0&quot;, &quot;conditionC.1&quot;, &quot;conditionC.2&quot;, &quot;conditionC.3&quot;, 
+&quot;conditionH.0&quot;, &quot;conditionH.1&quot;, &quot;conditionH.2&quot;, &quot;conditionH.3&quot;
+)</code></pre>
+<pre class="r"><code># We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;none&quot;)
+
+# We want a random effect term for individual
+#corfit &lt;- duplicateCorrelation(cpm.voom, design,block=individual)
+corfit.correlation = 0.1947084
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;none&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HCday0 = c(1,0,0,0,-1,0,0,0), HCday1 = c(0,1,0,0,0,-1,0,0), HCday2 = c(0,0,1,0,0,0,-1,0), HCday3 = c(0,0,0,1,0,0,0,-1), C01 = c(0, 1, -1,0,0,0,0,0), H01 = c(0, 0,0,0,0,1,-1,0), levels = design)
+
+# Fit the new model
+try &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(try)
+
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), C01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  H01 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+
+# Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+par(mfrow=c(1,1))
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (FDR&lt; 5%)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;Figure 7.D.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code># Significant between days 0 and 1 in each species
+
+FDR_level &lt;- 0.05
+par(mfrow=c(1,1))
+
+mylist &lt;- list()
+
+mylist[[&quot;H&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;C&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
+
+orange_blue &lt;- c(2,5)
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between days in each species (FDR&lt; 5%)&quot;, cex=4 , fill = pal[orange_blue], lty=1, height=2000, width=3000)
+pdf(file = &quot;Presentation_day12.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code># Significant every day
+
+sig_all &lt;- length(intersect(intersect(intersect(mylist[[&quot;DE Day 0&quot;]], mylist[[&quot;DE Day 1&quot;]]), mylist[[&quot;DE Day 2&quot;]]), mylist[[&quot;DE Day 3&quot;]]))
+
+nonlist &lt;- list()
+nonlist[[&quot;non DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &gt; FDR_level]
+nonlist[[&quot;non DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &gt; FDR_level]
+nonlist[[&quot;non DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &gt; FDR_level]
+nonlist[[&quot;non DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &gt; FDR_level]
+
+# Non-sign all
+sig_none &lt;- length(intersect(intersect(intersect(nonlist[[&quot;non DE Day 0&quot;]], nonlist[[&quot;non DE Day 1&quot;]]), nonlist[[&quot;non DE Day 2&quot;]]), nonlist[[&quot;non DE Day 3&quot;]]))
+
+# Find unique genes for each day 
+
+sig_day_0_only &lt;- length(intersect(intersect(intersect(mylist[[&quot;DE Day 0&quot;]], nonlist[[&quot;non DE Day 1&quot;]]), nonlist[[&quot;non DE Day 2&quot;]]), nonlist[[&quot;non DE Day 3&quot;]]))
+
+sig_day_1_only &lt;- length(intersect(intersect(intersect(mylist[[&quot;DE Day 1&quot;]], nonlist[[&quot;non DE Day 0&quot;]]), nonlist[[&quot;non DE Day 2&quot;]]), nonlist[[&quot;non DE Day 3&quot;]]))
+
+sig_day_2_only &lt;- length(intersect(intersect(intersect(mylist[[&quot;DE Day 2&quot;]], nonlist[[&quot;non DE Day 0&quot;]]), nonlist[[&quot;non DE Day 1&quot;]]), nonlist[[&quot;non DE Day 3&quot;]]))
+
+sig_day_3_only &lt;- length(intersect(intersect(intersect(mylist[[&quot;DE Day 3&quot;]], nonlist[[&quot;non DE Day 0&quot;]]), nonlist[[&quot;non DE Day 1&quot;]]), nonlist[[&quot;non DE Day 2&quot;]]))
+
+# Find the rest of the values for the graph (DE in 2 or 3 days)
+
+black_day_0 &lt;- length(mylist[[&quot;DE Day 0&quot;]]) - sig_day_0_only
+
+black_day_1 &lt;- length(mylist[[&quot;DE Day 1&quot;]]) - sig_day_1_only
+
+black_day_2 &lt;- length(mylist[[&quot;DE Day 2&quot;]]) - sig_day_2_only
+
+black_day_3 &lt;- length(mylist[[&quot;DE Day 3&quot;]]) - sig_day_3_only
+
+#### Plot the number of genes DE between species at each day
+
+dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
+<pre class="r"><code># Numbers for non-unique DE genes
+collect_total_barplot &lt;- c(black_day_0, black_day_1, black_day_2, black_day_3, sig_none, sig_all)
+
+# Numbers for unique DE genes
+collect_only &lt;- c(sig_day_0_only, sig_day_1_only, sig_day_2_only, sig_day_3_only, 0, 0)
+
+# Combine the unique and non-unique DE genes
+msig &lt;- rbind(collect_total_barplot, collect_only)
+colnames(msig) &lt;- c(&quot;Day 0&quot;, &quot;Day 1&quot;, &quot;Day 2&quot;, &quot;Day 3&quot;, &quot;Never DE&quot;, &quot;Always DE&quot;)
+
+# Make a stacked barplot
+
+barplot(msig, ylab=&quot;Number of DE genes&quot;, ylim = c(0, 6000), main = &quot;Differentially Expressed Genes between Humans and Chimps Across Days&quot;)</code></pre>
+</div>
+<div id="find-non-significant-genes-between-species-for-each-day" class="section level4">
+<h4>Find non-significant genes between species for each day</h4>
+<pre class="r"><code># Not significant at each day
+mylist &lt;- list()
+mylist[[&quot;non DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &gt; FDR_level]
+mylist[[&quot;non DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &gt; FDR_level]
+mylist[[&quot;non DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &gt; FDR_level]
+mylist[[&quot;non DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &gt; FDR_level]
+
+# Not significant at any days
+notsig &lt;- length(intersect(intersect(intersect(mylist[[&quot;non DE Day 0&quot;]], mylist[[&quot;non DE Day 1&quot;]]), mylist[[&quot;non DE Day 2&quot;]]), mylist[[&quot;non DE Day 3&quot;]]))</code></pre>
+</div>
+</div>
+<div id="significant-interaction-term" class="section level3">
+<h3>Significant interaction term</h3>
+<p>Here, the model for expression has fixed effects for day, species, and a day-by-species interaction term.</p>
+<pre class="r"><code># Make the design matrix with an interaction term between species and day
+
+condition &lt;- factor(paste(species,day,sep=&quot;.&quot;))
+design &lt;- model.matrix(~species+day+species*day)
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;&quot;, dput(colnames(design)))</code></pre>
+<pre><code>c(&quot;(Intercept)&quot;, &quot;speciesH&quot;, &quot;day1&quot;, &quot;day2&quot;, &quot;day3&quot;, &quot;speciesH:day1&quot;, 
+&quot;speciesH:day2&quot;, &quot;speciesH:day3&quot;)</code></pre>
+<pre class="r"><code>#colnames(design) &lt;- gsub(&quot;:&quot;, &quot;&quot;, dput(colnames(design)))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;none&quot;)
+
+# We want a random effect term for individual
+corfit &lt;- duplicateCorrelation(cpm.voom, design,block=individual)
+corfit.correlation = 0.1947084
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;none&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+# Fit the new model
+
+fit2 &lt;- eBayes(fit)
+
+top3 &lt;- list(day1inter =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), day2inter =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  day3inter =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+mylist &lt;- list()
+mylist[[&quot;Human x Day 1&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+
+mylist[[&quot;Human x Day 2&quot;]] &lt;- row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+
+mylist[[&quot;Human x Day 3&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;Genes with significant species by day interactions (FDR&lt; 5%)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;Figure 6.A.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
