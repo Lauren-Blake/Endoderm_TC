@@ -2569,6 +2569,11 @@ make_exp_df <- as.data.frame(cbind(exp, day, species))
 colnames(make_exp_df) <- c("CPM", "Day", "Species")
 ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle("TMEM65 Expression") + xlab("Day") + ylab("Log2(CPM) expression")
 
+# SOX 2
+exp <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000181449", rownames(cpm_in_cutoff)), ])
+make_exp_df <- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) <- c("CPM", "Day", "Species")
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species))  + ggtitle("SOX2 Expression") + xlab("Day") + ylab("Log2(CPM) expression")
 ```
 
 #### Make heatmap of all the markers

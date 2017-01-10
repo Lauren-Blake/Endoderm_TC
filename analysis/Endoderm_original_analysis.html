@@ -7469,6 +7469,12 @@ make_exp_df &lt;- as.data.frame(cbind(exp, day, species))
 colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
 ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle(&quot;TMEM65 Expression&quot;) + xlab(&quot;Day&quot;) + ylab(&quot;Log2(CPM) expression&quot;)</code></pre>
 <p><img src="Endoderm_original_analysis_files/figure-html/unnamed-chunk-38-12.png" width="672" /></p>
+<pre class="r"><code># SOX 2
+exp &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000181449&quot;, rownames(cpm_in_cutoff)), ])
+make_exp_df &lt;- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species))  + ggtitle(&quot;SOX2 Expression&quot;) + xlab(&quot;Day&quot;) + ylab(&quot;Log2(CPM) expression&quot;)</code></pre>
+<p><img src="Endoderm_original_analysis_files/figure-html/unnamed-chunk-38-13.png" width="672" /></p>
 <div id="make-heatmap-of-all-the-markers" class="section level4">
 <h4>Make heatmap of all the markers</h4>
 <pre class="r"><code># PRDM1 ENSG00000057657
