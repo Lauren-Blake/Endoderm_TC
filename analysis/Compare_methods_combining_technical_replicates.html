@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>Assessing_combining_technical_replicates</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Assessing_combining_technical_replicates</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>January 9, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#when-2-technical-replicates-take-the-average-log2cpm">When 2 technical replicates, take the average log2(CPM)</a></li>
+<li><a href="#when-2-technical-replicates-sum-the-gene-counts-and-then-normalize-all-data-together">When 2 technical replicates, sum the gene counts and then normalize all data together</a></li>
+</ul>
+</div>
+
+<p>This script is to assess the impact of combining technical replicates: taking the average of the log2(CPM) of the technical replicates or taking the sum of the technical replicates prior to normalization.</p>
+<pre class="r"><code># Load libraries
+
+library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;qvalue&quot;)</code></pre>
+<pre><code>## Warning: package &#39;qvalue&#39; was built under R version 3.2.3</code></pre>
+<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+
+# Load colors
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+
+# Load data
+cpm_in_cutoff &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt&quot;)</code></pre>
+<div id="when-2-technical-replicates-take-the-average-log2cpm" class="section level2">
+<h2>When 2 technical replicates, take the average log2(CPM)</h2>
+<pre class="r"><code># Take the mean of the technical replicates when available
+
+  # Day 0 technical replicates
+D0_28815 &lt;- as.data.frame(apply(cpm_in_cutoff[,5:6], 1, mean))
+D0_3647 &lt;- as.data.frame(apply(cpm_in_cutoff[,8:9], 1, mean))
+D0_3649 &lt;- as.data.frame(apply(cpm_in_cutoff[,10:11], 1, mean))
+D0_40300 &lt;- as.data.frame(apply(cpm_in_cutoff[,12:13], 1, mean))
+D0_4955 &lt;- as.data.frame(apply(cpm_in_cutoff[,14:15], 1, mean))
+  # Day 1 technical replicates
+D1_20157 &lt;- as.data.frame(apply(cpm_in_cutoff[,16:17], 1, mean))
+D1_28815 &lt;- as.data.frame(apply(cpm_in_cutoff[,21:22], 1, mean))
+D1_3647 &lt;- as.data.frame(apply(cpm_in_cutoff[,24:25], 1, mean))
+D1_3649 &lt;- as.data.frame(apply(cpm_in_cutoff[,26:27], 1, mean))
+D1_40300 &lt;- as.data.frame(apply(cpm_in_cutoff[,28:29], 1, mean))
+D1_4955 &lt;- as.data.frame(apply(cpm_in_cutoff[,30:31], 1, mean))
+  # Day 2 technical replicates
+D2_20157 &lt;- as.data.frame(apply(cpm_in_cutoff[,32:33], 1, mean))
+D2_28815 &lt;- as.data.frame(apply(cpm_in_cutoff[,37:38], 1, mean))
+D2_3647 &lt;- as.data.frame(apply(cpm_in_cutoff[,40:41], 1, mean))
+D2_3649 &lt;- as.data.frame(apply(cpm_in_cutoff[,42:43], 1, mean))
+D2_40300 &lt;- as.data.frame(apply(cpm_in_cutoff[,44:45], 1, mean))
+D2_4955 &lt;- as.data.frame(apply(cpm_in_cutoff[,46:47], 1, mean))
+  # Day 3 technical replicates
+D3_20157 &lt;- as.data.frame(apply(cpm_in_cutoff[,48:49], 1, mean))
+D3_28815 &lt;- as.data.frame(apply(cpm_in_cutoff[,53:54], 1, mean))
+D3_3647 &lt;- as.data.frame(apply(cpm_in_cutoff[,56:57], 1, mean))
+D3_3649 &lt;- as.data.frame(apply(cpm_in_cutoff[,58:59], 1, mean))
+D3_40300 &lt;- as.data.frame(apply(cpm_in_cutoff[,60:61], 1, mean))
+D3_4955 &lt;- as.data.frame(apply(cpm_in_cutoff[,62:63], 1, mean))
+
+# Create a new data frame with all of the combined technical replicates
+mean_tech_reps &lt;- cbind(cpm_in_cutoff[,1:4], D0_28815, cpm_in_cutoff[,7], D0_3647, D0_3649, D0_40300, D0_4955, D1_20157, cpm_in_cutoff[,18:20], D1_28815, cpm_in_cutoff[,23], D1_3647, D1_3649, D1_40300, D1_4955, D2_20157, cpm_in_cutoff[,34:36], D2_28815, cpm_in_cutoff[,39], D2_3647, D2_3649, D2_40300, D2_4955, D3_20157, cpm_in_cutoff[,50:52], D3_28815, cpm_in_cutoff[,55], D3_3647, D3_3649, D3_40300, D3_4955)
+
+
+colnames(mean_tech_reps) &lt;- c(&quot;D0_20157&quot;, &quot;D0_20961&quot;, &quot;D0_21792&quot;, &quot;D0_28162&quot;, &quot;D0_28815&quot;, &quot;D0_29089&quot;, &quot;D0_3647&quot;, &quot;D0_3649&quot;, &quot;D0_40300&quot;, &quot;D0_4955&quot;, &quot;D1_20157&quot;, &quot;D1_20961&quot;, &quot;D1_21792&quot;, &quot;D1_28162&quot;, &quot;D1_28815&quot;, &quot;D1_29089&quot;, &quot;D1_3647&quot;, &quot;D1_3649&quot;, &quot;D1_40300&quot;, &quot;D1_4955&quot;, &quot;D2_20157&quot;, &quot;D2_20961&quot;, &quot;D2_21792&quot;, &quot;D2_28162&quot;, &quot;D2_28815&quot;, &quot;D2_29089&quot;, &quot;D2_3647&quot;, &quot;D2_3649&quot;, &quot;D2_40300&quot;, &quot;D2_4955&quot;, &quot;D3_20157&quot;, &quot;D3_20961&quot;, &quot;D3_21792&quot;, &quot;D3_28162&quot;, &quot;D3_28815&quot;, &quot;D3_29089&quot;, &quot;D3_3647&quot;, &quot;D3_3649&quot;, &quot;D3_40300&quot;, &quot;D3_4955&quot;)
+
+dim(mean_tech_reps)</code></pre>
+<pre><code>[1] 10304    40</code></pre>
+<pre class="r"><code># Make a column for which are averaged or not
+
+averaged_status &lt;- c(1,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2)
+
+# Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors &lt;- read.delim(&quot;~/Downloads/samplefactors-filtered.txt&quot;, stringsAsFactors=FALSE)
+day &lt;- bio_rep_samplefactors$Day
+species &lt;- bio_rep_samplefactors$Species
+
+# Make PCA plots with the factors colored by day
+
+pca_genes &lt;- prcomp(t(mean_tech_reps), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(averaged_status), size=2)) + geom_point() + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + theme_minimal() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) + scale_color_discrete(name  =&quot;Day&quot;, labels = c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) +  scale_shape_manual(values = c(5, 7)) + scale_shape_discrete(name  =&quot;Replicate status&quot;, labels = c(&quot;Single&quot; ,&quot;Averaged&quot;)) + labs(title = &quot;PCs 1 and 2 from global normalized expression&quot;)</code></pre>
+<pre><code>Scale for &#39;shape&#39; is already present. Adding another scale for &#39;shape&#39;,
+which will replace the existing scale.</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(averaged_status), size=2)) + geom_point() + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + scale_shape_manual(values = c(5, 8)) + scale_color_discrete(name  =&quot;Day&quot;, labels = c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;))  + labs(title = &quot;PCs 1 and 2 from global normalized gene expression (Averaged bet. technical replicates)&quot;)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ggplotly()</code></pre>
+</div>
+<div id="when-2-technical-replicates-sum-the-gene-counts-and-then-normalize-all-data-together" class="section level2">
+<h2>When 2 technical replicates, sum the gene counts and then normalize all data together</h2>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
