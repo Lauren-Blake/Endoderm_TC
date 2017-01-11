@@ -2088,6 +2088,9 @@ qqplot_inc_top_all_day12 &lt;- as.data.frame(qqplot_inc_top_all_day12)
 qqplot_inc_top_all_day23 &lt;- as.data.frame(qqplot_inc_top_all_day23)
 qqplot_inc_top_all_day02 &lt;- as.data.frame(qqplot_inc_top_all_day02)
 
+
+
+# Plots of pi_1
 dev.off()</code></pre>
 <pre><code>null device 
           1 </code></pre>
@@ -2101,18 +2104,18 @@ calling par(new=TRUE) with no plot</code></pre>
 legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 0 to 2&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
     0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#E69F00&quot;, &quot;#000000&quot;,  &quot;#009E73&quot;,&quot;#0072B2&quot; ), cex = 1)
 
-dev.off()</code></pre>
-<pre><code>null device 
-          1 </code></pre>
-<pre class="r"><code># Plot inc in variation
+ggplot(qqplot_red_top_all_day01, aes(x = qqplot_red_top_all_day01[,1], y = qqplot_red_top_all_day01[,2])) + geom_line(colour=&quot;#E69F00&quot;) + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12[,1], y = qqplot_red_top_all_day12[,2]), colour = &quot;#000000&quot;) + geom_line(aes(x = qqplot_red_top_all_day23[,1], y = qqplot_red_top_all_day23[,2]), colour =  &quot;#009E73&quot;) + geom_line(aes(x = qqplot_red_top_all_day02[,1], y = qqplot_red_top_all_day02[,2]), colour =  &quot;#0072B2&quot;) + ylim(0,1) + ggtitle(&quot;Proportion of Shared Genes with a Reduction in Variance between Days&quot;) + xlab(&quot;N Most Significant Genes in Humans&quot;) + ylab(&quot;Pi_1 of Chimpanzees|Significant in Humans&quot;) 
+
+
+# Plot inc in variation
 ggplot(qqplot_inc_top_all_day01, aes(x = qqplot_inc_top_all_day01[,1], y = qqplot_inc_top_all_day01[,2])) + geom_line(colour=&quot;#E69F00&quot;) + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12[,1], y = qqplot_inc_top_all_day12[,2]), colour = &quot;#000000&quot;) + geom_line(aes(x = qqplot_inc_top_all_day23[,1], y = qqplot_inc_top_all_day23[,2]), colour =  &quot;#009E73&quot;) + geom_line(aes(x = qqplot_inc_top_all_day02[,1], y = qqplot_inc_top_all_day02[,2]), colour =  &quot;#0072B2&quot;) + ylim(0,1) + ggtitle(&quot;Proportion of Shared Genes with an Increase in Variance between Days&quot;) + xlab(&quot;N Most Significant Genes in Humans&quot;) + ylab(&quot;Pi_1 of Chimpanzees|Significant in Humans&quot;) 
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)</code></pre>
-<pre><code>Warning in par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, :
-calling par(new=TRUE) with no plot</code></pre>
-<pre class="r"><code>plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
 legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 0 to 2&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#E69F00&quot;, &quot;#000000&quot;,  &quot;#009E73&quot;,&quot;#0072B2&quot; ), cex = 1)</code></pre>
+    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#E69F00&quot;, &quot;#000000&quot;,  &quot;#009E73&quot;,&quot;#0072B2&quot; ), cex = 1)
+
+ggplot(qqplot_inc_top_all_day01, aes(x = qqplot_inc_top_all_day01[,1], y = qqplot_inc_top_all_day01[,2])) + geom_line(colour=&quot;#E69F00&quot;) + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12[,1], y = qqplot_inc_top_all_day12[,2]), colour = &quot;#000000&quot;) + geom_line(aes(x = qqplot_inc_top_all_day23[,1], y = qqplot_inc_top_all_day23[,2]), colour =  &quot;#009E73&quot;) + geom_line(aes(x = qqplot_inc_top_all_day02[,1], y = qqplot_inc_top_all_day02[,2]), colour =  &quot;#0072B2&quot;) + ylim(0,1) + ggtitle(&quot;Proportion of Shared Genes with an Increase in Variance between Days&quot;) + xlab(&quot;N Most Significant Genes in Humans&quot;) + ylab(&quot;Pi_1 of Chimpanzees|Significant in Humans&quot;) </code></pre>
 </div>
 <div id="enrichments-in-humans" class="section level3">
 <h3>Enrichments in humans</h3>
@@ -3158,31 +3161,30 @@ qqplot_inc_top_all_day12 &lt;- as.data.frame(qqplot_inc_top_all_day12)
 qqplot_inc_top_all_day23 &lt;- as.data.frame(qqplot_inc_top_all_day23)
 qqplot_inc_top_all_day02 &lt;- as.data.frame(qqplot_inc_top_all_day02)
 
-dev.off()</code></pre>
-<pre><code>null device 
-          1 </code></pre>
-<pre class="r"><code># Plot reduction in variation
+
+# Plot reduction in variation
 ggplot(qqplot_red_top_all_day01, aes(x = qqplot_red_top_all_day01[,1], y = qqplot_red_top_all_day01[,2])) + geom_line(colour=&quot;#E69F00&quot;) + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12[,1], y = qqplot_red_top_all_day12[,2]), colour = &quot;#000000&quot;) + geom_line(aes(x = qqplot_red_top_all_day23[,1], y = qqplot_red_top_all_day23[,2]), colour =  &quot;#009E73&quot;) + geom_line(aes(x = qqplot_red_top_all_day02[,1], y = qqplot_red_top_all_day02[,2]), colour =  &quot;#0072B2&quot;) + ggtitle(&quot;Proportion of Shared Genes with a Reduction in Variance between Days&quot;) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(&quot;Pi_1 of Humans|Significant in Chimpanzees&quot;) 
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)</code></pre>
-<pre><code>Warning in par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, :
-calling par(new=TRUE) with no plot</code></pre>
-<pre class="r"><code>plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
-legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 0 to 2&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#E69F00&quot;, &quot;#000000&quot;,  &quot;#009E73&quot;,&quot;#0072B2&quot; ), cex = 1)
-
-dev.off()</code></pre>
-<pre><code>null device 
-          1 </code></pre>
-<pre class="r"><code># Plot inc in variation
-ggplot(qqplot_inc_top_all_day01, aes(x = qqplot_inc_top_all_day01[,1], y = qqplot_inc_top_all_day01[,2])) + geom_line(colour=&quot;#E69F00&quot;) + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12[,1], y = qqplot_inc_top_all_day12[,2]), colour = &quot;#000000&quot;) + geom_line(aes(x = qqplot_inc_top_all_day23[,1], y = qqplot_inc_top_all_day23[,2]), colour =  &quot;#009E73&quot;) + geom_line(aes(x = qqplot_inc_top_all_day02[,1], y = qqplot_inc_top_all_day02[,2]), colour =  &quot;#0072B2&quot;) + ggtitle(&quot;Proportion of Shared Genes with an Increase in Variance between Days&quot;) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(&quot;Pi_1 of Humans|Significant in Chimpanzees&quot;) 
-
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)</code></pre>
-<pre><code>Warning in par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, :
-calling par(new=TRUE) with no plot</code></pre>
-<pre class="r"><code>plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
 legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 0 to 2&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
     0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#E69F00&quot;, &quot;#000000&quot;,  &quot;#009E73&quot;,&quot;#0072B2&quot; ), cex = 1)</code></pre>
+<p><img src="figure/Temporal_changes_variation.Rmd/unnamed-chunk-13-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(qqplot_red_top_all_day01, aes(x = qqplot_red_top_all_day01[,1], y = qqplot_red_top_all_day01[,2])) + geom_line(colour=&quot;#E69F00&quot;) + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12[,1], y = qqplot_red_top_all_day12[,2]), colour = &quot;#000000&quot;) + geom_line(aes(x = qqplot_red_top_all_day23[,1], y = qqplot_red_top_all_day23[,2]), colour =  &quot;#009E73&quot;) + geom_line(aes(x = qqplot_red_top_all_day02[,1], y = qqplot_red_top_all_day02[,2]), colour =  &quot;#0072B2&quot;) + ggtitle(&quot;Proportion of Shared Genes with a Reduction in Variance between Days&quot;) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(&quot;Pi_1 of Humans|Significant in Chimpanzees&quot;) </code></pre>
+<p><img src="figure/Temporal_changes_variation.Rmd/unnamed-chunk-13-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#dev.off()
+
+# Plot inc in variation
+ggplot(qqplot_inc_top_all_day01, aes(x = qqplot_inc_top_all_day01[,1], y = qqplot_inc_top_all_day01[,2])) + geom_line(colour=&quot;#E69F00&quot;) + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12[,1], y = qqplot_inc_top_all_day12[,2]), colour = &quot;#000000&quot;) + geom_line(aes(x = qqplot_inc_top_all_day23[,1], y = qqplot_inc_top_all_day23[,2]), colour =  &quot;#009E73&quot;) + geom_line(aes(x = qqplot_inc_top_all_day02[,1], y = qqplot_inc_top_all_day02[,2]), colour =  &quot;#0072B2&quot;) + ggtitle(&quot;Proportion of Shared Genes with an Increase in Variance between Days&quot;) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(&quot;Pi_1 of Humans|Significant in Chimpanzees&quot;) 
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 0 to 2&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
+    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#E69F00&quot;, &quot;#000000&quot;,  &quot;#009E73&quot;,&quot;#0072B2&quot; ), cex = 1)</code></pre>
+<p><img src="figure/Temporal_changes_variation.Rmd/unnamed-chunk-13-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot inc in variation
+ggplot(qqplot_inc_top_all_day01, aes(x = qqplot_inc_top_all_day01[,1], y = qqplot_inc_top_all_day01[,2])) + geom_line(colour=&quot;#E69F00&quot;) + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12[,1], y = qqplot_inc_top_all_day12[,2]), colour = &quot;#000000&quot;) + geom_line(aes(x = qqplot_inc_top_all_day23[,1], y = qqplot_inc_top_all_day23[,2]), colour =  &quot;#009E73&quot;) + geom_line(aes(x = qqplot_inc_top_all_day02[,1], y = qqplot_inc_top_all_day02[,2]), colour =  &quot;#0072B2&quot;) + ggtitle(&quot;Proportion of Shared Genes with an Increase in Variance between Days&quot;) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(&quot;Pi_1 of Humans|Significant in Chimpanzees&quot;)</code></pre>
+<p><img src="figure/Temporal_changes_variation.Rmd/unnamed-chunk-13-20.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 </div>
