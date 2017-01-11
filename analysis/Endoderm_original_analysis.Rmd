@@ -1084,7 +1084,7 @@ table(df_plot$comparison)
 ggplot(df_plot, aes(x = day1, y = correlation)) +
   geom_boxplot() +
   facet_wrap(~comparison) +
-  labs(x = "Day", y = "Spearman's r", title = "When original samples used (mostly from batch 1")
+  labs(x = "Day", y = "Spearman's r", title = "When original samples used (mostly from batch 1)")
   
   day1cor_cross <- pair_cor_long[pair_cor_long$day1==1,]$cross
   day0cor_cross <- pair_cor_long[pair_cor_long$day1==0,]$cross
@@ -1320,7 +1320,7 @@ table(df_plot$comparison)
 ggplot(df_plot, aes(x = day1, y = correlation)) +
   geom_boxplot() +
   facet_wrap(~comparison) +
-  labs(x = "Day", y = "Spearman's r", title = "When original samples used (mostly from batch 1")
+  labs(x = "Day", y = "Spearman's r", title = "When original samples used (mostly from batch 2)")
   
   day1cor_cross <- pair_cor_long[pair_cor_long$day1==1,]$cross
   day0cor_cross <- pair_cor_long[pair_cor_long$day1==0,]$cross
@@ -1601,7 +1601,7 @@ table(df_plot$comparison)
 ggplot(df_plot, aes(x = day1, y = correlation)) +
   geom_boxplot() +
   facet_wrap(~comparison) +
-  labs(x = "Day", y = "Spearman's r", title = "When technical replicates available, mean used except for D0_20157")
+  labs(x = "Day", y = "Spearman's r", title = "Average of technical replicates when available (4 chimps, 6 humans")
   
   day1cor_cross <- pair_cor_long[pair_cor_long$day1==1,]$cross
   day0cor_cross <- pair_cor_long[pair_cor_long$day1==0,]$cross

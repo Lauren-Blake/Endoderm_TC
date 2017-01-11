@@ -152,6 +152,7 @@ labels10 <- rbind(labels1, labels2, labels3, labels4, labels1, labels2, labels3,
 labels10 <- as.numeric(as.factor(labels10))
 
 #1 Overall trend across genes
+
 # Boxplot of variances gives general trend
 HC_var <- rbind(as.data.frame(chimps_day0_var), as.data.frame(chimps_day1_var), as.data.frame(chimps_day2_var), as.data.frame(chimps_day3_var), as.data.frame(humans_day0_var), as.data.frame(humans_day1_var), as.data.frame(humans_day2_var), as.data.frame(humans_day3_var))
 
@@ -224,7 +225,7 @@ t.test(humans_day2_var, humans_day3_var) # 7.301e-07
 
 ```
 
-Conclusion: For both species, there is at least 1 mean (of the variances) that is different; however, when testing between the chimps day 0 and 1, there is not enough statistical evidence to suggest a difference in the means of the variances (p = 0.4586). Even if you make the argument that biologically we expect a reduction in variance between day 0 an dday 1 (due to cannalization, for example) and therefore try a one-sided t-test, the p-value is still not statistically significant (p = 0.2293). 
+Conclusion: For both species, there is at least 1 mean (of the variances) that is different; however, when testing between the chimps day 0 and 1, there is not enough statistical evidence to suggest a difference in the means of the variances (p = 0.4586). Even if you make the argument that biologically we expect a reduction in variance between day 0 an day 1 (due to cannalization, for example) and therefore try a one-sided t-test, the p-value is still not statistically significant (p = 0.2293). 
 
 ## Characterizing variance trends between days
 

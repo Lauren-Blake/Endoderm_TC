@@ -1,0 +1,2339 @@
+---
+title: "Explore_temporal_changes_in_variation"
+author: "Lauren Blake"
+date: "January 9, 2017"
+output: html_document
+---
+
+The goal of this script is to assess the extent of regulatory variation in our cell types. 
+
+## Check data
+
+```{r}
+# Load libraries
+
+library("ggplot2")
+library("qvalue")
+source("~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R")
+library("RColorBrewer")
+
+# Load colors
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+
+# Load data
+cpm_in_cutoff <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt")
+```
+
+
+```{r}
+# Take the mean of the technical replicates when available
+
+  # Day 0 technical replicates
+D0_28815 <- as.data.frame(apply(cpm_in_cutoff[,5:6], 1, mean))
+D0_3647 <- as.data.frame(apply(cpm_in_cutoff[,8:9], 1, mean))
+D0_3649 <- as.data.frame(apply(cpm_in_cutoff[,10:11], 1, mean))
+D0_40300 <- as.data.frame(apply(cpm_in_cutoff[,12:13], 1, mean))
+D0_4955 <- as.data.frame(apply(cpm_in_cutoff[,14:15], 1, mean))
+  # Day 1 technical replicates
+D1_20157 <- as.data.frame(apply(cpm_in_cutoff[,16:17], 1, mean))
+D1_28815 <- as.data.frame(apply(cpm_in_cutoff[,21:22], 1, mean))
+D1_3647 <- as.data.frame(apply(cpm_in_cutoff[,24:25], 1, mean))
+D1_3649 <- as.data.frame(apply(cpm_in_cutoff[,26:27], 1, mean))
+D1_40300 <- as.data.frame(apply(cpm_in_cutoff[,28:29], 1, mean))
+D1_4955 <- as.data.frame(apply(cpm_in_cutoff[,30:31], 1, mean))
+  # Day 2 technical replicates
+D2_20157 <- as.data.frame(apply(cpm_in_cutoff[,32:33], 1, mean))
+D2_28815 <- as.data.frame(apply(cpm_in_cutoff[,37:38], 1, mean))
+D2_3647 <- as.data.frame(apply(cpm_in_cutoff[,40:41], 1, mean))
+D2_3649 <- as.data.frame(apply(cpm_in_cutoff[,42:43], 1, mean))
+D2_40300 <- as.data.frame(apply(cpm_in_cutoff[,44:45], 1, mean))
+D2_4955 <- as.data.frame(apply(cpm_in_cutoff[,46:47], 1, mean))
+  # Day 3 technical replicates
+D3_20157 <- as.data.frame(apply(cpm_in_cutoff[,48:49], 1, mean))
+D3_28815 <- as.data.frame(apply(cpm_in_cutoff[,53:54], 1, mean))
+D3_3647 <- as.data.frame(apply(cpm_in_cutoff[,56:57], 1, mean))
+D3_3649 <- as.data.frame(apply(cpm_in_cutoff[,58:59], 1, mean))
+D3_40300 <- as.data.frame(apply(cpm_in_cutoff[,60:61], 1, mean))
+D3_4955 <- as.data.frame(apply(cpm_in_cutoff[,62:63], 1, mean))
+
+# Create a new data frame with all of the combined technical replicates
+mean_tech_reps <- cbind(cpm_in_cutoff[,1:4], D0_28815, cpm_in_cutoff[,7], D0_3647, D0_3649, D0_40300, D0_4955, D1_20157, cpm_in_cutoff[,18:20], D1_28815, cpm_in_cutoff[,23], D1_3647, D1_3649, D1_40300, D1_4955, D2_20157, cpm_in_cutoff[,34:36], D2_28815, cpm_in_cutoff[,39], D2_3647, D2_3649, D2_40300, D2_4955, D3_20157, cpm_in_cutoff[,50:52], D3_28815, cpm_in_cutoff[,55], D3_3647, D3_3649, D3_40300, D3_4955)
+
+
+colnames(mean_tech_reps) <- c("D0_20157", "D0_20961", "D0_21792", "D0_28162", "D0_28815", "D0_29089", "D0_3647", "D0_3649", "D0_40300", "D0_4955", "D1_20157", "D1_20961", "D1_21792", "D1_28162", "D1_28815", "D1_29089", "D1_3647", "D1_3649", "D1_40300", "D1_4955", "D2_20157", "D2_20961", "D2_21792", "D2_28162", "D2_28815", "D2_29089", "D2_3647", "D2_3649", "D2_40300", "D2_4955", "D3_20157", "D3_20961", "D3_21792", "D3_28162", "D3_28815", "D3_29089", "D3_3647", "D3_3649", "D3_40300", "D3_4955")
+
+dim(mean_tech_reps)
+
+# Make a column for which are averaged or not
+
+averaged_status <- c(1,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2)
+
+# Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors <- read.delim("~/Downloads/samplefactors-filtered.txt", stringsAsFactors=FALSE)
+day <- bio_rep_samplefactors$Day
+species <- bio_rep_samplefactors$Species
+
+# Make PCA plots with the factors colored by day
+
+pca_genes <- prcomp(t(mean_tech_reps), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(averaged_status), size=2)) + geom_point() + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + theme_minimal() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) + scale_color_discrete(name  ="Day", labels = c("0", "1", "2", "3")) +  scale_shape_manual(values = c(5, 7)) + scale_shape_discrete(name  ="Replicate status", labels = c("Single" ,"Averaged")) + labs(title = "PCs 1 and 2 from global normalized expression")
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(averaged_status), size=2)) + geom_point() + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + scale_shape_manual(values = c(5, 8)) + scale_color_discrete(name  ="Day", labels = c("0", "1", "2", "3"))  + labs(title = "PCs 1 and 2 from global normalized gene expression (Averaged bet. technical replicates)")
+
+#ggplotly()
+
+
+```
+
+## Examine the means and the variances between day-species pairs
+
+```{r}
+# Calculate the variance for each species-time pair
+
+humans_day0_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,1:6]),1, var) )
+colnames(humans_day0_var) <- c("Variance") 
+chimps_day0_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,7:10]),1, var))
+colnames(chimps_day0_var) <- c("Variance") 
+humans_day1_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,11:16]),1, var))
+colnames(humans_day1_var) <- c("Variance") 
+chimps_day1_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,17:20]),1, var))
+colnames(chimps_day1_var) <- c("Variance")
+humans_day2_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,21:26]),1, var))
+colnames(humans_day2_var) <- c("Variance") 
+chimps_day2_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,27:30]),1, var))
+colnames(chimps_day2_var) <- c("Variance")
+humans_day3_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,31:36]),1, var))
+colnames(humans_day3_var) <- c("Variance") 
+chimps_day3_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,37:40]),1, var))
+colnames(chimps_day3_var) <- c("Variance")
+
+# Calculate the mean for each species-time pair
+humans_day0_mean <-  as.data.frame(apply(as.data.frame(mean_tech_reps[,1:6]),1, mean))
+colnames(humans_day0_mean) <- c("Mean")
+chimps_day0_mean <- as.data.frame(apply(as.data.frame(mean_tech_reps[,7:10]),1, mean))
+colnames(chimps_day0_mean) <- c("Mean")
+humans_day1_mean <- as.data.frame(apply(as.data.frame(mean_tech_reps[,11:16]),1, mean))
+colnames(humans_day1_mean) <- c("Mean")
+chimps_day1_mean <- as.data.frame(apply(as.data.frame(mean_tech_reps[,17:20]),1, mean))
+colnames(chimps_day1_mean) <- c("Mean")
+humans_day2_mean <- as.data.frame(apply(as.data.frame(mean_tech_reps[,21:26]),1, mean))
+colnames(humans_day2_mean) <- c("Mean")
+chimps_day2_mean <- as.data.frame(apply(as.data.frame(mean_tech_reps[,27:30]),1, mean))
+colnames(chimps_day2_mean) <- c("Mean")
+humans_day3_mean <- as.data.frame(apply(as.data.frame(mean_tech_reps[,31:36]),1, mean))
+colnames(humans_day3_mean) <- c("Mean")
+chimps_day3_mean <- as.data.frame(apply(as.data.frame(mean_tech_reps[,37:40]),1, mean))
+colnames(chimps_day3_mean) <- c("Mean")
+
+# Make arrays with all the means
+
+labels1 <- array("Chimp Day 0", dim = c(10304, 1)) 
+labels2 <- array("Chimp Day 1", dim = c(10304, 1)) 
+labels3 <- array("Chimp Day 2", dim = c(10304, 1)) 
+labels4 <- array("Chimp Day 3", dim = c(10304, 1)) 
+labels5 <- array("Human Day 0", dim = c(10304, 1)) 
+labels6 <- array("Human Day 1", dim = c(10304, 1)) 
+labels7 <- array("Human Day 2", dim = c(10304, 1)) 
+labels8 <- array("Human Day 3", dim = c(10304, 1)) 
+
+# Make species-day labels
+labels9 <- rbind(labels1, labels2, labels3, labels4, labels5, labels6, labels7, labels8)
+labels <- as.numeric(as.factor(labels9))
+# Make labels so same days from different species are the same color
+labels10 <- rbind(labels1, labels2, labels3, labels4, labels1, labels2, labels3, labels4)
+labels10 <- as.numeric(as.factor(labels10))
+
+#1 Overall trend across genes
+
+# Boxplot of means gives general trend
+
+# Combine means
+HC_mean <- rbind(as.data.frame(chimps_day0_mean), as.data.frame(chimps_day1_mean), as.data.frame(chimps_day2_mean), as.data.frame(chimps_day3_mean), as.data.frame(humans_day0_mean), as.data.frame(humans_day1_mean), as.data.frame(humans_day2_mean), as.data.frame(humans_day3_mean))
+
+HC_mean_labels <- cbind(HC_mean, labels, labels10)
+
+m <- ggplot(HC_mean_labels, aes(x = factor(labels), y = HC_mean))
+m <- m + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + scale_y_continuous(trans = "log2") + ggtitle("Mean for each gene by species and day") + xlab("Species-Day Pair") + ylab("Mean for each gene") 
+m <- m + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3"))
+m
+
+# Boxplot of variances gives general trend
+HC_var <- rbind(as.data.frame(chimps_day0_var), as.data.frame(chimps_day1_var), as.data.frame(chimps_day2_var), as.data.frame(chimps_day3_var), as.data.frame(humans_day0_var), as.data.frame(humans_day1_var), as.data.frame(humans_day2_var), as.data.frame(humans_day3_var))
+
+HC_var_labels <- cbind(HC_var, labels, labels10)
+
+p <- ggplot(HC_var_labels, aes(x = factor(labels), y = HC_var))
+p <- p + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + scale_y_continuous(trans = "log2") + ggtitle("Variance for each gene by species and day") + xlab("Species-Day Pair") + ylab("Variance for each gene") 
+p <- p + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3"))
+p
+```
+
+# Evaluating global changes in variation 
+
+## No global reduction in means between day 0 and day 1
+
+Check to see if differences between means (of all gene expression values) within humans and chimps
+
+
+```{r}
+
+########## Within chimps ##########
+
+# Test at least one of the means is different
+group <- rbind(labels1, labels2, labels3, labels4)
+
+mean_day_species <- rbind(chimps_day0_mean,chimps_day1_mean, chimps_day2_mean, chimps_day3_mean)
+
+aov_groups <- cbind(mean_day_species, group)
+
+dim(aov_groups)
+
+aov_bet <- oneway.test(aov_groups$Mean ~ aov_groups$group)
+aov_bet
+
+#F = 4.4683, num df = 3, denom df = 22893, p-value = 0.003845
+
+# Test groups individually
+
+# Day 0 and Day 1
+t.test(chimps_day0_mean, chimps_day1_mean) # 0.5399
+# Day 1 and Day 2
+t.test(chimps_day1_mean, chimps_day2_mean) # 0.03798
+# Day 2 and Day 3
+t.test(chimps_day2_mean, chimps_day3_mean) # 0.7277
+
+
+########## Within humans ##########
+
+# Test at least one of the means is different
+group <- rbind(labels5, labels6, labels7, labels8)
+
+mean_day_species <- rbind(humans_day0_mean,humans_day1_mean, humans_day2_mean, humans_day3_mean)
+
+aov_groups <- cbind(mean_day_species, group)
+
+dim(aov_groups)
+
+aov_bet <- oneway.test(aov_groups$Mean ~ aov_groups$group)
+aov_bet
+
+# F = 6.2552, num df = 3, denom df = 22892, p-value = 0.0003067
+
+# Test groups individually
+
+# Day 0 and Day 1
+t.test(humans_day0_mean, humans_day1_mean) # 0.73
+# Day 1 and Day 2
+t.test(humans_day1_mean, humans_day2_mean) # 0.009
+# Day 2 and Day 3
+t.test(humans_day2_mean, humans_day3_mean) # 0.5806
+
+```
+
+Conclusion: For both species, there is at least 1 mean that is different; however, when testing between the chimps day 0 and 1, there is not enough statistical evidence to suggest a difference in the means of the variances (p = 0.53). 
+
+
+## No global reduction in variance between day 0 and 1 in both species
+
+Check to see if differences between means (of the variances of all of the genes) within humans and chimps
+
+```{r}
+
+########## Within chimps ##########
+
+# Test at least one of the means is different
+group <- rbind(labels1, labels2, labels3, labels4)
+
+var_day_species <- rbind(chimps_day0_var,chimps_day1_var, chimps_day2_var, chimps_day3_var)
+
+aov_groups <- cbind(var_day_species, group)
+
+dim(aov_groups)
+
+aov_bet <- oneway.test(aov_groups$Variance ~ aov_groups$group)
+aov_bet
+
+# F = 16.803, num df = 3, denom df = 22848, p-value = 6.715e-11
+
+# Test groups individually
+
+# Day 0 and Day 1
+t.test(chimps_day0_var, chimps_day1_var) # 0.4586
+t.test(chimps_day0_var, chimps_day1_var, alternative = "greater") # 0.2293
+# Day 1 and Day 2
+t.test(chimps_day1_var, chimps_day2_var) # 0.03103
+# Day 2 and Day 3
+t.test(chimps_day2_var, chimps_day3_var) # 2.992e-06
+
+
+
+########## Within humans ##########
+
+# Test at least one of the means is different
+group <- rbind(labels5, labels6, labels7, labels8)
+
+var_day_species <- rbind(humans_day0_var,humans_day1_var, humans_day2_var, humans_day3_var)
+
+aov_groups <- cbind(var_day_species, group)
+
+dim(aov_groups)
+
+aov_bet <- oneway.test(aov_groups$Variance ~ aov_groups$group)
+aov_bet
+
+# F = 80.035, num df = 3, denom df = 22652, p-value < 2.2e-16
+
+# Test groups individually
+
+# Day 0 and Day 1
+t.test(humans_day0_var, humans_day1_var) # < 2.2e-16
+# Day 1 and Day 2
+t.test(humans_day1_var, humans_day2_var) # < 2.2e-16
+# Day 2 and Day 3
+t.test(humans_day2_var, humans_day3_var) # 7.301e-07
+
+```
+
+Conclusion: For both species, there is at least 1 mean (of the variances) that is different; however, when testing between the chimps day 0 and 1, there is not enough statistical evidence to suggest a difference in the means of the variances (p = 0.4586). Even if you make the argument that biologically we expect a reduction in variance between day 0 an day 1 (due to cannalization, for example) and therefore try a one-sided t-test, the p-value is still not statistically significant (p = 0.2293). 
+
+# Characterizing variance trends between days
+
+We are interested in the genes that experience either an increase or reduction in variance between days in both species. 
+
+## Which individual genes undergo an increase or reduction in variation in one species given an increase or reduction in variation in the other species?
+
+We are going to first use a parametric test.
+
+### General functions for reduction/increase in variance 
+
+```{r}
+
+## Original code for the qqplots provided by Bryce van de Geijn.
+#Output:                                                                                                                                  
+#adds a set of qq points to an existing graph                                                                                             
+
+addqqplot=function(pvals, always.plot,density, col_designated){
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+  return(res)
+}
+
+#newqqplot creates a new plot with a set of qq points                                                                                     
+#Output:                                                                                                                                  
+#creates a new qq plot                                                                                                                    
+
+newqqplot=function(pvals, always.plot,density){
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+}
+
+```
+
+```{r}
+
+# 1A) Reduction in variation. Enrichment in chimps given that the gene was significant in humans
+
+# We need 4 values for each species: day t-1 start and end values and day t start and end values.
+
+find_qqplot_red_chimps <- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y <- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    chimp_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+
+############## For humans
+
+  human_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y <- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    human_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+############ Find p-values of the F_statistics
+
+# Make one data frame
+
+  var_pval <- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c("Chimpanzee", "Human")
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Set p-value
+
+  p_val <- 0.05
+
+# P-val < 0.05 for chimps only
+  num_var_pval_chimps <- var_pval[ which(var_pval[,1] < p_val), ]
+
+                    
+# P-val < 0.05 for humans only
+  num_var_pval_humans <- var_pval[ which(var_pval[,2] < p_val), ]
+  
+# A data frame with the # of genes with significant p-values  
+  sig_p_val <- as.data.frame(rbind(dim(num_var_pval_chimps), dim(num_var_pval_humans)))[,1]
+  
+# Run for the chimps
+  num_var_pval_chimps_neg_log <- -log10(var_pval[,1])
+
+  res_chimp <- newqqplot(num_var_pval_chimps_neg_log, -1, 100)
+
+# Run for the shared
+  # Find the p-values of the chimps given that it was significant in the humans
+
+  subset_var <- as.data.frame(var_pval[ which(var_pval[,2] < 0.05), 1:2])
+  num_var_pval_chimp_given_human_no_df <- subset_var[,1]
+  num_var_pval_chimp_given_human <- as.data.frame(subset_var[,1])
+ 
+  num_var_pval_shared_neg_log <- -log10(num_var_pval_chimp_given_human)
+
+  res_shared <- addqqplot(num_var_pval_shared_neg_log[,1], -1, 100, pal[3])
+
+  # Information for plotting
+
+  list_values = list(chimp_var_pval, num_var_pval_chimp_given_human_no_df, sig_p_val, res_chimp$x, res_chimp$y, res_shared$x, res_shared$y, max(res_chimp$x), max(res_chimp$y),  max(res_shared$x),  max(res_shared$y))
+  
+  
+  return(list_values)
+
+}
+
+# 2A) Increase in variation. Enrichment in chimps given that the gene was significant in humans
+
+# We need 4 values for each species: day t-1 start and end values and day t start and end values.
+
+find_qqplot_inc_chimps <- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y <- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest <- var.test(x, y, alternative = c("less"))
+    chimp_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+
+############## For humans
+
+  human_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y <- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest <- var.test(x, y, alternative = c("less"))
+    human_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+############ Find p-values of the F_statistics
+
+# Make one data frame
+
+  var_pval <- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c("Chimpanzee", "Human")
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Set p-value
+
+  p_val <- 0.05
+
+# P-val < 0.05 for chimps only
+  num_var_pval_chimps <- var_pval[ which(var_pval[,1] < p_val), ]
+
+                    
+# P-val < 0.05 for humans only
+  num_var_pval_humans <- var_pval[ which(var_pval[,2] < p_val), ]
+  
+# A data frame with the # of genes with significant p-values  
+  sig_p_val <- as.data.frame(rbind(dim(num_var_pval_chimps), dim(num_var_pval_humans)))[,1]
+  
+# Run for the chimps
+  num_var_pval_chimps_neg_log <- -log10(var_pval[,1])
+
+  res_chimp <- newqqplot(num_var_pval_chimps_neg_log, -1, 100)
+
+# Run for the shared
+  # Find the p-values of the chimps given that it was significant in the humans
+
+  subset_var <- as.data.frame(var_pval[ which(var_pval[,2] < 0.05), 1:2])
+  num_var_pval_chimp_given_human_no_df <- subset_var[,1]
+  num_var_pval_chimp_given_human <- as.data.frame(subset_var[,1])
+ 
+  num_var_pval_shared_neg_log <- -log10(num_var_pval_chimp_given_human)
+
+  res_shared <- addqqplot(num_var_pval_shared_neg_log[,1], -1, 100, pal[3])
+
+  # Information for plotting
+
+  list_values = list(chimp_var_pval, num_var_pval_chimp_given_human_no_df, sig_p_val, res_chimp$x, res_chimp$y, res_shared$x, res_shared$y, max(res_chimp$x), max(res_chimp$y),  max(res_shared$x),  max(res_shared$y))
+  
+  
+  return(list_values)
+
+}
+
+# 1B) Reduction in variation. Enrichment in humans given that the gene was significant in chimps
+
+# We need 4 values for each species: day t-1 start and end values and day t start and end values.
+
+find_qqplot_red_humans <- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y <- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    chimp_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+
+############## For humans
+
+  human_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y <- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    human_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+############ Find p-values of the F_statistics
+
+# Make one data frame
+
+  var_pval <- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c("Chimpanzee", "Human")
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Set p-value
+
+  p_val <- 0.05
+
+# P-val < 0.05 for chimps only
+  num_var_pval_chimps <- var_pval[ which(var_pval[,1] < p_val), ]
+
+                    
+# P-val < 0.05 for humans only
+  num_var_pval_humans <- var_pval[ which(var_pval[,2] < p_val), ]
+  
+# A data frame with the # of genes with significant p-values  
+  sig_p_val <- as.data.frame(rbind(dim(num_var_pval_chimps), dim(num_var_pval_humans)))[,1]
+  
+# Run for the humans
+  num_var_pval_chimps_neg_log <- -log10(var_pval[,2])
+
+  res_chimp <- newqqplot(num_var_pval_chimps_neg_log, -1, 100)
+
+# Run for the shared
+  # Find the p-values of the humans given that it was significant in the chimps
+
+  subset_var <- as.data.frame(var_pval[ which(var_pval[,1] < 0.05), 1:2])
+  num_var_pval_human_given_chimp_no_df <- subset_var[,2]
+  num_var_pval_human_given_chimp <- as.data.frame(subset_var[,2])
+ 
+  num_var_pval_shared_neg_log <- -log10(num_var_pval_human_given_chimp)
+
+  res_shared <- addqqplot(num_var_pval_shared_neg_log[,1], -1, 100, pal[3])
+
+  # Information for plotting
+
+  list_values = list(human_var_pval, num_var_pval_human_given_chimp_no_df, sig_p_val, res_chimp$x, res_chimp$y, res_shared$x, res_shared$y, max(res_chimp$x), max(res_chimp$y),  max(res_shared$x),  max(res_shared$y))
+  
+  
+  return(list_values)
+
+}
+
+# 2B) Reduction in variation. Enrichment in humans given that the gene was significant in chimps
+
+# We need 4 values for each species: day t-1 start and end values and day t start and end values.
+
+find_qqplot_inc_humans <- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y <- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest <- var.test(x, y, alternative = c("less"))
+    chimp_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+
+############## For humans
+
+  human_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y <- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest <- var.test(x, y, alternative = c("less"))
+    human_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+############ Find p-values of the F_statistics
+
+# Make one data frame
+
+  var_pval <- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c("Chimpanzee", "Human")
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Set p-value
+
+  p_val <- 0.05
+
+# P-val < 0.05 for chimps only
+  num_var_pval_chimps <- var_pval[ which(var_pval[,1] < p_val), ]
+
+                    
+# P-val < 0.05 for humans only
+  num_var_pval_humans <- var_pval[ which(var_pval[,2] < p_val), ]
+  
+# A data frame with the # of genes with significant p-values  
+  sig_p_val <- as.data.frame(rbind(dim(num_var_pval_chimps), dim(num_var_pval_humans)))[,1]
+  
+# Run for the humans
+  num_var_pval_chimps_neg_log <- -log10(var_pval[,2])
+
+  res_chimp <- newqqplot(num_var_pval_chimps_neg_log, -1, 100)
+
+# Run for the shared
+  # Find the p-values of the humans given that it was significant in the chimps
+
+  subset_var <- as.data.frame(var_pval[ which(var_pval[,1] < 0.05), 1:2])
+  num_var_pval_human_given_chimp_no_df <- subset_var[,2]
+  num_var_pval_human_given_chimp <- as.data.frame(subset_var[,2])
+ 
+  num_var_pval_shared_neg_log <- -log10(num_var_pval_human_given_chimp)
+
+  res_shared <- addqqplot(num_var_pval_shared_neg_log[,1], -1, 100, pal[3])
+
+  # Information for plotting
+
+  list_values = list(human_var_pval, num_var_pval_human_given_chimp_no_df, sig_p_val, res_chimp$x, res_chimp$y, res_shared$x, res_shared$y, max(res_chimp$x), max(res_chimp$y),  max(res_shared$x),  max(res_shared$y))
+  
+  
+  return(list_values)
+
+}
+
+# Make multiple ggplots on the same page
+
+# Multiplot function (from http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_%28ggplot2%29/)
+
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
+
+```
+
+
+### Enrichment in chimps
+
+```{r}
+# Reduction in variance from day 0 to day 1 chimps
+
+qqplot_red_day01 <- find_qqplot_red_chimps(7,10,17,20,1,6,11,16)
+
+# Reduction in variance from day 1 to day 2 chimps
+
+qqplot_red_day12 <- find_qqplot_red_chimps(17,20,27,30,11,16,21,26)
+
+# Reduction in variance from day 2 to day 3 chimps
+
+qqplot_red_day23 <- find_qqplot_red_chimps(27,30,37,40,21,26,31,36)
+
+# Reduction in variance from day 0 to day 2 chimps
+
+qqplot_red_day02 <- find_qqplot_red_chimps(7,10,27,30,1,6,21,26)
+
+# Inc. in variance from day 0 to day 1
+
+qqplot_inc_day01 <- find_qqplot_inc_chimps(7,10,17,20,1,6,11,16)
+
+# Inc. in variance from day 1 to day 2
+
+qqplot_inc_day12 <- find_qqplot_inc_chimps(17,20,27,30,11,16,21,26)
+
+# Inc. in variance from day 2 to day 3
+
+qqplot_inc_day23 <- find_qqplot_inc_chimps(27,30,37,40,21,26,31,36)
+
+# Inc. in variance from day 0 to day 2
+
+qqplot_inc_day02 <- find_qqplot_inc_chimps(7,10,27,30,1,6,21,26)
+
+# Reduction of variance qqplots- chimps
+
+par(mfrow=c(2,4),oma = c(2, 2, 2, 2))
+
+# Reduction of variance to day 0 to 1 chimps
+plot(qqplot_red_day01[[4]],qqplot_red_day01[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved", main = "Day 0 to 1")
+abline(0,1, col = "black")
+
+# Add to the plot
+points(qqplot_red_day01[[6]],qqplot_red_day01[[7]], pch = 16, col = pal[3])
+
+# Reduction of variance to day 1 to 2
+plot(qqplot_red_day12[[4]],qqplot_red_day12[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved", main = "Day 1 to 2")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_red_day12[[6]],qqplot_red_day12[[7]], pch = 16, col = pal[3])
+
+# Reduction of variance to day 2 to 3
+plot(qqplot_red_day23[[4]],qqplot_red_day23[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved", main = "Day 2 to 3")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_red_day23[[6]],qqplot_red_day23[[7]], pch = 16, col = pal[3])
+
+# Reduction of variance to day 0 to 2
+plot(qqplot_red_day02[[4]],qqplot_red_day02[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved", main = "Day 0 to 2")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_red_day02[[6]],qqplot_red_day02[[7]], pch = 16, col = pal[3])
+
+# Add bottom title
+
+mtext("Reduction in Variation", font = 2, side = 3, line = -1.5, outer = TRUE)
+
+### Increase in variance
+
+# Inc variance to day 0 to 1
+plot(qqplot_inc_day01[[4]],qqplot_inc_day01[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved",  main = "Day 0 to 1")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_inc_day01[[6]],qqplot_inc_day01[[7]], pch = 16, col = pal[3])
+
+# Increase of variance to day 1 to 2
+plot(qqplot_inc_day12[[4]],qqplot_inc_day12[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved",  main = "Day 1 to 2")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_inc_day12[[6]],qqplot_inc_day12[[7]], pch = 16, col = pal[3])
+
+
+# Increase of variance to day 2 to 3
+plot(qqplot_inc_day23[[4]],qqplot_inc_day23[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved",  main = "Day 2 to 3")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_inc_day23[[6]],qqplot_inc_day23[[7]], pch = 16, col = pal[3])
+
+# Increase of variance to day 0 to 2
+plot(qqplot_inc_day02[[4]],qqplot_inc_day02[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved",  main = "Day 0 to 2")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_inc_day02[[6]],qqplot_inc_day02[[7]], pch = 16, col = pal[3])
+
+
+mtext("Increase in Variation", font = 2, side = 3, line = -29, outer = TRUE)
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("bottomright", c("Chimpanzee", "Chimpanzee|significant in humans"), xpd = TRUE, horiz = TRUE, inset = c(0,  0), bty = "n", pch = c(16, 16), col = pal[2:3], cex = 1.5)
+
+```
+
+
+### Estimates of pi0 and pi1
+
+```{r}
+library("qvalue")
+################ REDUCTION IN VARIATION FOR CHIMPS################
+
+# Day 0 to 1
+
+
+# Obtain pvalues
+chimp_p_values_gen <- as.data.frame(qqplot_red_day01[1])
+shared_p_values_gen <- as.data.frame(qqplot_red_day01[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_chimps <- pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps
+
+# Pi_1 estimate for the chimps
+
+pi1est_chimps <- 1 - pi0est_chimps
+pi1est_chimps
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_chimps_given_humans <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps_given_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
+pi1est_chimps_given_humans
+pi0est_chimps_given_humans*as.data.frame(qqplot_red_day01[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_c <- array("Chimpanzee", dim = c(10304,1))
+labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_red_day01[[3]][2]),1))
+
+chimps <- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+humans <- cbind(labels_h, shared_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+
+p1 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 0 to 1") +
+  geom_hline(yintercept = pi0est_chimps_given_humans) + 
+  geom_hline(yintercept = pi0est_chimps) +       
+  annotate("text", label='italic(hat(pi)[0][", chimp"])=="0.74"', parse=TRUE, x=0.4, y=(pi0est_chimps+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.52"', parse=TRUE, x=0.4, y=(pi0est_chimps_given_humans+0.07))
+
+p1
+
+# Day 1 to 2
+
+
+# Obtain pvalues
+chimp_p_values_gen <- as.data.frame(qqplot_red_day12[1])
+shared_p_values_gen <- as.data.frame(qqplot_red_day12[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_chimps <- pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps
+
+# Pi_1 estimate for the chimps
+
+pi1est_chimps <- 1 - pi0est_chimps
+pi1est_chimps
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_chimps_given_humans <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps_given_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
+pi1est_chimps_given_humans
+pi0est_chimps_given_humans*as.data.frame(qqplot_red_day12[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_c <- array("Chimpanzee", dim = c(10304,1))
+labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_red_day12[[3]][2]),1))
+
+chimps <- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+humans <- cbind(labels_h, shared_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+
+p2 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 1 to 2") +
+  geom_hline(yintercept = pi0est_chimps_given_humans) + 
+  geom_hline(yintercept = pi0est_chimps) +       
+  annotate("text", label='italic(hat(pi)[0][", chimp"])=="1"', parse=TRUE, x=0.6, y=(pi0est_chimps+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.57"', parse=TRUE, x=0.6, y=(pi0est_chimps_given_humans+0.07))
+
+p2
+
+# Day 2 to 3
+
+# Obtain pvalues
+chimp_p_values_gen <- as.data.frame(qqplot_red_day23[1])
+shared_p_values_gen <- as.data.frame(qqplot_red_day23[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_chimps <- pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps
+
+# Pi_1 estimate for the chimps
+
+pi1est_chimps <- 1 - pi0est_chimps
+pi1est_chimps
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_chimps_given_humans <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps_given_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
+pi1est_chimps_given_humans
+pi0est_chimps_given_humans*as.data.frame(qqplot_red_day23[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_c <- array("Chimpanzee", dim = c(10304,1))
+labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_red_day23[[3]][2]),1))
+
+chimps <- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+humans <- cbind(labels_h, shared_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+
+p3 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 2 to 3") +
+  geom_hline(yintercept = pi0est_chimps_given_humans) + 
+  geom_hline(yintercept = pi0est_chimps) +       
+  annotate("text", label='italic(hat(pi)[0][", chimp"])=="0.91"', parse=TRUE, x=0.6, y=(pi0est_chimps-0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.96"', parse=TRUE, x=0.6, y=(pi0est_chimps_given_humans+0.07))
+
+p3
+
+# Day 0 to 2
+
+# Obtain pvalues
+chimp_p_values_gen <- as.data.frame(qqplot_red_day02[1])
+shared_p_values_gen <- as.data.frame(qqplot_red_day02[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_chimps <- pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps
+
+# Pi_1 estimate for the chimps
+
+pi1est_chimps <- 1 - pi0est_chimps
+pi1est_chimps
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_chimps_given_humans <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps_given_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
+pi1est_chimps_given_humans
+pi0est_chimps_given_humans*as.data.frame(qqplot_red_day23[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_c <- array("Chimpanzee", dim = c(10304,1))
+labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_red_day02[[3]][2]),1))
+
+chimps <- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+humans <- cbind(labels_h, shared_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+
+p4 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 0 to 2") +
+  geom_hline(yintercept = pi0est_chimps_given_humans) + 
+  geom_hline(yintercept = pi0est_chimps) +       
+  annotate("text", label='italic(hat(pi)[0][", chimp"])=="1"', parse=TRUE, x=0.6, y=(pi0est_chimps+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.81"', parse=TRUE, x=0.6, y=(pi0est_chimps_given_humans+0.07))
+
+p4
+
+############### Reduction in Variation ############
+
+# Day 0 to 1
+
+# Obtain pvalues
+chimp_p_values_gen <- as.data.frame(qqplot_inc_day01[1])
+shared_p_values_gen <- as.data.frame(qqplot_inc_day01[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_chimps <- pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps
+
+# Pi_1 estimate for the chimps
+
+pi1est_chimps <- 1 - pi0est_chimps
+pi1est_chimps
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_chimps_given_humans <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps_given_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
+pi1est_chimps_given_humans
+pi1est_chimps_given_humans*as.data.frame(qqplot_inc_day01[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_c <- array("Chimpanzee", dim = c(10304,1))
+labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_inc_day01[[3]][2]),1))
+
+chimps <- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+humans <- cbind(labels_h, shared_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+
+p5 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 0 to 1") +
+  geom_hline(yintercept = pi0est_chimps_given_humans) + 
+  geom_hline(yintercept = pi0est_chimps) +       
+  annotate("text", label='italic(hat(pi)[0][", chimp"])=="1"', parse=TRUE, x=0.6, y=(pi0est_chimps+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.86"', parse=TRUE, x=0.6, y=(pi0est_chimps_given_humans+0.07))
+
+p5
+
+# Day 1 to 2
+
+# Obtain pvalues
+chimp_p_values_gen <- as.data.frame(qqplot_inc_day12[1])
+shared_p_values_gen <- as.data.frame(qqplot_inc_day12[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_chimps <- pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps
+
+# Pi_1 estimate for the chimps
+
+pi1est_chimps <- 1 - pi0est_chimps
+pi1est_chimps
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_chimps_given_humans <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps_given_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
+pi1est_chimps_given_humans
+pi1est_chimps_given_humans*as.data.frame(qqplot_inc_day12[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_c <- array("Chimpanzee", dim = c(10304,1))
+labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_inc_day12[[3]][2]),1))
+
+chimps <- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+humans <- cbind(labels_h, shared_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+
+p6 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 1 to 2") +
+  geom_hline(yintercept = pi0est_chimps_given_humans) + 
+  geom_hline(yintercept = pi0est_chimps) +       
+  annotate("text", label='italic(hat(pi)[0][", chimp"])=="0.52"', parse=TRUE, x=0.4, y=(pi0est_chimps+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.32"', parse=TRUE, x=0.4, y=(pi0est_chimps_given_humans+0.07))
+
+p6
+
+# Day 2 to 3
+
+# Obtain pvalues
+chimp_p_values_gen <- as.data.frame(qqplot_inc_day23[1])
+shared_p_values_gen <- as.data.frame(qqplot_inc_day23[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_chimps <- pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps
+
+# Pi_1 estimate for the chimps
+
+pi1est_chimps <- 1 - pi0est_chimps
+pi1est_chimps
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_chimps_given_humans <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps_given_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
+pi1est_chimps_given_humans
+pi1est_chimps_given_humans*as.data.frame(qqplot_inc_day12[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_c <- array("Chimpanzee", dim = c(10304,1))
+labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_inc_day23[[3]][2]),1))
+
+chimps <- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+humans <- cbind(labels_h, shared_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+
+p7 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 2 to 3") +
+  geom_hline(yintercept = pi0est_chimps_given_humans) + 
+  geom_hline(yintercept = pi0est_chimps) +       
+  annotate("text", label='italic(hat(pi)[0][", chimp"])=="0.37"', parse=TRUE, x=0.4, y=(pi0est_chimps+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.23"', parse=TRUE, x=0.4, y=(pi0est_chimps_given_humans+0.07))
+
+p7
+
+# Day 0 to 2
+
+# Obtain pvalues
+chimp_p_values_gen <- as.data.frame(qqplot_inc_day02[1])
+shared_p_values_gen <- as.data.frame(qqplot_inc_day02[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_chimps <- pi0est(chimp_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps
+
+# Pi_1 estimate for the chimps
+
+pi1est_chimps <- 1 - pi0est_chimps
+pi1est_chimps
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_chimps_given_humans <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_chimps_given_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
+pi1est_chimps_given_humans
+pi1est_chimps_given_humans*as.data.frame(qqplot_inc_day02[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_c <- array("Chimpanzee", dim = c(10304,1))
+labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_inc_day02[[3]][2]),1))
+
+chimps <- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+humans <- cbind(labels_h, shared_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+
+p8 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 2 to 3") +
+  geom_hline(yintercept = pi0est_chimps_given_humans) + 
+  geom_hline(yintercept = pi0est_chimps) +       
+  annotate("text", label='italic(hat(pi)[0][", chimp"])=="0.99"', parse=TRUE, x=0.6, y=(pi0est_chimps+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.62"', parse=TRUE, x=0.6, y=(pi0est_chimps_given_humans+0.07))
+
+p8
+
+multiplot(p1,p5,p2,p6,p3,p7,p4,p8,cols=4)
+```
+
+### Sharing estimates (chimps conditioned on humans)
+```{r}
+find_qqplot_red_top_all_sharing_chimps <- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y <- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    chimp_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+
+############## For humans
+
+  human_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y <- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    human_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+############ Find p-values of the F_statistics
+
+# Make one data frame
+
+  var_pval <- as.data.frame(cbind(human_var_pval, chimp_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c("Human", "Chimpanzee")
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Convert to data frame
+  top_var_pval <- var_pval[order(var_pval[,1]), ]
+  
+# Instead of going by p < 0.05, take the top x number of p-values
+  for_pi1_var_pval <- array(NA, dim = c(10205, 2))
+  
+  for(i in 100:10304){
+    num_var_pval <- top_var_pval[1:i, 1:2]
+  
+# Get humans
+    num_var_pval_chimps_i <- top_var_pval[1:i, 1]
+  
+# Get sharing
+    num_var_pval_shared_i <- top_var_pval[1:i, 2]
+  
+
+# Pi_0 estimate for the humans given significant in the chimps
+  pi0est_humans_given_chimps_i <- pi0est(num_var_pval_shared_i, lambda = seq(0.05, 0.95, 0.05))$pi0
+
+
+# Pi_1 estimate for the humans
+  for_pi1_var_pval[i-99,1] <- i
+  for_pi1_var_pval[i-99,2] <- 1 - pi0est_humans_given_chimps_i
+  }
+  return(for_pi1_var_pval)
+}
+
+find_qqplot_inc_top_all_sharing_chimps <- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y <- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest <- var.test(x, y, alternative = c("less"))
+    chimp_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+
+############## For humans
+
+  human_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y <- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest <- var.test(x, y, alternative = c("less"))
+    human_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+############ Find p-values of the F_statistics
+
+# Make one data frame
+
+  var_pval <- as.data.frame(cbind( human_var_pval, chimp_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c( "Human", "Chimpanzee")
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Convert to data frame
+  top_var_pval <- var_pval[order(var_pval[,1]), ]
+  
+# Instead of going by p < 0.05, take the top x number of p-values
+  for_pi1_var_pval <- array(NA, dim = c(10205, 2))
+  
+  for(i in 100:10304){
+    num_var_pval <- top_var_pval[1:i, 1:2]
+  
+# Get humans
+    num_var_pval_chimps_i <- top_var_pval[1:i, 1]
+  
+# Get sharing
+    num_var_pval_shared_i <- top_var_pval[1:i, 2]
+  
+
+# Pi_0 estimate for the humans given significant in the chimps
+  pi0est_humans_given_chimps_i <- pi0est(num_var_pval_shared_i, lambda = seq(0.05, 0.95, 0.05))$pi0
+
+
+# Pi_1 estimate for the humans
+  for_pi1_var_pval[i-99,1] <- i
+  for_pi1_var_pval[i-99,2] <- 1 - pi0est_humans_given_chimps_i
+  }
+  return(for_pi1_var_pval)
+}
+
+# Reduction in variance from day 0 to day 1
+
+qqplot_red_top_all_day01 <- find_qqplot_red_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
+
+# Reduction in variance from day 1 to day 2
+
+qqplot_red_top_all_day12 <- find_qqplot_red_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
+
+# Reduction in variance from day 2 to day 3
+
+qqplot_red_top_all_day23 <- find_qqplot_red_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
+
+# Reduction in variance from day 0 to day 2
+
+qqplot_red_top_all_day02 <- find_qqplot_red_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
+
+
+# Inc. in variance from day 0 to day 1
+
+qqplot_inc_top_all_day01 <- find_qqplot_inc_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
+
+# Inc. in variance from day 1 to day 2
+
+qqplot_inc_top_all_day12 <- find_qqplot_inc_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
+
+# Inc. in variance from day 2 to day 3
+
+qqplot_inc_top_all_day23 <- find_qqplot_inc_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
+
+# Inc. in variance from day 0 to day 2
+
+qqplot_inc_top_all_day02 <- find_qqplot_inc_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
+
+# Make everything a data frame
+qqplot_red_top_all_day01 <- as.data.frame(qqplot_red_top_all_day01)
+qqplot_red_top_all_day12 <- as.data.frame(qqplot_red_top_all_day12)
+qqplot_red_top_all_day23 <- as.data.frame(qqplot_red_top_all_day23)
+qqplot_red_top_all_day02 <- as.data.frame(qqplot_red_top_all_day02)
+qqplot_inc_top_all_day01 <- as.data.frame(qqplot_inc_top_all_day01)
+qqplot_inc_top_all_day12 <- as.data.frame(qqplot_inc_top_all_day12)
+qqplot_inc_top_all_day23 <- as.data.frame(qqplot_inc_top_all_day23)
+qqplot_inc_top_all_day02 <- as.data.frame(qqplot_inc_top_all_day02)
+
+dev.off()
+# Plot reduction in variation
+ggplot(qqplot_red_top_all_day01, aes(x = qqplot_red_top_all_day01[,1], y = qqplot_red_top_all_day01[,2])) + geom_line(colour="#E69F00") + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12[,1], y = qqplot_red_top_all_day12[,2]), colour = "#000000") + geom_line(aes(x = qqplot_red_top_all_day23[,1], y = qqplot_red_top_all_day23[,2]), colour =  "#009E73") + geom_line(aes(x = qqplot_red_top_all_day02[,1], y = qqplot_red_top_all_day02[,2]), colour =  "#0072B2") + ylim(0,1) + ggtitle("Proportion of Shared Genes with a Reduction in Variance between Days") + xlab("N Most Significant Genes in Humans") + ylab("Pi_1 of Chimpanzees|Significant in Humans") 
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 0 to 2"), xpd = TRUE, horiz = FALSE, inset = c(0, 
+    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#E69F00", "#000000",  "#009E73","#0072B2" ), cex = 1)
+
+dev.off()
+
+# Plot inc in variation
+ggplot(qqplot_inc_top_all_day01, aes(x = qqplot_inc_top_all_day01[,1], y = qqplot_inc_top_all_day01[,2])) + geom_line(colour="#E69F00") + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12[,1], y = qqplot_inc_top_all_day12[,2]), colour = "#000000") + geom_line(aes(x = qqplot_inc_top_all_day23[,1], y = qqplot_inc_top_all_day23[,2]), colour =  "#009E73") + geom_line(aes(x = qqplot_inc_top_all_day02[,1], y = qqplot_inc_top_all_day02[,2]), colour =  "#0072B2") + ylim(0,1) + ggtitle("Proportion of Shared Genes with an Increase in Variance between Days") + xlab("N Most Significant Genes in Humans") + ylab("Pi_1 of Chimpanzees|Significant in Humans") 
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 0 to 2"), xpd = TRUE, horiz = FALSE, inset = c(0, 
+    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#E69F00", "#000000",  "#009E73","#0072B2" ), cex = 1)
+
+```
+
+
+### Enrichments in humans
+
+```{r}
+# Reduction in variance from day 0 to day 1 humans
+
+qqplot_red_day01 <- find_qqplot_red_humans(7,10,17,20,1,6,11,16)
+
+# Reduction in variance from day 1 to day 2 humans
+
+qqplot_red_day12 <- find_qqplot_red_humans(17,20,27,30,11,16,21,26)
+
+# Reduction in variance from day 2 to day 3 humans
+
+qqplot_red_day23 <- find_qqplot_red_humans(27,30,37,40,21,26,31,36)
+
+# Reduction in variance from day 0 to day 2 humans
+
+qqplot_red_day02 <- find_qqplot_red_humans(7,10,27,30,1,6,21,26)
+
+# Inc. in variance from day 0 to day 1 humans
+
+qqplot_inc_day01 <- find_qqplot_inc_humans(7,10,17,20,1,6,11,16)
+
+# Inc. in variance from day 1 to day 2 humans
+
+qqplot_inc_day12 <- find_qqplot_inc_humans(17,20,27,30,11,16,21,26)
+
+# Inc. in variance from day 2 to day 3 humans
+
+qqplot_inc_day23 <- find_qqplot_inc_humans(27,30,37,40,21,26,31,36)
+
+# Inc. in variance from day 0 to day 2
+
+qqplot_inc_day02 <- find_qqplot_inc_humans(7,10,27,30,1,6,21,26)
+
+# Reduction of variance qqplots- humans
+
+dev.off()
+
+par(mfrow=c(2,4),oma = c(2, 2, 2, 2))
+
+# Reduction of variance to day 0 to 1 humans
+plot(qqplot_red_day01[[4]],qqplot_red_day01[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved", main = "Day 0 to 1")
+abline(0,1, col = "black")
+
+# Add to the plot
+points(qqplot_red_day01[[6]],qqplot_red_day01[[7]], pch = 16, col = pal[3])
+
+# Reduction of variance to day 1 to 2
+plot(qqplot_red_day12[[4]],qqplot_red_day12[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved", main = "Day 1 to 2")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_red_day12[[6]],qqplot_red_day12[[7]], pch = 16, col = pal[3])
+
+# Reduction of variance to day 2 to 3
+plot(qqplot_red_day23[[4]],qqplot_red_day23[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved", main = "Day 2 to 3")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_red_day23[[6]],qqplot_red_day23[[7]], pch = 16, col = pal[3])
+
+# Reduction of variance to day 0 to 2
+plot(qqplot_red_day02[[4]],qqplot_red_day02[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved", main = "Day 0 to 2")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_red_day02[[6]],qqplot_red_day02[[7]], pch = 16, col = pal[3])
+
+# Add bottom title
+
+mtext("Reduction in Variation", font = 2, side = 3, line = -1.5, outer = TRUE)
+
+### Increase in variance
+
+# Inc variance to day 0 to 1
+plot(qqplot_inc_day01[[4]],qqplot_inc_day01[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved",  main = "Day 0 to 1")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_inc_day01[[6]],qqplot_inc_day01[[7]], pch = 16, col = pal[3])
+
+# Increase of variance to day 1 to 2
+plot(qqplot_inc_day12[[4]],qqplot_inc_day12[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved",  main = "Day 1 to 2")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_inc_day12[[6]],qqplot_inc_day12[[7]], pch = 16, col = pal[3])
+
+
+# Increase of variance to day 2 to 3
+plot(qqplot_inc_day23[[4]],qqplot_inc_day23[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved",  main = "Day 2 to 3")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_inc_day23[[6]],qqplot_inc_day23[[7]], pch = 16, col = pal[3])
+
+# Increase of variance to day 0 to 2
+plot(qqplot_inc_day02[[4]],qqplot_inc_day02[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved",  main = "Day 0 to 2")
+abline(0,1, col = "black")
+
+
+# Add to the plot
+points(qqplot_inc_day02[[6]],qqplot_inc_day02[[7]], pch = 16, col = pal[3])
+
+
+mtext("Increase in Variation", font = 2, side = 3, line = -29, outer = TRUE)
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("bottomright", c("Human", "Human|significant in chimpanzee"), xpd = TRUE, horiz = TRUE, inset = c(0,  0), bty = "n", pch = c(16, 16), col = pal[2:3], cex = 1.5)
+
+```
+
+```{r}
+################ REDUCTION IN VARIATION FOR HUMANS ################
+
+# Day 0 to 1
+
+# Obtain pvalues
+human_p_values_gen <- as.data.frame(qqplot_red_day01[1])
+shared_p_values_gen <- as.data.frame(qqplot_red_day01[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_humans <- pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans
+
+# Pi_1 estimate for the chimps
+
+pi1est_humans <- 1 - pi0est_humans
+pi1est_humans
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_humans_given_chimps <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+pi1est_humans_given_chimps
+pi0est_humans_given_chimps*as.data.frame(qqplot_red_day01[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_h <- array("Humans", dim = c(10304,1))
+labels_c <- array("Shared (Human|Significant in Chimps)", dim = c(as.data.frame(qqplot_red_day01[[3]][1]),1))
+
+humans <- cbind(labels_h, human_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+chimps <- cbind(labels_c, shared_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(humans[,1:2], chimps[,1:2])
+
+
+p1 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 0 to 1") +
+  geom_hline(yintercept = pi0est_humans_given_chimps) + 
+  geom_hline(yintercept = pi0est_humans) +       
+  annotate("text", label='italic(hat(pi)[0][", human"])=="0.17"', parse=TRUE, x=0.3, y=(pi0est_humans+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.12"', parse=TRUE, x=0.3, y=(pi0est_humans_given_chimps-0.06))
+
+p1
+
+# Day 1 to 2
+
+# Obtain pvalues
+human_p_values_gen <- as.data.frame(qqplot_red_day12[1])
+shared_p_values_gen <- as.data.frame(qqplot_red_day12[2])
+
+
+# Pi_0 estimate for the humans
+
+pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_humans <- pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_humans <- 1 - pi0est_humans
+pi1est_humans
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_humans_given_chimps <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+pi1est_humans_given_chimps
+pi1est_humans_given_chimps*as.data.frame(qqplot_red_day12[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_h <- array("Humans", dim = c(10304,1))
+labels_c <- array("Shared (Human|Significant in Chimps)", dim = c(as.data.frame(qqplot_red_day12[[3]][1]),1))
+
+humans <- cbind(labels_h, human_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+chimps <- cbind(labels_c, shared_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(humans[,1:2], chimps[,1:2])
+
+
+p2 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 1 to 2") +
+  geom_hline(yintercept = pi0est_humans_given_chimps) + 
+  geom_hline(yintercept = pi0est_humans) +       
+  annotate("text", label='italic(hat(pi)[0][", human"])=="1"', parse=TRUE, x=0.25, y=(pi0est_humans+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="1"', parse=TRUE, x=0.25, y=(pi0est_humans_given_chimps-0.07))
+
+p2
+
+# Day 2 to 3
+
+# Obtain pvalues
+human_p_values_gen <- as.data.frame(qqplot_red_day23[1])
+shared_p_values_gen <- as.data.frame(qqplot_red_day23[2])
+
+
+# Pi_0 estimate for the humans
+
+pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_humans <- pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_humans <- 1 - pi0est_humans
+pi1est_humans
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_humans_given_chimps <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+pi1est_humans_given_chimps
+pi1est_humans_given_chimps*as.data.frame(qqplot_red_day23[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_h <- array("Humans", dim = c(10304,1))
+labels_c <- array("Shared (Human|Significant in Chimps)", dim = c(as.data.frame(qqplot_red_day23[[3]][1]),1))
+
+humans <- cbind(labels_h, human_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+chimps <- cbind(labels_c, shared_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(humans[,1:2], chimps[,1:2])
+
+
+p3 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 2 to 3") +
+  geom_hline(yintercept = pi0est_humans_given_chimps) + 
+  geom_hline(yintercept = pi0est_humans) +       
+  annotate("text", label='italic(hat(pi)[0][", human"])=="0.87"', parse=TRUE, x=0.63, y=(pi0est_humans+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.71"', parse=TRUE, x=0.63, y=(pi0est_humans_given_chimps+0.07))
+
+p3
+
+# Day 0 to 2
+
+# Obtain pvalues
+human_p_values_gen <- as.data.frame(qqplot_red_day02[1])
+shared_p_values_gen <- as.data.frame(qqplot_red_day02[2])
+
+
+# Pi_0 estimate for the humans
+
+pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_humans <- pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_humans <- 1 - pi0est_humans
+pi1est_humans
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_humans_given_chimps <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+pi1est_humans_given_chimps
+pi1est_humans_given_chimps*as.data.frame(qqplot_red_day02[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_h <- array("Humans", dim = c(10304,1))
+labels_c <- array("Shared (Human|Significant in Chimps)", dim = c(as.data.frame(qqplot_red_day02[[3]][1]),1))
+
+humans <- cbind(labels_h, human_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+chimps <- cbind(labels_c, shared_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(humans[,1:2], chimps[,1:2])
+
+
+p4 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 0 to 2") +
+  geom_hline(yintercept = pi0est_humans_given_chimps) + 
+  geom_hline(yintercept = pi0est_humans) +       
+  annotate("text", label='italic(hat(pi)[0][", human"])=="1"', parse=TRUE, x=0.5, y=(pi0est_humans+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.72"', parse=TRUE, x=0.5, y=(pi0est_humans_given_chimps+0.07))
+
+p4
+
+
+################ INCREASE IN VARIATION FOR HUMANS ################
+
+# Day 0 to 1
+
+# Obtain pvalues
+human_p_values_gen <- as.data.frame(qqplot_inc_day01[1])
+shared_p_values_gen <- as.data.frame(qqplot_inc_day01[2])
+
+
+# Pi_0 estimate for the chimps
+
+pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_humans <- pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans
+
+# Pi_1 estimate for the chimps
+
+pi1est_humans <- 1 - pi0est_humans
+pi1est_humans
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_humans_given_chimps <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+pi1est_humans_given_chimps
+pi1est_humans_given_chimps*as.data.frame(qqplot_inc_day01[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_h <- array("Humans", dim = c(10304,1))
+labels_c <- array("Shared (Human|Significant in Chimps)", dim = c(as.data.frame(qqplot_inc_day01[[3]][1]),1))
+
+humans <- cbind(labels_h, human_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+chimps <- cbind(labels_c, shared_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(humans[,1:2], chimps[,1:2])
+
+
+p5 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 0 to 1") +
+  geom_hline(yintercept = pi0est_humans_given_chimps) + 
+  geom_hline(yintercept = pi0est_humans) +       
+  annotate("text", label='italic(hat(pi)[0][", human"])=="1"', parse=TRUE, x=0.2, y=(pi0est_humans+0.08)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="1"', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps-0.07))
+
+p5
+
+# Day 1 to 2
+
+# Obtain pvalues
+human_p_values_gen <- as.data.frame(qqplot_inc_day12[1])
+shared_p_values_gen <- as.data.frame(qqplot_inc_day12[2])
+
+
+# Pi_0 estimate for the humans
+
+pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_humans <- pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_humans <- 1 - pi0est_humans
+pi1est_humans
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_humans_given_chimps <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+pi1est_humans_given_chimps
+pi1est_humans_given_chimps*as.data.frame(qqplot_inc_day12[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_h <- array("Humans", dim = c(10304,1))
+labels_c <- array("Shared (Human|Significant in Chimps)", dim = c(as.data.frame(qqplot_inc_day12[[3]][1]),1))
+
+humans <- cbind(labels_h, human_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+chimps <- cbind(labels_c, shared_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(humans[,1:2], chimps[,1:2])
+
+
+p6 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 1 to 2") +
+  geom_hline(yintercept = pi0est_humans_given_chimps) + 
+  geom_hline(yintercept = pi0est_humans) +       
+  annotate("text", label='italic(hat(pi)[0][", human"])=="0.23"', parse=TRUE, x=0.25, y=(pi0est_humans+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.11"', parse=TRUE, x=0.25, y=(pi0est_humans_given_chimps+0.07))
+
+p6
+
+# Day 2 to 3
+
+# Obtain pvalues
+human_p_values_gen <- as.data.frame(qqplot_inc_day23[1])
+shared_p_values_gen <- as.data.frame(qqplot_inc_day23[2])
+
+
+# Pi_0 estimate for the humans
+
+pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_humans <- pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_humans <- 1 - pi0est_humans
+pi1est_humans
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_humans_given_chimps <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+pi1est_humans_given_chimps
+pi1est_humans_given_chimps*as.data.frame(qqplot_inc_day23[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_h <- array("Humans", dim = c(10304,1))
+labels_c <- array("Shared (Human|Significant in Chimps)", dim = c(as.data.frame(qqplot_inc_day23[[3]][1]),1))
+
+humans <- cbind(labels_h, human_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+chimps <- cbind(labels_c, shared_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(humans[,1:2], chimps[,1:2])
+
+
+p7 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 2 to 3") +
+  geom_hline(yintercept = pi0est_humans_given_chimps) + 
+  geom_hline(yintercept = pi0est_humans) +       
+  annotate("text", label='italic(hat(pi)[0][", human"])=="0.87"', parse=TRUE, x=0.45, y=(pi0est_humans+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.75"', parse=TRUE, x=0.45, y=(pi0est_humans_given_chimps+0.07))
+
+p7
+
+# Day 0 to 2
+
+# Obtain pvalues
+human_p_values_gen <- as.data.frame(qqplot_inc_day02[1])
+shared_p_values_gen <- as.data.frame(qqplot_inc_day02[2])
+
+
+# Pi_0 estimate for the humans
+
+pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+pi0est_humans <- pi0est(human_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans
+
+# Pi_1 estimate for the humans
+
+pi1est_humans <- 1 - pi0est_humans
+pi1est_humans
+
+# Pi_0 estimate for the chimps given significant in the humans
+pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))
+
+pi0est_humans_given_chimps <- pi0est(shared_p_values_gen, lambda = seq(0.05, 0.95, 0.05))$pi0
+pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+pi1est_humans_given_chimps
+pi1est_humans_given_chimps*as.data.frame(qqplot_inc_day02[[3]][2])
+
+# Let's overlap the two histograms
+
+#abline(1,0)
+#hist(num_var_pval_human_given_chimp[,1], breaks = 20, col=rgb(0,0,1,0.5), freq = FALSE)
+#hist(var_pval[,1], col=rgb(1,0,0,0.5),  breaks = 20, freq = FALSE, add = T)
+
+
+labels_h <- array("Humans", dim = c(10304,1))
+labels_c <- array("Shared (Human|Significant in Chimps)", dim = c(as.data.frame(qqplot_inc_day02[[3]][1]),1))
+
+humans <- cbind(labels_h, human_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+chimps <- cbind(labels_c, shared_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(humans[,1:2], chimps[,1:2])
+
+
+p8 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 0.5) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_minimal() +  labs(title = "Day 0 to 2") +
+  geom_hline(yintercept = pi0est_humans_given_chimps) + 
+  geom_hline(yintercept = pi0est_humans) +       
+  annotate("text", label='italic(hat(pi)[0][", human"])=="1"', parse=TRUE, x=0.6, y=(pi0est_humans+0.07)) +  annotate("text", label='italic(hat(pi)[0][", shared"])=="0.89"', parse=TRUE, x=0.6, y=(pi0est_humans_given_chimps+0.07))
+
+p8
+
+multiplot(p1,p5,p2,p6,p3,p7,p4,p8,cols=4)
+```
+
+### Sharing estimates (humans conditioned on chimps)
+```{r}
+find_qqplot_red_top_all <- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y <- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    chimp_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+
+############## For humans
+
+  human_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y <- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    human_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+############ Find p-values of the F_statistics
+
+# Make one data frame
+
+  var_pval <- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c("Chimpanzee", "Human")
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Convert to data frame
+  top_var_pval <- var_pval[order(var_pval[,1]), ]
+  
+# Instead of going by p < 0.05, take the top x number of p-values
+  for_pi1_var_pval <- array(NA, dim = c(10205, 2))
+  
+  for(i in 100:10304){
+    num_var_pval <- top_var_pval[1:i, 1:2]
+  
+# Get chimps
+    num_var_pval_chimps_i <- top_var_pval[1:i, 1]
+  
+# Get sharing
+    num_var_pval_shared_i <- top_var_pval[1:i, 2]
+  
+
+# Pi_0 estimate for the humans given significant in the chimps
+  pi0est_humans_given_chimps_i <- pi0est(num_var_pval_shared_i, lambda = seq(0.05, 0.95, 0.05))$pi0
+
+
+# Pi_1 estimate for the humans
+  for_pi1_var_pval[i-99,1] <- i
+  for_pi1_var_pval[i-99,2] <- 1 - pi0est_humans_given_chimps_i
+  }
+  return(for_pi1_var_pval)
+}
+
+find_qqplot_inc_top_all <- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y <- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest <- var.test(x, y, alternative = c("less"))
+    chimp_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+
+############## For humans
+
+  human_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y <- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest <- var.test(x, y, alternative = c("less"))
+    human_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+############ Find p-values of the F_statistics
+
+# Make one data frame
+
+  var_pval <- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c("Chimpanzee", "Human")
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Convert to data frame
+  top_var_pval <- var_pval[order(var_pval[,1]), ]
+  
+# Instead of going by p < 0.05, take the top x number of p-values
+  for_pi1_var_pval <- array(NA, dim = c(10205, 2))
+  
+  for(i in 100:10304){
+    num_var_pval <- top_var_pval[1:i, 1:2]
+  
+# Get chimps
+    num_var_pval_chimps_i <- top_var_pval[1:i, 1]
+  
+# Get sharing
+    num_var_pval_shared_i <- top_var_pval[1:i, 2]
+  
+
+# Pi_0 estimate for the humans given significant in the chimps
+  pi0est_humans_given_chimps_i <- pi0est(num_var_pval_shared_i, lambda = seq(0.05, 0.95, 0.05))$pi0
+
+
+# Pi_1 estimate for the humans
+  for_pi1_var_pval[i-99,1] <- i
+  for_pi1_var_pval[i-99,2] <- 1 - pi0est_humans_given_chimps_i
+  }
+  return(for_pi1_var_pval)
+}
+
+# Reduction in variance from day 0 to day 1
+
+qqplot_red_top_all_day01 <- find_qqplot_red_top_all(7,10,17,20,1,6,11,16)
+
+# Reduction in variance from day 1 to day 2
+
+qqplot_red_top_all_day12 <- find_qqplot_red_top_all(17,20,27,30,11,16,21,26)
+
+# Reduction in variance from day 2 to day 3
+
+qqplot_red_top_all_day23 <- find_qqplot_red_top_all(27,30,37,40,21,26,31,36)
+
+# Reduction in variance from day 0 to day 3
+
+qqplot_red_top_all_day02 <- find_qqplot_red_top_all(7,10,27,30,1,6,21,26)
+
+
+# Inc. in variance from day 0 to day 1
+
+qqplot_inc_top_all_day01 <- find_qqplot_inc_top_all(7,10,17,20,1,6,11,16)
+
+# Inc. in variance from day 1 to day 2
+
+qqplot_inc_top_all_day12 <- find_qqplot_inc_top_all(17,20,27,30,11,16,21,26)
+
+# Inc. in variance from day 2 to day 3
+
+qqplot_inc_top_all_day23 <- find_qqplot_inc_top_all(27,30,37,40,21,26,31,36)
+
+# Inc. in variance from day 0 to day 2
+
+qqplot_inc_top_all_day02 <- find_qqplot_inc_top_all(7,10,27,30,1,6,21,26)
+
+# Make everything a data frame
+qqplot_red_top_all_day01 <- as.data.frame(qqplot_red_top_all_day01)
+qqplot_red_top_all_day12 <- as.data.frame(qqplot_red_top_all_day12)
+qqplot_red_top_all_day23 <- as.data.frame(qqplot_red_top_all_day23)
+qqplot_red_top_all_day02 <- as.data.frame(qqplot_red_top_all_day02)
+qqplot_inc_top_all_day01 <- as.data.frame(qqplot_inc_top_all_day01)
+qqplot_inc_top_all_day12 <- as.data.frame(qqplot_inc_top_all_day12)
+qqplot_inc_top_all_day23 <- as.data.frame(qqplot_inc_top_all_day23)
+qqplot_inc_top_all_day02 <- as.data.frame(qqplot_inc_top_all_day02)
+
+dev.off()
+# Plot reduction in variation
+ggplot(qqplot_red_top_all_day01, aes(x = qqplot_red_top_all_day01[,1], y = qqplot_red_top_all_day01[,2])) + geom_line(colour="#E69F00") + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12[,1], y = qqplot_red_top_all_day12[,2]), colour = "#000000") + geom_line(aes(x = qqplot_red_top_all_day23[,1], y = qqplot_red_top_all_day23[,2]), colour =  "#009E73") + geom_line(aes(x = qqplot_red_top_all_day02[,1], y = qqplot_red_top_all_day02[,2]), colour =  "#0072B2") + ggtitle("Proportion of Shared Genes with a Reduction in Variance between Days") + xlab("N Most Significant Genes in Chimpanzees") + ylab("Pi_1 of Humans|Significant in Chimpanzees") 
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 0 to 2"), xpd = TRUE, horiz = FALSE, inset = c(0, 
+    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#E69F00", "#000000",  "#009E73","#0072B2" ), cex = 1)
+
+dev.off()
+
+# Plot inc in variation
+ggplot(qqplot_inc_top_all_day01, aes(x = qqplot_inc_top_all_day01[,1], y = qqplot_inc_top_all_day01[,2])) + geom_line(colour="#E69F00") + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12[,1], y = qqplot_inc_top_all_day12[,2]), colour = "#000000") + geom_line(aes(x = qqplot_inc_top_all_day23[,1], y = qqplot_inc_top_all_day23[,2]), colour =  "#009E73") + geom_line(aes(x = qqplot_inc_top_all_day02[,1], y = qqplot_inc_top_all_day02[,2]), colour =  "#0072B2") + ggtitle("Proportion of Shared Genes with an Increase in Variance between Days") + xlab("N Most Significant Genes in Chimpanzees") + ylab("Pi_1 of Humans|Significant in Chimpanzees") 
+
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 0 to 2"), xpd = TRUE, horiz = FALSE, inset = c(0, 
+    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#E69F00", "#000000",  "#009E73","#0072B2" ), cex = 1)
+
+```
+

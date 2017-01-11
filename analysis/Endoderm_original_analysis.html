@@ -1983,7 +1983,7 @@ table(df_plot$comparison)</code></pre>
 <pre class="r"><code>ggplot(df_plot, aes(x = day1, y = correlation)) +
   geom_boxplot() +
   facet_wrap(~comparison) +
-  labs(x = &quot;Day&quot;, y = &quot;Spearman&#39;s r&quot;, title = &quot;When original samples used (mostly from batch 1&quot;)</code></pre>
+  labs(x = &quot;Day&quot;, y = &quot;Spearman&#39;s r&quot;, title = &quot;When original samples used (mostly from batch 1)&quot;)</code></pre>
 <p><img src="Endoderm_original_analysis_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 <pre class="r"><code>  day1cor_cross &lt;- pair_cor_long[pair_cor_long$day1==1,]$cross
   day0cor_cross &lt;- pair_cor_long[pair_cor_long$day1==0,]$cross
@@ -2391,7 +2391,7 @@ table(df_plot$comparison)</code></pre>
 <pre class="r"><code>ggplot(df_plot, aes(x = day1, y = correlation)) +
   geom_boxplot() +
   facet_wrap(~comparison) +
-  labs(x = &quot;Day&quot;, y = &quot;Spearman&#39;s r&quot;, title = &quot;When original samples used (mostly from batch 1&quot;)</code></pre>
+  labs(x = &quot;Day&quot;, y = &quot;Spearman&#39;s r&quot;, title = &quot;When original samples used (mostly from batch 2)&quot;)</code></pre>
 <p><img src="Endoderm_original_analysis_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 <pre class="r"><code>  day1cor_cross &lt;- pair_cor_long[pair_cor_long$day1==1,]$cross
   day0cor_cross &lt;- pair_cor_long[pair_cor_long$day1==0,]$cross
@@ -2846,7 +2846,7 @@ table(df_plot$comparison)</code></pre>
 <pre class="r"><code>ggplot(df_plot, aes(x = day1, y = correlation)) +
   geom_boxplot() +
   facet_wrap(~comparison) +
-  labs(x = &quot;Day&quot;, y = &quot;Spearman&#39;s r&quot;, title = &quot;When technical replicates available, mean used except for D0_20157&quot;)</code></pre>
+  labs(x = &quot;Day&quot;, y = &quot;Spearman&#39;s r&quot;, title = &quot;Average of technical replicates when available (4 chimps, 6 humans&quot;)</code></pre>
 <p><img src="Endoderm_original_analysis_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 <pre class="r"><code>  day1cor_cross &lt;- pair_cor_long[pair_cor_long$day1==1,]$cross
   day0cor_cross &lt;- pair_cor_long[pair_cor_long$day1==0,]$cross
