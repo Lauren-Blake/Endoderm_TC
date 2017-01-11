@@ -361,7 +361,6 @@ day <- After_removal_sample_info$Day
 individual <- After_removal_sample_info$Individual
 Sample_ID <- After_removal_sample_info$Sample_ID
 labels <- paste(Sample_ID, day, sep=" ")
-rep_batch <- After_removal_sample_info$Reprogramming_batch
 
 # Log2(CPM)
 
@@ -532,3 +531,55 @@ heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', 
 
 
 PC 1 is correlated with day, PC 2 with species, PC 3 is somewhat by species, PC 4 with day, and PC 5 separates one sample (D228815) from the rest of the samples. 
+
+## Is differentiation batch or individual a stronger driver of variation of gene expression in our samples?
+
+```{r}
+# Load data about differentiation batch
+
+differentiation_batch <- After_removal_sample_info$Reprogramming_batch
+
+# Load data about Individual
+
+individual <- After_removal_sample_info$Individual
+```
+
+We want to make sure that differentiation batch nor individual is perfectly correlated with PCs 1-2 (which are correlated with our biological variables of interest).
+
+### Differentiation batch
+```{r}
+
+# Differentiation batch
+
+pvaluesandr2_differentiation_batch = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"), c("Diff_batch p_val", "Diff_batch R^2")))
+
+j = 1
+  for (j in 1:10){
+  
+  checkPC1 <- lm(pcs[,j] ~ as.factor(differentiation_batch))
+
+#Get the summary statistics from it
+  summary(checkPC1)
+
+#Get the p-value of the F-statistic
+  summary(checkPC1)$fstatistic
+
+  fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  
+#Fraction of the variance explained by the model
+  r2_value <- summary(checkPC1)$r.squared
+
+#Put the summary statistics into the matrix w
+
+  pvaluesandr2_differentiation_batch[j, 1] <- p_fstat
+  pvaluesandr2_differentiation_batch[j, 2] <- r2_value
+  
+}
+
+pvaluesandr2_differentiation_batch
+
+
+```
+
+Differentiation batch is most highly correlated with PC10 (p-value = 0.014), then PC5, then PC2. 
