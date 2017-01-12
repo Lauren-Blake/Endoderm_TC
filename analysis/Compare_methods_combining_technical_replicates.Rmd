@@ -19,8 +19,18 @@ library("RColorBrewer")
 pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
 
 
-# Load data
+# Load cpm data 
+
 cpm_in_cutoff <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt")
+
+dim(cpm_in_cutoff)
+
+# Load count data 
+
+gene_counts_combined_raw_data <- read.delim("~/Desktop/Endoderm_TC/gene_counts_combined.txt")
+counts_genes <- gene_counts_combined_raw_data[1:30030,2:65]
+rownames(counts_genes) <- gene_counts_combined_raw_data[1:30030,1]
+
 ```
 
 ## When 2 technical replicates, take the average log2(CPM)
@@ -100,4 +110,51 @@ ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(avera
 ```
 
 ## When 2 technical replicates, sum the gene counts and then normalize all data together
+
+```{r}
+# Remove D0_28815 outlier
+
+counts_genes63 <- counts_genes[,-2]
+dim(counts_genes63)
+
+After_removal_sample_info <- read.csv("~/Desktop/Endoderm_TC/After_removal_sample_info.csv")
+
+Species <- After_removal_sample_info$Species
+species <- After_removal_sample_info$Species
+day <- After_removal_sample_info$Day
+individual <- After_removal_sample_info$Individual
+Sample_ID <- After_removal_sample_info$Sample_ID
+labels <- paste(Sample_ID, day, sep=" ")
+
+# Sum gene counts of technical replicates
+
+D0_28815_pre <- as.data.frame(apply(counts_genes63[,5:6], 1, sum))
+D0_3647_pre <- as.data.frame(apply(counts_genes63[,8:9], 1, sum))
+D0_3649_pre <- as.data.frame(apply(counts_genes63[,10:11], 1, sum))
+D0_40300_pre <- as.data.frame(apply(counts_genes63[,12:13], 1, sum))
+D0_4955_pre <- as.data.frame(apply(counts_genes63[,14:15], 1, mean))
+  # Day 1 technical replicates
+D1_20157_pre <- as.data.frame(apply(counts_genes63[,16:17], 1, mean))
+D1_28815_pre <- as.data.frame(apply(counts_genes63[,21:22], 1, mean))
+D1_3647_pre <- as.data.frame(apply(counts_genes63[,24:25], 1, mean))
+D1_3649_pre <- as.data.frame(apply(counts_genes63[,26:27], 1, mean))
+D1_40300_pre <- as.data.frame(apply(counts_genes63[,28:29], 1, mean))
+D1_4955_pre <- as.data.frame(apply(counts_genes63[,30:31], 1, mean))
+  # Day 2 technical replicates
+D2_20157_pre <- as.data.frame(apply(counts_genes63[,32:33], 1, mean))
+D2_28815_pre <- as.data.frame(apply(counts_genes63[,37:38], 1, mean))
+D2_3647_pre <- as.data.frame(apply(counts_genes63[,40:41], 1, mean))
+D2_3649_pre <- as.data.frame(apply(counts_genes63[,42:43], 1, mean))
+D2_40300_pre <- as.data.frame(apply(counts_genes63[,44:45], 1, mean))
+D2_4955_pre <- as.data.frame(apply(counts_genes63[,46:47], 1, mean))
+  # Day 3 technical replicates
+D3_20157_pre <- as.data.frame(apply(counts_genes63[,48:49], 1, mean))
+D3_28815_pre <- as.data.frame(apply(counts_genes63[,53:54], 1, mean))
+D3_3647_pre <- as.data.frame(apply(counts_genes63[,56:57], 1, mean))
+D3_3649_pre <- as.data.frame(apply(counts_genes63[,58:59], 1, mean))
+D3_40300_pre <- as.data.frame(apply(counts_genes63[,60:61], 1, mean))
+D3_4955_pre <- as.data.frame(apply(counts_genes63[,62:63], 1, mean))
+
+```
+
 

@@ -476,48 +476,8 @@ ggplot(data=pcs, aes(x=pc4, y=pc5, color=as.factor(day), shape=Species, size=2))
 #ggplotly()
 
 
-# Does reprogramming batch correlate with any PCs?
-
-# PCs 1 and 2
-
-ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Reprogramming Batch", labels=c("2015", "2016")) + labs(title = "PCA plot of normalized endoderm time course data")
-#ggplotly()
-
-# PCs 9 and 10
-ggplot(data=pcs, aes(x=pc9, y=pc10, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC9 (",(summary$importance[2,9]*100), "% of variance)")) + ylab(paste("PC10 (",(summary$importance[2,10]*100), "% of variance)")) + title("PCs 9 and 10 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Reprogramming Batch", labels=c("2015", "2016")) + labs(title = "PCA plot of normalized endoderm time course data")
-#ggplotly()
-
-
-pvaluesandr2 = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"), c("Rep_batch p_val", "Rep_batch R^2")))
-
-j = 1
-  for (j in 1:10){
-  
-  checkPC1 <- lm(pcs[,j] ~ as.factor(rep_batch))
-
-#Get the summary statistics from it
-  summary(checkPC1)
-
-#Get the p-value of the F-statistic
-  summary(checkPC1)$fstatistic
-
-  fstat <- as.data.frame(summary(checkPC1)$fstatistic)
-  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
-  
-#Fraction of the variance explained by the model
-  r2_value <- summary(checkPC1)$r.squared
-
-#Put the summary statistics into the matrix w
-
-  pvaluesandr2[j, 1] <- p_fstat
-  pvaluesandr2[j, 2] <- r2_value
-  
-}
-
-pvaluesandr2
-
 # Hierarchical clustering on normalized data
-dev.off()
+#dev.off()
 cors <- cor(cpm_in_cutoff, method="pearson", use="pairwise.complete.obs")
 
 heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels,labRow=' ', ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
@@ -526,6 +486,7 @@ heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', 
 #                  , distfun = dist(x, method = "euclidean"), 
 #                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, col=colors, denscol="white", ColSideColors=pal[as.integer(as.factor(Day))+9])
           
+
 
 ```
 
@@ -542,6 +503,8 @@ differentiation_batch <- After_removal_sample_info$Reprogramming_batch
 # Load data about Individual
 
 individual <- After_removal_sample_info$Individual
+
+#dev.off()
 ```
 
 We want to make sure that differentiation batch nor individual is perfectly correlated with PCs 1-2 (which are correlated with our biological variables of interest).
@@ -579,7 +542,74 @@ j = 1
 
 pvaluesandr2_differentiation_batch
 
+# PCs 1 and 2 by differentiation batch
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(differentiation_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + ggtitle("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Differentiation Batch", labels=c("2015", "2016")) 
+
+
+
+# PCs 9 and 10 by differentiation batch
+
+ggplot(data=pcs, aes(x=pc9, y=pc10, color=as.factor(day+1), shape=as.factor(differentiation_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC9 (",(summary$importance[2,9]*100), "% of variance)")) + ylab(paste("PC10 (",(summary$importance[2,10]*100), "% of variance)")) + ggtitle("PCs 9 and 10 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Differentiation Batch", labels=c("2015", "2016")) 
+```
+
+Differentiation batch is most highly correlated with PC10 (p-value = 0.014), then PC5, then PC2.
+
+### Individual
+
+```{r}
+# Individual
+
+pvaluesandr2_individual = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"), c("Individual p_val", "Individual R^2")))
+
+j = 1
+  for (j in 1:10){
+  
+  checkPC1 <- lm(pcs[,j] ~ as.factor(individual))
+
+#Get the summary statistics from it
+  summary(checkPC1)
+
+#Get the p-value of the F-statistic
+  summary(checkPC1)$fstatistic
+
+  fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  
+#Fraction of the variance explained by the model
+  r2_value <- summary(checkPC1)$r.squared
+
+#Put the summary statistics into the matrix w
+
+  pvaluesandr2_individual[j, 1] <- p_fstat
+  pvaluesandr2_individual[j, 2] <- r2_value
+  
+}
+
+pvaluesandr2_individual
+
+# PCs 1 and 2 by individual
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(individual), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + ggtitle("PCs 1 and 2 of Normalized Data") + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8,9,10)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
+
+# PCs 3 and 4 by individual
+
+ggplot(data=pcs, aes(x=pc3, y=pc4, color=as.factor(day+1), shape=as.factor(individual), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC3 (",(summary$importance[2,3]*100), "% of variance)")) + ylab(paste("PC4 (",(summary$importance[2,4]*100), "% of variance)")) + ggtitle("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + theme_bw() + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8,9,10)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
+
+# PCs 3 and 4 by individual
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5, pc6, pc7, pc8, pc9, pc10)
+
+summary <- summary(pca_genes)
+
+
+humans <- c(1:7, 16:23, 32:39, 48:55)
+chimps <- c(8:15, 24:31, 40:47, 56:63)
+
+ggplot(data=pcs[humans,], aes(x=pc1, y=pc3, color=as.factor(day[humans]+1), shape=as.factor(individual[humans]), size=2)) + geom_point(aes(text = sample[humans])) + xlab("PC1") + ylab("PC3") + ggtitle("PCs 1 and 3 of Normalized Data- Humans Only") + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
+
+ggplot(data=pcs[chimps,], aes(x=pc1, y=pc3, color=as.factor(day[chimps]+1), shape=as.factor(individual[chimps]), size=2)) + geom_point(aes(text = sample[chimps])) + xlab("PC1") + ylab("PC3") + ggtitle("PCs 1 and 3 of Normalized Data- Chimpanzees Only") + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
 
 ```
 
-Differentiation batch is most highly correlated with PC10 (p-value = 0.014), then PC5, then PC2. 
+Individual is most highly correlated with PC2 because there are no individuals that are both humans and chimpanzees. It is next most correlated with PC3 (p-value = 0.005). 

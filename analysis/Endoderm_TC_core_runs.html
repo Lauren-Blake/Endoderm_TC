@@ -190,6 +190,10 @@ $(document).ready(function () {
 <li><a href="#correction-for-library-size">Correction for library size</a></li>
 <li><a href="#visualizing-the-filtered-data">Visualizing the filtered data</a></li>
 <li><a href="#normalization-after-removal-of-sample-d0201570116">Normalization after removal of Sample D0201570116</a></li>
+<li><a href="#is-differentiation-batch-or-individual-a-stronger-driver-of-variation-of-gene-expression-in-our-samples">Is differentiation batch or individual a stronger driver of variation of gene expression in our samples?</a><ul>
+<li><a href="#differentiation-batch">Differentiation batch</a></li>
+<li><a href="#individual">Individual</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -767,7 +771,6 @@ day &lt;- After_removal_sample_info$Day
 individual &lt;- After_removal_sample_info$Individual
 Sample_ID &lt;- After_removal_sample_info$Sample_ID
 labels &lt;- paste(Sample_ID, day, sep=&quot; &quot;)
-rep_batch &lt;- After_removal_sample_info$Reprogramming_batch
 
 # Log2(CPM)
 
@@ -1023,24 +1026,39 @@ ggplot(data=pcs, aes(x=pc4, y=pc5, color=as.factor(day), shape=Species, size=2))
 #ggplotly()
 
 
-# Does reprogramming batch correlate with any PCs?
+# Hierarchical clustering on normalized data
+#dev.off()
+cors &lt;- cor(cpm_in_cutoff, method=&quot;pearson&quot;, use=&quot;pairwise.complete.obs&quot;)
 
-# PCs 1 and 2
+heatmap.2( cors, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;, labCol= labels,labRow=&#39; &#39;, ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
 
-ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + title(&quot;PCs 1 and 2 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) + scale_shape_discrete(name  =&quot;Reprogramming Batch&quot;, labels=c(&quot;2015&quot;, &quot;2016&quot;)) + labs(title = &quot;PCA plot of normalized endoderm time course data&quot;)
-#ggplotly()
+#gplots::heatmap.2(x=as.matrix(t(cpm_in_cutoff)),
+#                  , distfun = dist(x, method = &quot;euclidean&quot;), 
+#                  hclustfun = function(x) hclust(dist(x), method = &quot;average&quot;), tracecol=NA, col=colors, denscol=&quot;white&quot;, ColSideColors=pal[as.integer(as.factor(Day))+9])</code></pre>
+<p>PC 1 is correlated with day, PC 2 with species, PC 3 is somewhat by species, PC 4 with day, and PC 5 separates one sample (D228815) from the rest of the samples.</p>
+</div>
+<div id="is-differentiation-batch-or-individual-a-stronger-driver-of-variation-of-gene-expression-in-our-samples" class="section level2">
+<h2>Is differentiation batch or individual a stronger driver of variation of gene expression in our samples?</h2>
+<pre class="r"><code># Load data about differentiation batch
 
-# PCs 9 and 10
-ggplot(data=pcs, aes(x=pc9, y=pc10, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC9 (&quot;,(summary$importance[2,9]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC10 (&quot;,(summary$importance[2,10]*100), &quot;% of variance)&quot;)) + title(&quot;PCs 9 and 10 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) + scale_shape_discrete(name  =&quot;Reprogramming Batch&quot;, labels=c(&quot;2015&quot;, &quot;2016&quot;)) + labs(title = &quot;PCA plot of normalized endoderm time course data&quot;)
-#ggplotly()
+differentiation_batch &lt;- After_removal_sample_info$Reprogramming_batch
 
+# Load data about Individual
 
-pvaluesandr2 = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;, &quot;PC8&quot;, &quot;PC9&quot;, &quot;PC10&quot;), c(&quot;Rep_batch p_val&quot;, &quot;Rep_batch R^2&quot;)))
+individual &lt;- After_removal_sample_info$Individual
+
+#dev.off()</code></pre>
+<p>We want to make sure that differentiation batch nor individual is perfectly correlated with PCs 1-2 (which are correlated with our biological variables of interest).</p>
+<div id="differentiation-batch" class="section level3">
+<h3>Differentiation batch</h3>
+<pre class="r"><code># Differentiation batch
+
+pvaluesandr2_differentiation_batch = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;, &quot;PC8&quot;, &quot;PC9&quot;, &quot;PC10&quot;), c(&quot;Diff_batch p_val&quot;, &quot;Diff_batch R^2&quot;)))
 
 j = 1
   for (j in 1:10){
   
-  checkPC1 &lt;- lm(pcs[,j] ~ as.factor(rep_batch))
+  checkPC1 &lt;- lm(pcs[,j] ~ as.factor(differentiation_batch))
 
 #Get the summary statistics from it
   summary(checkPC1)
@@ -1056,35 +1074,99 @@ j = 1
 
 #Put the summary statistics into the matrix w
 
-  pvaluesandr2[j, 1] &lt;- p_fstat
-  pvaluesandr2[j, 2] &lt;- r2_value
+  pvaluesandr2_differentiation_batch[j, 1] &lt;- p_fstat
+  pvaluesandr2_differentiation_batch[j, 2] &lt;- r2_value
   
 }
 
-pvaluesandr2</code></pre>
-<pre><code>##      Rep_batch p_val Rep_batch R^2
-## PC1       0.47072218  0.0085624598
-## PC2       0.06812259  0.0535140379
-## PC3       0.10109465  0.0434574441
-## PC4       0.65511637  0.0032921407
-## PC5       0.06114160  0.0563014590
-## PC6       0.90258790  0.0002475643
-## PC7       0.31342977  0.0166551365
-## PC8       0.61441310  0.0041860738
-## PC9       0.26793651  0.0200803073
-## PC10      0.01379165  0.0953718381</code></pre>
-<pre class="r"><code># Hierarchical clustering on normalized data
-dev.off()</code></pre>
-<pre><code>## null device 
-##           1</code></pre>
-<pre class="r"><code>cors &lt;- cor(cpm_in_cutoff, method=&quot;pearson&quot;, use=&quot;pairwise.complete.obs&quot;)
+pvaluesandr2_differentiation_batch</code></pre>
+<pre><code>##      Diff_batch p_val Diff_batch R^2
+## PC1        0.47072218   0.0085624598
+## PC2        0.06812259   0.0535140379
+## PC3        0.10109465   0.0434574441
+## PC4        0.65511637   0.0032921407
+## PC5        0.06114160   0.0563014590
+## PC6        0.90258790   0.0002475643
+## PC7        0.31342977   0.0166551365
+## PC8        0.61441310   0.0041860738
+## PC9        0.26793651   0.0200803073
+## PC10       0.01379165   0.0953718381</code></pre>
+<pre class="r"><code># PCs 1 and 2 by differentiation batch
 
-heatmap.2( cors, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;, labCol= labels,labRow=&#39; &#39;, ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(differentiation_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + ggtitle(&quot;PCs 1 and 2 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) + scale_shape_discrete(name  =&quot;Differentiation Batch&quot;, labels=c(&quot;2015&quot;, &quot;2016&quot;)) </code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code># PCs 9 and 10 by differentiation batch
 
-#gplots::heatmap.2(x=as.matrix(t(cpm_in_cutoff)),
-#                  , distfun = dist(x, method = &quot;euclidean&quot;), 
-#                  hclustfun = function(x) hclust(dist(x), method = &quot;average&quot;), tracecol=NA, col=colors, denscol=&quot;white&quot;, ColSideColors=pal[as.integer(as.factor(Day))+9])</code></pre>
-<p>PC 1 is correlated with day, PC 2 with species, PC 3 is somewhat by species, PC 4 with day, and PC 5 separates one sample (D228815) from the rest of the samples.</p>
+ggplot(data=pcs, aes(x=pc9, y=pc10, color=as.factor(day+1), shape=as.factor(differentiation_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC9 (&quot;,(summary$importance[2,9]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC10 (&quot;,(summary$importance[2,10]*100), &quot;% of variance)&quot;)) + ggtitle(&quot;PCs 9 and 10 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) + scale_shape_discrete(name  =&quot;Differentiation Batch&quot;, labels=c(&quot;2015&quot;, &quot;2016&quot;)) </code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-15-2.png" width="672" /></p>
+<p>Differentiation batch is most highly correlated with PC10 (p-value = 0.014), then PC5, then PC2.</p>
+</div>
+<div id="individual" class="section level3">
+<h3>Individual</h3>
+<pre class="r"><code># Individual
+
+pvaluesandr2_individual = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;, &quot;PC6&quot;, &quot;PC7&quot;, &quot;PC8&quot;, &quot;PC9&quot;, &quot;PC10&quot;), c(&quot;Individual p_val&quot;, &quot;Individual R^2&quot;)))
+
+j = 1
+  for (j in 1:10){
+  
+  checkPC1 &lt;- lm(pcs[,j] ~ as.factor(individual))
+
+#Get the summary statistics from it
+  summary(checkPC1)
+
+#Get the p-value of the F-statistic
+  summary(checkPC1)$fstatistic
+
+  fstat &lt;- as.data.frame(summary(checkPC1)$fstatistic)
+  p_fstat &lt;- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  
+#Fraction of the variance explained by the model
+  r2_value &lt;- summary(checkPC1)$r.squared
+
+#Put the summary statistics into the matrix w
+
+  pvaluesandr2_individual[j, 1] &lt;- p_fstat
+  pvaluesandr2_individual[j, 2] &lt;- r2_value
+  
+}
+
+pvaluesandr2_individual</code></pre>
+<pre><code>##      Individual p_val Individual R^2
+## PC1       0.979631118     0.04410887
+## PC2       0.000000000     0.91273719
+## PC3       0.004732411     0.34394496
+## PC4       0.813783886     0.08854234
+## PC5       0.646522725     0.11529047
+## PC6       0.037280167     0.27115202
+## PC7       0.145567862     0.21147770
+## PC8       0.017155961     0.30037670
+## PC9       0.064769674     0.24851964
+## PC10      0.496785860     0.13800282</code></pre>
+<pre class="r"><code># PCs 1 and 2 by individual
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(individual), size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + ggtitle(&quot;PCs 1 and 2 of Normalized Data&quot;) + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8,9,10)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;))</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code># PCs 3 and 4 by individual
+
+ggplot(data=pcs, aes(x=pc3, y=pc4, color=as.factor(day+1), shape=as.factor(individual), size=2)) + geom_point(aes(text = sample)) + xlab(paste(&quot;PC3 (&quot;,(summary$importance[2,3]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC4 (&quot;,(summary$importance[2,4]*100), &quot;% of variance)&quot;)) + ggtitle(&quot;PCs 1 and 2 of Normalized Data&quot;) + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + theme_bw() + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8,9,10)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;))</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
+<pre class="r"><code># PCs 3 and 4 by individual
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5, pc6, pc7, pc8, pc9, pc10)
+
+summary &lt;- summary(pca_genes)
+
+
+humans &lt;- c(1:7, 16:23, 32:39, 48:55)
+chimps &lt;- c(8:15, 24:31, 40:47, 56:63)
+
+ggplot(data=pcs[humans,], aes(x=pc1, y=pc3, color=as.factor(day[humans]+1), shape=as.factor(individual[humans]), size=2)) + geom_point(aes(text = sample[humans])) + xlab(&quot;PC1&quot;) + ylab(&quot;PC3&quot;) + ggtitle(&quot;PCs 1 and 3 of Normalized Data- Humans Only&quot;) + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;))</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-16-3.png" width="672" /></p>
+<pre class="r"><code>ggplot(data=pcs[chimps,], aes(x=pc1, y=pc3, color=as.factor(day[chimps]+1), shape=as.factor(individual[chimps]), size=2)) + geom_point(aes(text = sample[chimps])) + xlab(&quot;PC1&quot;) + ylab(&quot;PC3&quot;) + ggtitle(&quot;PCs 1 and 3 of Normalized Data- Chimpanzees Only&quot;) + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8)) + scale_color_discrete(name  =&quot;Day&quot;, labels=c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;))</code></pre>
+<p><img src="Endoderm_TC_core_runs_files/figure-html/unnamed-chunk-16-4.png" width="672" /></p>
+<p>Individual is most highly correlated with PC2 because there are no individuals that are both humans and chimpanzees. It is next most correlated with PC3 (p-value = 0.005).</p>
+</div>
 </div>
 
 

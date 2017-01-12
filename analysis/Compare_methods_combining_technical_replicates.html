@@ -199,8 +199,17 @@ library(&quot;ggplot2&quot;)</code></pre>
 pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
 
 
-# Load data
-cpm_in_cutoff &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt&quot;)</code></pre>
+# Load cpm data 
+
+cpm_in_cutoff &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt&quot;)
+
+dim(cpm_in_cutoff)</code></pre>
+<pre><code>## [1] 10304    63</code></pre>
+<pre class="r"><code># Load count data 
+
+gene_counts_combined_raw_data &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/gene_counts_combined.txt&quot;)
+counts_genes &lt;- gene_counts_combined_raw_data[1:30030,2:65]
+rownames(counts_genes) &lt;- gene_counts_combined_raw_data[1:30030,1]</code></pre>
 <div id="when-2-technical-replicates-take-the-average-log2cpm" class="section level2">
 <h2>When 2 technical replicates, take the average log2(CPM)</h2>
 <pre class="r"><code># Take the mean of the technical replicates when available
@@ -278,6 +287,48 @@ which will replace the existing scale.</code></pre>
 </div>
 <div id="when-2-technical-replicates-sum-the-gene-counts-and-then-normalize-all-data-together" class="section level2">
 <h2>When 2 technical replicates, sum the gene counts and then normalize all data together</h2>
+<pre class="r"><code># Remove D0_28815 outlier
+
+counts_genes63 &lt;- counts_genes[,-2]
+dim(counts_genes63)</code></pre>
+<pre><code>[1] 30030    63</code></pre>
+<pre class="r"><code>After_removal_sample_info &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/After_removal_sample_info.csv&quot;)
+
+Species &lt;- After_removal_sample_info$Species
+species &lt;- After_removal_sample_info$Species
+day &lt;- After_removal_sample_info$Day
+individual &lt;- After_removal_sample_info$Individual
+Sample_ID &lt;- After_removal_sample_info$Sample_ID
+labels &lt;- paste(Sample_ID, day, sep=&quot; &quot;)
+
+# Sum gene counts of technical replicates
+
+D0_28815_pre &lt;- as.data.frame(apply(counts_genes63[,5:6], 1, sum))
+D0_3647_pre &lt;- as.data.frame(apply(counts_genes63[,8:9], 1, sum))
+D0_3649_pre &lt;- as.data.frame(apply(counts_genes63[,10:11], 1, sum))
+D0_40300_pre &lt;- as.data.frame(apply(counts_genes63[,12:13], 1, sum))
+D0_4955_pre &lt;- as.data.frame(apply(counts_genes63[,14:15], 1, mean))
+  # Day 1 technical replicates
+D1_20157_pre &lt;- as.data.frame(apply(counts_genes63[,16:17], 1, mean))
+D1_28815_pre &lt;- as.data.frame(apply(counts_genes63[,21:22], 1, mean))
+D1_3647_pre &lt;- as.data.frame(apply(counts_genes63[,24:25], 1, mean))
+D1_3649_pre &lt;- as.data.frame(apply(counts_genes63[,26:27], 1, mean))
+D1_40300_pre &lt;- as.data.frame(apply(counts_genes63[,28:29], 1, mean))
+D1_4955_pre &lt;- as.data.frame(apply(counts_genes63[,30:31], 1, mean))
+  # Day 2 technical replicates
+D2_20157_pre &lt;- as.data.frame(apply(counts_genes63[,32:33], 1, mean))
+D2_28815_pre &lt;- as.data.frame(apply(counts_genes63[,37:38], 1, mean))
+D2_3647_pre &lt;- as.data.frame(apply(counts_genes63[,40:41], 1, mean))
+D2_3649_pre &lt;- as.data.frame(apply(counts_genes63[,42:43], 1, mean))
+D2_40300_pre &lt;- as.data.frame(apply(counts_genes63[,44:45], 1, mean))
+D2_4955_pre &lt;- as.data.frame(apply(counts_genes63[,46:47], 1, mean))
+  # Day 3 technical replicates
+D3_20157_pre &lt;- as.data.frame(apply(counts_genes63[,48:49], 1, mean))
+D3_28815_pre &lt;- as.data.frame(apply(counts_genes63[,53:54], 1, mean))
+D3_3647_pre &lt;- as.data.frame(apply(counts_genes63[,56:57], 1, mean))
+D3_3649_pre &lt;- as.data.frame(apply(counts_genes63[,58:59], 1, mean))
+D3_40300_pre &lt;- as.data.frame(apply(counts_genes63[,60:61], 1, mean))
+D3_4955_pre &lt;- as.data.frame(apply(counts_genes63[,62:63], 1, mean))</code></pre>
 </div>
 
 
