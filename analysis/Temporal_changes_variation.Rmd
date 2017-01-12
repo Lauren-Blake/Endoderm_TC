@@ -2398,3 +2398,77 @@ legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 0 to 2"), xpd =
 
 ```
 
+### For Bryan to test clusters
+
+```{r}
+
+# Reduction Day 0 to 1 chimps
+
+chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x <- t(mean_tech_reps[i,7:10])
+    y <- t(mean_tech_reps[i,17:20])
+    htest <- var.test(x, y, alternative = c("greater"))
+    chimp_var_pval[i,1] <- htest$p.value
+}
+rownames(chimp_var_pval) <- rownames(mean_tech_reps)
+length(which(chimp_var_pval < 0.05))
+
+chimp_red_01 <- as.data.frame(chimp_var_pval[which(chimp_var_pval < 0.05), ])
+dim(chimp_red_01)
+write.table(chimp_red_01,file="~/Desktop/Endoderm_TC/ashlar-trial/data/red_chimps_day0_1.txt",sep="\t", col.names = T, row.names = T)
+
+
+# Reduction Day 0 to 1 humans
+human_var_pval <- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x <- t(mean_tech_reps[i,1:6])
+    y <- t(mean_tech_reps[i,11:16])
+    htest <- var.test(x, y, alternative = c("greater"))
+    human_var_pval[i,1] <- htest$p.value
+}
+rownames(human_var_pval) <- rownames(mean_tech_reps)
+length(which(human_var_pval < 0.05))
+
+human_red_01 <- as.data.frame(human_var_pval[which(human_var_pval < 0.05), ])
+dim(human_red_01)
+write.table(human_red_01,file="~/Desktop/Endoderm_TC/ashlar-trial/data/red_human_day0_1.txt",sep="\t", col.names = T, row.names = T)
+
+
+# Increase Day 1 to 2 chimps
+chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x <- t(mean_tech_reps[i,17:20])
+    y <- t(mean_tech_reps[i,27:30])
+    htest <- var.test(x, y, alternative = c("less"))
+    chimp_var_pval[i,1] <- htest$p.value
+}
+rownames(chimp_var_pval) <- rownames(mean_tech_reps)
+length(which(chimp_var_pval < 0.05))
+
+chimp_inc_12 <- as.data.frame(chimp_var_pval[which(chimp_var_pval < 0.05), ])
+dim(chimp_inc_12)
+write.table(chimp_inc_12,file="~/Desktop/Endoderm_TC/ashlar-trial/data/inc_chimps_day1_2.txt",sep="\t", col.names = T, row.names = T)
+
+
+# Increase Day 1 to 2 humans
+human_var_pval <- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x <- t(mean_tech_reps[i,11:16])
+    y <- t(mean_tech_reps[i,21:26])
+    htest <- var.test(x, y, alternative = c("less"))
+    human_var_pval[i,1] <- htest$p.value
+}
+rownames(human_var_pval) <- rownames(mean_tech_reps)
+length(which(human_var_pval < 0.05))
+
+human_inc_12 <- as.data.frame(human_var_pval[which(human_var_pval < 0.05), ])
+dim(human_inc_12)
+write.table(human_inc_12,file="~/Desktop/Endoderm_TC/ashlar-trial/data/inc_human_day1_2.txt",sep="\t", col.names = T, row.names = T)
+
+```
+

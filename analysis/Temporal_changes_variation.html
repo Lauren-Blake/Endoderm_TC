@@ -193,6 +193,7 @@ $(document).ready(function () {
 <li><a href="#sharing-estimates-chimps-conditioned-on-humans">Sharing estimates (chimps conditioned on humans)</a></li>
 <li><a href="#enrichments-in-humans">Enrichments in humans</a></li>
 <li><a href="#sharing-estimates-humans-conditioned-on-chimps">Sharing estimates (humans conditioned on chimps)</a></li>
+<li><a href="#for-bryan-to-test-clusters">For Bryan to test clusters</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -3227,6 +3228,80 @@ plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt
 legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 0 to 2&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
     0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#E69F00&quot;, &quot;#000000&quot;,  &quot;#009E73&quot;,&quot;#0072B2&quot; ), cex = 1)</code></pre>
 <p><img src="figure/Temporal_changes_variation.Rmd/unnamed-chunk-13-20.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="for-bryan-to-test-clusters" class="section level3">
+<h3>For Bryan to test clusters</h3>
+<pre class="r"><code># Reduction Day 0 to 1 chimps
+
+chimp_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x &lt;- t(mean_tech_reps[i,7:10])
+    y &lt;- t(mean_tech_reps[i,17:20])
+    htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+    chimp_var_pval[i,1] &lt;- htest$p.value
+}
+rownames(chimp_var_pval) &lt;- rownames(mean_tech_reps)
+length(which(chimp_var_pval &lt; 0.05))</code></pre>
+<pre><code>[1] 612</code></pre>
+<pre class="r"><code>chimp_red_01 &lt;- as.data.frame(chimp_var_pval[which(chimp_var_pval &lt; 0.05), ])
+dim(chimp_red_01)</code></pre>
+<pre><code>[1] 612   1</code></pre>
+<pre class="r"><code>write.table(chimp_red_01,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/red_chimps_day0_1.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)
+
+
+# Reduction Day 0 to 1 humans
+human_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x &lt;- t(mean_tech_reps[i,1:6])
+    y &lt;- t(mean_tech_reps[i,11:16])
+    htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+    human_var_pval[i,1] &lt;- htest$p.value
+}
+rownames(human_var_pval) &lt;- rownames(mean_tech_reps)
+length(which(human_var_pval &lt; 0.05))</code></pre>
+<pre><code>[1] 2289</code></pre>
+<pre class="r"><code>human_red_01 &lt;- as.data.frame(human_var_pval[which(human_var_pval &lt; 0.05), ])
+dim(human_red_01)</code></pre>
+<pre><code>[1] 2289    1</code></pre>
+<pre class="r"><code>write.table(human_red_01,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/red_human_day0_1.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)
+
+
+# Increase Day 1 to 2 chimps
+chimp_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x &lt;- t(mean_tech_reps[i,17:20])
+    y &lt;- t(mean_tech_reps[i,27:30])
+    htest &lt;- var.test(x, y, alternative = c(&quot;less&quot;))
+    chimp_var_pval[i,1] &lt;- htest$p.value
+}
+rownames(chimp_var_pval) &lt;- rownames(mean_tech_reps)
+length(which(chimp_var_pval &lt; 0.05))</code></pre>
+<pre><code>[1] 531</code></pre>
+<pre class="r"><code>chimp_inc_12 &lt;- as.data.frame(chimp_var_pval[which(chimp_var_pval &lt; 0.05), ])
+dim(chimp_inc_12)</code></pre>
+<pre><code>[1] 531   1</code></pre>
+<pre class="r"><code>write.table(chimp_inc_12,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/inc_chimps_day1_2.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)
+
+
+# Increase Day 1 to 2 humans
+human_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x &lt;- t(mean_tech_reps[i,11:16])
+    y &lt;- t(mean_tech_reps[i,21:26])
+    htest &lt;- var.test(x, y, alternative = c(&quot;less&quot;))
+    human_var_pval[i,1] &lt;- htest$p.value
+}
+rownames(human_var_pval) &lt;- rownames(mean_tech_reps)
+length(which(human_var_pval &lt; 0.05))</code></pre>
+<pre><code>[1] 2043</code></pre>
+<pre class="r"><code>human_inc_12 &lt;- as.data.frame(human_var_pval[which(human_var_pval &lt; 0.05), ])
+dim(human_inc_12)</code></pre>
+<pre><code>[1] 2043    1</code></pre>
+<pre class="r"><code>write.table(human_inc_12,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/inc_human_day1_2.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)</code></pre>
 </div>
 </div>
 </div>

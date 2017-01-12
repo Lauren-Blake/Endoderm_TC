@@ -5,12 +5,13 @@ date: "January 8, 2017"
 output: html_document
 ---
 
-## Introduction
+# Introduction
 
 The goal of this script is to process the data from the 2 core runs of our endoderm time course project. The data was sequenced on an Illumina 4000 at the University of Chicago Genomics Core Facility. 
 There are 2 species (humans and chimps) with 6 human iPSC lines with 2 replicates and 4 chimp iPSC lines with 4 replicates. RNA was extracted from the iPSCs for each day of the differentation into endoderm for a total of 4 days. 
 
-## PLOTS OF UNMAPPED AND MAPPED READS
+# PLOTS OF UNMAPPED AND MAPPED READS
+
 
 ```{r}
 # Load necessary libraries
@@ -121,7 +122,7 @@ ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_po
 
 ```
 
-## VISUALIZATION OF THE RAW DATA 
+# VISUALIZATION OF THE RAW DATA 
 
 ```{r}
 # Load libraries
@@ -222,7 +223,7 @@ for (n in 1:1){
 }
 ```
 
-## INITIALIZE NORMALIZATION
+# INITIALIZE NORMALIZATION (64 samples)
 
 ```{r}
 # Let's see what happens when we take the log2 of the raw counts
@@ -256,7 +257,7 @@ plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Day)], legend="top
 
 ```
 
-### Filtering lowly expressed genes
+## Filtering lowly expressed genes
 
 We are beginning with 30030 genes and 64 samples (8 samples/species x 4 timepoints/species x 2 species)
 Based on what we have learned from Roux and Blake (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html), we will use a cutoff of log2(CPM) > 1.5 in at least 16 of the human samples and 16 of the chimp samples.
@@ -285,11 +286,11 @@ hist(as.numeric(unlist(genes_in_cutoff)), main = "log2(CPM) values in filtered d
 
 ```
 
-## About GC Content Normalization
+# About GC Content Normalization
 
 Roux and Blake's comparative analysis (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/GC_content_normalization_CHT.html) showed that GC content normalization does not substantially impact gene counts. Therefore, we will not perform it in this analysis. 
 
-## Correction for library size
+# Correction for library size
 
 ```{r}
 # Find the original counts of all of the genes that fit the criteria 
@@ -323,7 +324,7 @@ heatmap.2( cors, scale="column", col = colors, margins = c(12, 12), trace='none'
 
 ```
 
-## Visualizing the filtered data
+## Visualizing the filtered data (64 samples, 10,304 genes)
 
 ```{r}
 # Make PCA plots with the factors colored by day
@@ -345,7 +346,7 @@ for (n in 2:2){
 
 From the PCA plot, we see that Sample D0201570116 is a clear outlier and doesn't cluster with anything, including its technical replicate. We will remove this sample and then go through the same process as above to visualize the data. 
 
-## Normalization after removal of Sample D0201570116
+# Normalization after removal of Sample D0201570116
 
 ```{r}
 # Get data and sample info
@@ -407,7 +408,7 @@ hist(cpm_in_cutoff, main = "log2(CPM) values in filtered data (10,304 genes from
 
 There are 10,304 genes remaining. 
 
-
+# Final Visualization of the data (all technical replicates included, 63 samples)
 ```{r}
 library("ggplot2")
 dev.off()
@@ -478,46 +479,6 @@ ggplot(data=pcs, aes(x=pc4, y=pc5, color=as.factor(day), shape=Species, size=2))
 #ggplotly()
 
 
-# Does reprogramming batch correlate with any PCs?
-
-# PCs 1 and 2
-
-ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Reprogramming Batch", labels=c("2015", "2016")) + labs(title = "PCA plot of normalized endoderm time course data")
-#ggplotly()
-
-# PCs 9 and 10
-ggplot(data=pcs, aes(x=pc9, y=pc10, color=as.factor(day+1), shape=as.factor(rep_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC9 (",(summary$importance[2,9]*100), "% of variance)")) + ylab(paste("PC10 (",(summary$importance[2,10]*100), "% of variance)")) + title("PCs 9 and 10 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Reprogramming Batch", labels=c("2015", "2016")) + labs(title = "PCA plot of normalized endoderm time course data")
-#ggplotly()
-
-
-pvaluesandr2 = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"), c("Rep_batch p_val", "Rep_batch R^2")))
-
-j = 1
-  for (j in 1:10){
-  
-  checkPC1 <- lm(pcs[,j] ~ as.factor(rep_batch))
-
-#Get the summary statistics from it
-  summary(checkPC1)
-
-#Get the p-value of the F-statistic
-  summary(checkPC1)$fstatistic
-
-  fstat <- as.data.frame(summary(checkPC1)$fstatistic)
-  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
-  
-#Fraction of the variance explained by the model
-  r2_value <- summary(checkPC1)$r.squared
-
-#Put the summary statistics into the matrix w
-
-  pvaluesandr2[j, 1] <- p_fstat
-  pvaluesandr2[j, 2] <- r2_value
-  
-}
-
-pvaluesandr2
-
 # Hierarchical clustering on normalized data
 dev.off()
 cors <- cor(cpm_in_cutoff, method="pearson", use="pairwise.complete.obs")
@@ -558,9 +519,9 @@ library("mygene")
 ```
 
 
-## Cormotif analysis
+# Cormotif analysis
 
-### Set up
+## Set up
 ```{r}
 # Create a factor for the experiments, with the levels ordered such that as.numeric converts them to numbers in a defined manner
 
@@ -585,7 +546,7 @@ compid_human <- data.frame(c1=c(5,6,7), c2=c(6,7,8))
 
 ```
 
-### Identifying genes with interspecies differences by day
+## Identifying genes with interspecies differences by day
 ```{r}
 #interspecies differences at each day
 set.seed(12345)
@@ -637,7 +598,7 @@ write.csv(all_genes, file="all_genes.txt", row.names=FALSE)
 
 ```
 
-### Identifying genes showing differences during differentiation
+## Identifying genes showing differences during differentiation
 
 ```{r}
 #differences during diffentiation
@@ -857,7 +818,7 @@ write.table(prob_day_8, file="prob_cluster_8.txt")
 
 ```
 
-### Combined interspecies and diffentiation differences
+## Combined interspecies and diffentiation differences
 
 ```{r}
 set.seed(12345)
@@ -871,7 +832,7 @@ plotMotif(cormotif_all)
 
 ```
 
-# Differences during differentiation in each species separately
+## Differences during differentiation in each species separately
 ```{r}
 
 set.seed(12345)
@@ -892,7 +853,7 @@ plotMotif(cormotif_human)
 
 ```
 
-## Evaluation of variance 
+# Evaluation of variance 
 
 ```{r}
 
@@ -991,20 +952,9 @@ ggplot(variance_chimps, aes(x=var, fill=day)) + geom_density(alpha=0.5) +xlim(-.
 t.test(var_d1H, var_d0H)
 ```
 
-## Iplot
-```{r}
-### Iplot ###
+# Pairwise correlations 
 
-# iplotCorr(substitute(cpm_in_cutoff))
-# iplotCorr(as.character(expr))
-```
-
-## ASH
-
-It appears from Sammy's original file that this method for calculating a p-value cutoff was never implemented. 
-
-## Pairwise correlations 
-
+## Using mostly batch 1 samples
 ```{r}
 library("tidyr")
 library("dplyr")
@@ -1244,6 +1194,8 @@ t.test(cor_D3, cor_D1)
 
 ```
 
+
+## Using mostly batch 2 samples
 ```{r}
 # Run samples from batch 2 when available
 bio_rep <- c(1:4, 6, 7, 9, 11, 13, 15, 17, 18:20, 22, 23, 25, 27, 29, 31, 33, 34:36, 38, 39, 41, 43, 45, 47, 49, 50:52,54, 55, 57, 59, 61, 63)
@@ -1478,6 +1430,7 @@ t.test(cor_D2, cor_D1)
 t.test(cor_D3, cor_D1) 
 ```
 
+## Using average of log2(CPM) expression to combine technical replicates
 ```{r}
 # Make the endoderm-counts-filtered document
 
@@ -1753,10 +1706,11 @@ t.test(cor_D0, cor_D1) # 0.001695
 t.test(cor_D2, cor_D1) # 0.0006723
 t.test(cor_D3, cor_D1) # 1.091e-05
 
-##### Variance density plot 
 
+```
 
-
+## Plot the correlations genewise
+```{r}
 ##### Plot the correlations genewise
 
 humans_day0_var <- apply(as.data.frame(mean_tech_reps[,1:6]),1, var) 
@@ -1790,12 +1744,10 @@ abline(0,1, col = "red", v = 0, h = 0)
 #t.test(var_d1b, var_d3b)
 
 
-
-
-
 ```
 
-### Assessing differential gene expression using Limma
+
+# Assessing differential gene expression using Limma
 
 Here, the model for expression has fixed effects for day, species, and a day-by-species interaction term. 
 
@@ -1965,7 +1917,7 @@ write.table(sigspd1names, file="sigspd1names.txt")
 # Make plots for genes with this significant coefficient
 sig1 <- cpm_in_cutoff[sigspd1names,]
 
-for (i in 1:10) {
+for (i in 1:3) {
   play <- sig1[i,]
   playdf <- data.frame(play,day,species)
   print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig1)[i])) + ylab("log2(CPM) expression value"))
@@ -1985,7 +1937,7 @@ length(sigspecies2)
 
 # Make plots for genes with this significant coefficient
 sig2 <- cpm_in_cutoff[sigspecies2names,]
-for (i in 1:10) {
+for (i in 1:3) {
   play <- sig2[i,]
   playdf <- data.frame(play,day,species)
   print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig2)[i])) + ylab("log2(CPM) expression value"))
@@ -2005,7 +1957,7 @@ length(sigspecies3)
 
 # Make plots for genes with this significant coefficient
 sig3 <- cpm_in_cutoff[sigspecies3names,]
-for (i in 1:10) {
+for (i in 1:3) {
   play <- sig3[i,]
   playdf <- data.frame(play,day,species)
   print(ggplot(data=playdf, aes(x=as.factor(day), y=play, fill=species)) + geom_boxplot(aes(fill=species)) + ggtitle(paste0("Expression for ", rownames(sig3)[i])) + ylab("log2(CPM) expression value"))
@@ -2013,7 +1965,7 @@ for (i in 1:10) {
 
 ```
 
-#### Make a Venn Diagrams
+## Make a Venn Diagrams
 
 ```{r}
 library("R.utils")
@@ -2085,43 +2037,8 @@ barplot(length_both, col=c("darkblue", "red"), ylim = c(0,17000), ylab = ("Numbe
 
 ```
 
-#### Plots for the effect sizes
 
-```{r}
-Betas <- cbind(Bspecies, BD1, BD2, BD3, BspeciesD1, BspeciesD2, BspeciesD3)
-head(Betas)
-rownames(Betas) <- rownames(output_all)
-rownames(Betas)
-heatmap(Betas)
-hist(Bspecies)
-hist(abs(BD1))
-hist(abs(BD2))
-hist(abs(BD3))
-hist(BspeciesD1)
-hist(BspeciesD2)
-hist(BspeciesD3)
-t.test(abs(BD3), abs(BD2))
-effect_size <- data.frame(ef=c(abs(BD1), abs(BD2), abs(BD3)), day = rep(c("D1", "D2", "D3"), times =c(length(BD1), length(BD2), length(BD3))))
-
-ggplot(effect_size, aes(x=ef, fill=day)) + geom_density(alpha=0.5) +xlim(-.25,8.0)+xlab("Effect size") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18))  
-
-
-effect_size_intrxn <- data.frame(ef=c(abs(BspeciesD1), abs(BspeciesD2), abs(BspeciesD3)), day = rep(c("sp.D1", "sp.D2", "sp.D3"), times =c(length(BspeciesD1), length(BspeciesD2), length(BspeciesD3))))
-
-ggplot(effect_size_intrxn, aes(x=ef, fill=day)) + geom_density(alpha=0.5) +xlim(-.25,8.0)+xlab("Effect size") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18))  +xlim(c(-0.1,5))
-t.test(BspeciesD2,BspeciesD3)
-
-#for (coef in 2:5) {
-#  stats_list[[coef]] <- topTable(fit2, coef = coef, number = nrow(counts),
-#                                 sort.by = "none")
-#}
-#stats_list <- llply(stats_list, function(x) cbind(gene = rownames(x), x))
-#stats <- ldply(stats_list, .id = "test")
-#stats$gene <- as.character(stats$gene)
-
-```
-
-### Differentially expressed genes using a model with no interaction term
+# Differentially expressed genes using a model with no interaction term
 
 Here, the model for expression has fixed effects for day and species. 
 
@@ -2159,7 +2076,7 @@ fit1 <- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.cor
 fit1 <- eBayes(fit1)
 ```
 
-## Differences between species at each time points
+# Differences between species at each time points
 
 ```{r}
 # Make the contrast matrix
@@ -2200,13 +2117,13 @@ head(output_all_0)
 
 #dev.off()
 
-effect_size_spday <- data.frame(ef=c(abs(output_all_0$logFC), abs(output_all_1$logFC), abs(output_all_2$logFC), abs(output_all_3$logFC)), day = rep(c("D0", "D1", "D2", "D3"), times =c(length(output_all_0$logFC), length(output_all_1$logFC), length(output_all_2$logFC), length(output_all_3$logFC))))
+#effect_size_spday <- data.frame(ef=c(abs(output_all_0$logFC), abs(output_all_1$logFC), abs(output_all_2$logFC), abs(output_all_3$logFC)), day = rep(c("D0", "D1", "D2", "D3"), times =c(length(output_all_0$logFC), length(output_all_1$logFC), length(output_all_2$logFC), length(output_all_3$logFC))))
 
-ggplot(effect_size_spday, aes(x=ef, fill=day)) + geom_density(alpha=0.5)+xlab("Effect size") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18)) +xlim(c(-0.1,2))
+#ggplot(effect_size_spday, aes(x=ef, fill=day)) + geom_density(alpha=0.5)+xlab("Effect size") + theme(legend.position=c(.75,.75), legend.title=element_blank(), axis.title=element_text(size=14), panel.background=element_rect(fill='white')) + theme(text = element_text(size=18)) +xlim(c(-0.1,2))
 t.test(BspeciesD2,BspeciesD3)
 ```
 
-#### Find non-significant genes between species for each day
+## Find non-significant genes between species for each day
 
 ```{r}
 # Set FDR level at 5% 
@@ -2241,7 +2158,7 @@ dim(notsig_any)
 
 ```
 
-#### Find genes between species for each day
+## Find genes between species for each day
 
 ```{r}
 # Significant between species in all of the days
@@ -2305,7 +2222,7 @@ pdf(file = "Figure 3.7C.pdf")
 dev.off()
 ```
 
-#### Find genes that are significant between species only for one day
+## Find genes that are significant between species only for one day
 
 ```{r}
 # Get the rownames for the genes
@@ -2354,10 +2271,10 @@ length(sig_all)
 #dfs <- data.frame(sig_D0$logFC, sig_D1$logFC, sig_D2$logFC, sig_D3$logFC)
 #dfs <- stack(dfs)
 #head(dfs)
-
+dev.off()
 ```
 
-#### Plot the number of genes DE between species at each day
+## Plot the number of genes DE between species at each day
 
 ```{r}
 dev.off()
@@ -2377,7 +2294,7 @@ barplot(msig, ylab="Number of DE genes", ylim = c(0, 6000), main = "Differential
 
 ```
 
-#Find significant genes arising at a given day
+## Find significant genes arising at a given day
 
 ```{r}
   # Arise at Day 0
@@ -2399,11 +2316,10 @@ collect_arise <- c(length(sig_d0_arise), length(sig_d1_arise), length(sig_d2_ari
 plot(collect_arise, xaxt="n", ylab="Number of DE genes arising", main=" Significant Genes Arising At Each Day", ylim = c(0, 5000), pch = 19)
 axis(side=1, at=1:4, labels=c("Day 0", "Day 1", "Day 2", "Day 3"))
 
-### TO DO: PLOT EFFECT SIZE OF THESE
 
 ```
 
-#### Plot distributions of signficant DE genes between species at each day (line 946)
+### Plot distributions of signficant DE genes between species at each day (line 946)
 
 ```{r}
 # Here is the function to find the normalized cpm of a subset of genes
@@ -2445,7 +2361,7 @@ dim(cpm_sig3)
 ```
 
 
-#### Plot distributions of non-signficant DE genes between species at each day
+## Plot distributions of non-signficant DE genes between species at each day
 
 ```{r}
 ###Plot nonsignificant genes###
@@ -2455,7 +2371,7 @@ dim(notsig_any)
 
 ```
 
-### Expression values for individual genes
+# Expression values for individual genes
 
 ```{r}
 # Get day and species information

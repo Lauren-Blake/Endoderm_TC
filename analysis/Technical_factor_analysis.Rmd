@@ -1,0 +1,57 @@
+---
+title: "Endoderm_TC_Technical_Factor_Analysis"
+author: "Lauren Blake"
+date: "January 12, 2017"
+output: html_document
+---
+
+The goal of this is to establish which, if any, technical factors are correlated with our biological variables of interest. 
+
+# PART ONE: See if any of the variables for RNA-Seq correlate with the expression PCs for genes
+
+## Initialization
+
+```{r}
+# Load libraries
+
+library("polycor")
+library("xlsx")
+
+# Load cpm data 
+
+cpm_in_cutoff <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt")
+
+# Load sample information
+
+After_removal_sample_info <- read.csv("~/Desktop/Endoderm_TC/After_removal_sample_info.csv")
+
+Species <- After_removal_sample_info$Species
+species <- After_removal_sample_info$Species
+day <- After_removal_sample_info$Day
+individual <- After_removal_sample_info$Individual
+Sample_ID <- After_removal_sample_info$Sample_ID
+labels <- paste(Sample_ID, day, sep=" ")
+
+# Load technical factor information
+
+
+
+```
+
+## Obtain gene expression PCs
+
+```{r}
+# Make PCA plots with the factors colored by day
+
+pca_genes <- prcomp(t(mean_tech_reps), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
