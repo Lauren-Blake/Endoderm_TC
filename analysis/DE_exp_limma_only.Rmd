@@ -406,7 +406,7 @@ cpm.voom.corfit <- voom(dge_in_cutoff, design, plot = TRUE, normalize.method="no
 
 # Plot the density to see shape of the distribution
 
-plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day1)], legend = F)
 
 # Run lmFit and eBayes in limma
 
@@ -551,5 +551,58 @@ colnames(msig) <- c("Day 0", "Day 1", "Day 2", "Day 3", "Never DE", "Always DE")
 
 barplot(msig, ylab="Number of DE genes", ylim = c(0, 6000), main = "DE Genes between 2-3 Humans and Chimps Across Days")
 
+```
+
+## Subset of human samples with the interaction term
+
+```{r}
+# Make the design matrix with an interaction term between species and day
+
+condition <- factor(paste(species1,day1,sep="."))
+design <- model.matrix(~species1+day1+species1*day1)
+colnames(design) <- gsub(":", "", dput(colnames(design)))
+#colnames(design) <- gsub(":", "", dput(colnames(design)))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom <- voom(dge_in_cutoff, design, normalize.method="none")
+
+# We want a random effect term for individual
+#corfit <- duplicateCorrelation(cpm.voom, design,block=Sample_ID_43)
+corfit.correlation = 0.1947084
+
+cpm.voom.corfit <- voom(dge_in_cutoff, design, plot = TRUE, normalize.method="none", block=Sample_ID_43, correlation = corfit.correlation )
+
+# Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)
+
+# Run lmFit and eBayes in limma
+
+fit <- lmFit(cpm.voom.corfit , design, block=Sample_ID_43, correlation=corfit.correlation)
+
+# Fit the new model
+
+fit2 <- eBayes(fit)
+
+top3 <- list(day1inter =topTable(fit2, coef=6, adjust="BH", number=Inf, sort.by="none"), day2inter =topTable(fit2, coef=7, adjust="BH", number=Inf, sort.by="none"),  day3inter =topTable(fit2, coef=8, adjust="BH", number=Inf, sort.by="none"))
+
+# Find the name of the genes with a significant interaction term
+
+mylist <- list()
+mylist[["Human x Day 1"]] <- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val < FDR_level]
+
+mylist[["Human x Day 2"]] <- row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val < FDR_level]
+
+mylist[["Human x Day 3"]] <- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val < FDR_level]
+
+# Find the numbers of genes with a significant interaction term
+sig_subset_interaction_day1 <- length(row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val < FDR_level])
+sig_subset_interaction_day2 <- length(row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val < FDR_level])
+sig_subset_interaction_day3 <- length(row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val < FDR_level])
+
+sig_subset_interaction_day1
+sig_subset_interaction_day2
+sig_subset_interaction_day3
 ```
 

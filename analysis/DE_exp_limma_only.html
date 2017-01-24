@@ -185,6 +185,7 @@ $(document).ready(function () {
 <li><a href="#repeat-the-analysis-but-only-using-a-subset-of-samples">Repeat the analysis but only using a subset of samples</a><ul>
 <li><a href="#data-visualization">Data visualization</a></li>
 </ul></li>
+<li><a href="#subset-of-human-samples-with-the-interaction-term">Subset of human samples with the interaction term</a></li>
 </ul>
 </div>
 
@@ -669,7 +670,7 @@ cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=
 <p><img src="figure/DE_exp_limma_only.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Plot the density to see shape of the distribution
 
-plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day1)], legend = F)</code></pre>
 <p><img src="figure/DE_exp_limma_only.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Run lmFit and eBayes in limma
 
@@ -822,6 +823,62 @@ colnames(msig) &lt;- c(&quot;Day 0&quot;, &quot;Day 1&quot;, &quot;Day 2&quot;, 
 
 barplot(msig, ylab=&quot;Number of DE genes&quot;, ylim = c(0, 6000), main = &quot;DE Genes between 2-3 Humans and Chimps Across Days&quot;)</code></pre>
 </div>
+</div>
+<div id="subset-of-human-samples-with-the-interaction-term" class="section level2">
+<h2>Subset of human samples with the interaction term</h2>
+<pre class="r"><code># Make the design matrix with an interaction term between species and day
+
+condition &lt;- factor(paste(species1,day1,sep=&quot;.&quot;))
+design &lt;- model.matrix(~species1+day1+species1*day1)
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;&quot;, dput(colnames(design)))</code></pre>
+<pre><code>c(&quot;(Intercept)&quot;, &quot;species1H&quot;, &quot;day11&quot;, &quot;day12&quot;, &quot;day13&quot;, &quot;species1H:day11&quot;, 
+&quot;species1H:day12&quot;, &quot;species1H:day13&quot;)</code></pre>
+<pre class="r"><code>#colnames(design) &lt;- gsub(&quot;:&quot;, &quot;&quot;, dput(colnames(design)))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;none&quot;)
+
+# We want a random effect term for individual
+#corfit &lt;- duplicateCorrelation(cpm.voom, design,block=Sample_ID_43)
+corfit.correlation = 0.1947084
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;none&quot;, block=Sample_ID_43, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=Sample_ID_43, correlation=corfit.correlation)
+
+# Fit the new model
+
+fit2 &lt;- eBayes(fit)
+
+top3 &lt;- list(day1inter =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), day2inter =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  day3inter =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+# Find the name of the genes with a significant interaction term
+
+mylist &lt;- list()
+mylist[[&quot;Human x Day 1&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+
+mylist[[&quot;Human x Day 2&quot;]] &lt;- row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+
+mylist[[&quot;Human x Day 3&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+
+# Find the numbers of genes with a significant interaction term
+sig_subset_interaction_day1 &lt;- length(row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level])
+sig_subset_interaction_day2 &lt;- length(row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level])
+sig_subset_interaction_day3 &lt;- length(row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level])
+
+sig_subset_interaction_day1</code></pre>
+<pre><code>[1] 42</code></pre>
+<pre class="r"><code>sig_subset_interaction_day2</code></pre>
+<pre><code>[1] 717</code></pre>
+<pre class="r"><code>sig_subset_interaction_day3</code></pre>
+<pre><code>[1] 828</code></pre>
 </div>
 
 

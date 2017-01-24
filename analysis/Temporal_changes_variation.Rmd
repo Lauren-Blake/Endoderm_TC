@@ -173,6 +173,7 @@ m <- m + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_b
 m <- m + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3"))
 m
 
+
 # Boxplot of variances gives general trend
 HC_var <- rbind(as.data.frame(chimps_day0_var), as.data.frame(chimps_day1_var), as.data.frame(chimps_day2_var), as.data.frame(chimps_day3_var), as.data.frame(humans_day0_var), as.data.frame(humans_day1_var), as.data.frame(humans_day2_var), as.data.frame(humans_day3_var))
 
@@ -182,6 +183,8 @@ p <- ggplot(HC_var_labels, aes(x = factor(labels), y = HC_var))
 p <- p + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + scale_y_continuous(trans = "log2") + ggtitle("Variance for each gene by species and day") + xlab("Species-Day Pair") + ylab("Variance for each gene") 
 p <- p + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3"))
 p
+
+
 ```
 
 # Evaluating global changes in variation 

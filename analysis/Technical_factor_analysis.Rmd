@@ -335,11 +335,13 @@ j=j+1
 j=1
 for (i in categorical_prev_sign_tech_factors) { 
   
-  pval_chi <- chisq.test(as.factor(RNA_seq_info[,i]), as.factor(day))$p.value
+  pval_chi <- chisq.test(as.factor(RNA_seq_info[,i]), as.factor(day), simulate.p.value = TRUE)$p.value
   pvalues_day[, i-1] <- pval_chi  
   j=j+1
   
 }
+
+
 ```
 
 
@@ -374,7 +376,7 @@ j=j+1
 j=1
 for (i in categorical_prev_sign_tech_factors) { 
   
-  pval_chi <- chisq.test(as.factor(RNA_seq_info[,i]), as.factor(Species))$p.value
+  pval_chi <- chisq.test(as.factor(RNA_seq_info[,i]), as.factor(Species), simulate.p.value = TRUE)$p.value
   pvalues_species[, i-1] <- pval_chi  
   j=j+1
   
@@ -409,14 +411,14 @@ collapse_table_fdr_val
 
 The following variables are confounded with day:
 
-* Harvest time (BH adjusted p-value = 1.661634e-15)
+* Harvest time (BH adjusted p-value = 0.009495252)
 * Harvest density (BH adjusted p-value = 0.01327875)
-* Index sequence (BH adjusted p-value = 5.219213e-15)
+* Index sequence (BH adjusted p-value = 0.009495252)
 
 The following variables are confounded with species:
 
-* Cell line (BH adjusted p-value = 6.703107e-09)
-* SPSX (BH adjusted p-value = 3.402224e-12)
+* Cell line (BH adjusted p-value = 0.009495252)
+* SPSX (BH adjusted p-value = 0.009495252)
 * Harvest density (BH adjusted p-value = 0.03300125)
 * Max. purity (BH adjusted p-value = 0.05001969)
 
@@ -428,17 +430,62 @@ plot(Species, as.factor(RNA_seq_info[,3]), main = "SPSX versus species (sign.)")
 plot(day, as.factor(RNA_seq_info[,8]), main =  "Harvest time versus day (sign.)")
 plot(Species, RNA_seq_info[,8], main = "Harvest time versus species")
 
-plot(as.factor(day), RNA_seq_info[,9], main = "Harvest density versus day (sign.)")
-plot(Species, RNA_seq_info[,9], main = "Harvest density versus species (sign.)")
-plot(as.factor(day), RNA_seq_info[,10], main = "High confidence purity versus day")
-plot(Species, RNA_seq_info[,10], main = "High confidence purity versus species")
-plot(as.factor(day), RNA_seq_info[,11], main = "Max. purity versus day")
-plot(Species, RNA_seq_info[,11], main = "Max. purity versus species (sign.)")
+plot(as.factor(day), RNA_seq_info[,9], main = "Harvest density versus day (sign.)", ylab = "Harvest density", xlab = "Day")
+plot(Species, RNA_seq_info[,9], main = "Harvest density versus species (sign.)", ylab = "Harvest density", xlab = "Species")
+
+plot(as.factor(day), RNA_seq_info[,10], main = "High confidence purity versus day", ylab = "High confidence purity", xlab = "Day")
+plot(Species, RNA_seq_info[,10], main = "High confidence purity versus species", ylab = "High confidence purity", xlab = "Species")
+plot(as.factor(day), RNA_seq_info[,11], main = "Max. purity versus day",  ylab = "Max. purity", xlab = "Day")
+plot(Species, RNA_seq_info[,11], main = "Max. purity versus species (sign.)", ylab = "Max. purity", xlab = "Species")
 plot(as.factor(day), as.factor(RNA_seq_info[,22]), main = "Index sequence versus day (sign.)")
 plot(Species, RNA_seq_info[,22], main = "Index sequence versus species")
 ```
 
-### Cleaner plots of significant technical factors versus our biological variables of interest
+### Combine and test day versus adapter for each sequencing pool
+
+```{r}
+# Make table of day, adaptor, and sequencing pool
+
+day_index_pool <- cbind(day, RNA_seq_info[,22], RNA_seq_info[,23]) 
+
+# Test dependency with the adaptors by day 
+
+  # Sequencing pool 1
+adaptors_pool1 <- day_index_pool[ which(day_index_pool[,3]==1),]
+
+chisq.test(as.factor(adaptors_pool1[,2]), as.factor(adaptors_pool1[,1]), simulate.p.value = TRUE)$p.value
+
+#fisher.test(adaptors_pool1[,1:2], simulate.p.value=TRUE)$p.value
+#fisher.test(adaptors_pool2[,2:1], simulate.p.value=TRUE)$p.value
+#fisher.test(adaptors_pool3[,2:1], simulate.p.value=TRUE)$p.value
+#fisher.test(adaptors_pool4[,2:1], simulate.p.value=TRUE)$p.value
+
+  # p-value = 1
+
+  # Sequencing pool 2
+adaptors_pool2 <- day_index_pool[ which(day_index_pool[,3]==2),]
+
+chisq.test(as.factor(adaptors_pool2[,2]), as.factor(adaptors_pool2[,1]), simulate.p.value = TRUE)$p.value
+
+  # p-value = 1
+
+  # Sequencing pool 3
+adaptors_pool3 <- day_index_pool[ which(day_index_pool[,3]==3),]
+
+chisq.test(as.factor(adaptors_pool3[,2]), as.factor(adaptors_pool3[,1]), simulate.p.value = TRUE)$p.value
+
+  # p-value = 1
+
+  # Sequencing pool 4
+adaptors_pool4 <- day_index_pool[ which(day_index_pool[,3]==4),]
+
+chisq.test(as.factor(adaptors_pool4[,2]), as.factor(adaptors_pool4[,1]), simulate.p.value = TRUE)$p.value
+
+  # p-value = 1
+
+fdr_val_4= p.adjust(c(1,1,1,1), method = "fdr")
+```
+
 
 
 
@@ -462,7 +509,7 @@ Check for degree of similarity between the values of the different technical var
 
 ```
 
-These two factors are not highly correlated.
+These two factors are not highly correlated (p-value = 0.465). 
 
 
 

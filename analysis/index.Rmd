@@ -13,6 +13,7 @@ title: "Home"
 
 *  [Plots of unmapped and mapped reads](../analysis/Unmapped_mapped_plots.html)
 *  [Normalization steps](../analysis/Normalize_again.html)
+*  [Analysis of technical factors](../analysis/Technical_factor_analysis.html)
 *  [Effect of Differentiation Batch](../analysis/Endoderm_TC_core_runs.html)
 *  [Pairwise Differential Expression](../analysis/DE_exp_limma_only.html)
 *  [Comparison of Two Methods of Combining Technical Replicates](../analysis/Compare_methods_combining_technical_replicates.html)
