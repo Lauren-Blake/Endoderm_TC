@@ -386,6 +386,7 @@ ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day1), shape=as.factor(specie
 
 ```
 
+## Pairwise DE without interaction
 
 ```{r}
 # Make the design matrix
@@ -553,7 +554,7 @@ barplot(msig, ylab="Number of DE genes", ylim = c(0, 6000), main = "DE Genes bet
 
 ```
 
-## Subset of human samples with the interaction term
+### Subset of human samples with the interaction term
 
 ```{r}
 # Make the design matrix with an interaction term between species and day

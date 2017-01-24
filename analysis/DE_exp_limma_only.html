@@ -185,7 +185,9 @@ $(document).ready(function () {
 <li><a href="#repeat-the-analysis-but-only-using-a-subset-of-samples">Repeat the analysis but only using a subset of samples</a><ul>
 <li><a href="#data-visualization">Data visualization</a></li>
 </ul></li>
+<li><a href="#pairwise-de-without-interaction">Pairwise DE without interaction</a><ul>
 <li><a href="#subset-of-human-samples-with-the-interaction-term">Subset of human samples with the interaction term</a></li>
+</ul></li>
 </ul>
 </div>
 
@@ -650,6 +652,10 @@ summary &lt;- summary(pca_genes)
 
 ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day1), shape=as.factor(species1), size=2)) + geom_point() + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;))  + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;) + labs(title = &quot;PCA of normalized endoderm data (Humans subset to match chimps)&quot;)</code></pre>
 <p><img src="figure/DE_exp_limma_only.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+<div id="pairwise-de-without-interaction" class="section level2">
+<h2>Pairwise DE without interaction</h2>
 <pre class="r"><code># Make the design matrix
 
 condition &lt;- factor(paste(species1,day1,sep=&quot;.&quot;))
@@ -822,10 +828,8 @@ colnames(msig) &lt;- c(&quot;Day 0&quot;, &quot;Day 1&quot;, &quot;Day 2&quot;, 
 # Make a stacked barplot
 
 barplot(msig, ylab=&quot;Number of DE genes&quot;, ylim = c(0, 6000), main = &quot;DE Genes between 2-3 Humans and Chimps Across Days&quot;)</code></pre>
-</div>
-</div>
-<div id="subset-of-human-samples-with-the-interaction-term" class="section level2">
-<h2>Subset of human samples with the interaction term</h2>
+<div id="subset-of-human-samples-with-the-interaction-term" class="section level3">
+<h3>Subset of human samples with the interaction term</h3>
 <pre class="r"><code># Make the design matrix with an interaction term between species and day
 
 condition &lt;- factor(paste(species1,day1,sep=&quot;.&quot;))
@@ -879,6 +883,7 @@ sig_subset_interaction_day1</code></pre>
 <pre><code>[1] 717</code></pre>
 <pre class="r"><code>sig_subset_interaction_day3</code></pre>
 <pre><code>[1] 828</code></pre>
+</div>
 </div>
 
 
