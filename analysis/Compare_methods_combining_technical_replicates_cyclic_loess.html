@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>Assessing_combining_technical_replicates</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Assessing_combining_technical_replicates</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>January 9, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#method-1-when-2-technical-replicates-take-the-average-log2cpm">Method #1: When 2 technical replicates, take the average log2(CPM)</a></li>
+<li><a href="#method-2-when-2-technical-replicates-sum-the-gene-counts-and-then-normalize-all-data-together">Method 2: When 2 technical replicates, sum the gene counts and then normalize all data together</a></li>
+<li><a href="#compare-the-two-methods">Compare the two methods</a></li>
+<li><a href="#testing-for-robustness-of-the-main-results-in-the-analysis-of-variance-section">Testing for robustness of the main results in the analysis of variance section</a></li>
+</ul>
+</div>
+
+<p>This script is to assess the impact of combining technical replicates: taking the average of the log2(CPM) of the technical replicates or taking the sum of the technical replicates prior to normalization.</p>
+<pre class="r"><code># Load libraries
+
+library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre><code>## Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+
+# Load colors
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+
+# Load cpm data 
+
+cpm_cyclicloess &lt;- read.table(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess.txt&quot;)
+
+dim(cpm_cyclicloess)</code></pre>
+<pre><code>## [1] 10304    63</code></pre>
+<pre class="r"><code># Load count data 
+
+gene_counts_combined_raw_data &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/gene_counts_combined.txt&quot;)
+counts_genes &lt;- gene_counts_combined_raw_data[1:30030,2:65]
+rownames(counts_genes) &lt;- gene_counts_combined_raw_data[1:30030,1]</code></pre>
+<div id="method-1-when-2-technical-replicates-take-the-average-log2cpm" class="section level2">
+<h2>Method #1: When 2 technical replicates, take the average log2(CPM)</h2>
+<pre class="r"><code># Take the mean of the technical replicates when available
+
+  # Day 0 technical replicates
+D0_28815 &lt;- as.data.frame(apply(cpm_cyclicloess[,5:6], 1, mean))
+D0_3647 &lt;- as.data.frame(apply(cpm_cyclicloess[,8:9], 1, mean))
+D0_3649 &lt;- as.data.frame(apply(cpm_cyclicloess[,10:11], 1, mean))
+D0_40300 &lt;- as.data.frame(apply(cpm_cyclicloess[,12:13], 1, mean))
+D0_4955 &lt;- as.data.frame(apply(cpm_cyclicloess[,14:15], 1, mean))
+  # Day 1 technical replicates
+D1_20157 &lt;- as.data.frame(apply(cpm_cyclicloess[,16:17], 1, mean))
+D1_28815 &lt;- as.data.frame(apply(cpm_cyclicloess[,21:22], 1, mean))
+D1_3647 &lt;- as.data.frame(apply(cpm_cyclicloess[,24:25], 1, mean))
+D1_3649 &lt;- as.data.frame(apply(cpm_cyclicloess[,26:27], 1, mean))
+D1_40300 &lt;- as.data.frame(apply(cpm_cyclicloess[,28:29], 1, mean))
+D1_4955 &lt;- as.data.frame(apply(cpm_cyclicloess[,30:31], 1, mean))
+  # Day 2 technical replicates
+D2_20157 &lt;- as.data.frame(apply(cpm_cyclicloess[,32:33], 1, mean))
+D2_28815 &lt;- as.data.frame(apply(cpm_cyclicloess[,37:38], 1, mean))
+D2_3647 &lt;- as.data.frame(apply(cpm_cyclicloess[,40:41], 1, mean))
+D2_3649 &lt;- as.data.frame(apply(cpm_cyclicloess[,42:43], 1, mean))
+D2_40300 &lt;- as.data.frame(apply(cpm_cyclicloess[,44:45], 1, mean))
+D2_4955 &lt;- as.data.frame(apply(cpm_cyclicloess[,46:47], 1, mean))
+  # Day 3 technical replicates
+D3_20157 &lt;- as.data.frame(apply(cpm_cyclicloess[,48:49], 1, mean))
+D3_28815 &lt;- as.data.frame(apply(cpm_cyclicloess[,53:54], 1, mean))
+D3_3647 &lt;- as.data.frame(apply(cpm_cyclicloess[,56:57], 1, mean))
+D3_3649 &lt;- as.data.frame(apply(cpm_cyclicloess[,58:59], 1, mean))
+D3_40300 &lt;- as.data.frame(apply(cpm_cyclicloess[,60:61], 1, mean))
+D3_4955 &lt;- as.data.frame(apply(cpm_cyclicloess[,62:63], 1, mean))
+
+# Create a new data frame with all of the combined technical replicates
+mean_tech_reps &lt;- cbind(cpm_cyclicloess[,1:4], D0_28815, cpm_cyclicloess[,7], D0_3647, D0_3649, D0_40300, D0_4955, D1_20157, cpm_cyclicloess[,18:20], D1_28815, cpm_cyclicloess[,23], D1_3647, D1_3649, D1_40300, D1_4955, D2_20157, cpm_cyclicloess[,34:36], D2_28815, cpm_cyclicloess[,39], D2_3647, D2_3649, D2_40300, D2_4955, D3_20157, cpm_cyclicloess[,50:52], D3_28815, cpm_cyclicloess[,55], D3_3647, D3_3649, D3_40300, D3_4955)
+
+
+colnames(mean_tech_reps) &lt;- c(&quot;D0_20157&quot;, &quot;D0_20961&quot;, &quot;D0_21792&quot;, &quot;D0_28162&quot;, &quot;D0_28815&quot;, &quot;D0_29089&quot;, &quot;D0_3647&quot;, &quot;D0_3649&quot;, &quot;D0_40300&quot;, &quot;D0_4955&quot;, &quot;D1_20157&quot;, &quot;D1_20961&quot;, &quot;D1_21792&quot;, &quot;D1_28162&quot;, &quot;D1_28815&quot;, &quot;D1_29089&quot;, &quot;D1_3647&quot;, &quot;D1_3649&quot;, &quot;D1_40300&quot;, &quot;D1_4955&quot;, &quot;D2_20157&quot;, &quot;D2_20961&quot;, &quot;D2_21792&quot;, &quot;D2_28162&quot;, &quot;D2_28815&quot;, &quot;D2_29089&quot;, &quot;D2_3647&quot;, &quot;D2_3649&quot;, &quot;D2_40300&quot;, &quot;D2_4955&quot;, &quot;D3_20157&quot;, &quot;D3_20961&quot;, &quot;D3_21792&quot;, &quot;D3_28162&quot;, &quot;D3_28815&quot;, &quot;D3_29089&quot;, &quot;D3_3647&quot;, &quot;D3_3649&quot;, &quot;D3_40300&quot;, &quot;D3_4955&quot;)
+
+dim(mean_tech_reps)</code></pre>
+<pre><code>[1] 10304    40</code></pre>
+<pre class="r"><code># Make a column for which are averaged or not
+
+
+
+# Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/samplefactors-filtered.txt&quot;, stringsAsFactors=FALSE)
+day &lt;- bio_rep_samplefactors$Day
+species &lt;- bio_rep_samplefactors$Species
+
+# Setup matrix
+mean_tech_reps_matrix &lt;- as.matrix(mean_tech_reps, nrow=10304, ncol = 40)
+
+mean_tech_reps_matrix[1:10304,1:40] = as.numeric(as.character(mean_tech_reps_matrix[1:10304,1:40]))
+colnames(mean_tech_reps_matrix) &lt;- colnames(mean_tech_reps)
+rownames(mean_tech_reps_matrix) &lt;- rownames(mean_tech_reps)
+
+#write.table(mean_tech_reps_matrix, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess_40.txt&quot;, sep=&quot;\t&quot;)
+
+# Make PCA plots with the factors colored by day
+
+cpm_cyclicloess_40 &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess_40.txt&quot;)
+
+pca_genes &lt;- prcomp(t(cpm_cyclicloess_40), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+
+averaged_status &lt;- c(1,1,1,1,2,1,3,3,3,3,2,1,1,1,2,1,3,3,3,3,2,1,1,1,2,1,3,3,3,3,2,1,1,1,2,1,3,3,3,3)
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day), shape=as.factor(averaged_status), size=2)) + geom_point(aes(colour = as.factor(day))) +  scale_colour_manual(name=&quot;Day&quot;,  
+                      values = c(&quot;0&quot;=rgb(239/255, 110/255, 99/255, 1), &quot;1&quot;= rgb(0/255, 180/255, 81/255, 1), &quot;2&quot;=rgb(0/255, 177/255, 219/255, 1),
+                                 &quot;3&quot;=rgb(199/255, 124/255, 255/255,1))) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100),&quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100),&quot;% of variance)&quot;)) + scale_size(guide = &#39;none&#39;)  + theme_bw()  + ggtitle(&quot;PCs 1 and 2 normalized expression with averaged technical replicates (40 samples)&quot;) + scale_shape_discrete(name  =&quot;Replicate status&quot;, labels = c(&quot;Human Single&quot; ,&quot;Human Averaged&quot;, &quot;Chimp Averaged&quot;)) </code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ggplotly()</code></pre>
+</div>
+<div id="method-2-when-2-technical-replicates-sum-the-gene-counts-and-then-normalize-all-data-together" class="section level2">
+<h2>Method 2: When 2 technical replicates, sum the gene counts and then normalize all data together</h2>
+<pre class="r"><code># Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/samplefactors-filtered.txt&quot;, stringsAsFactors=FALSE)
+day &lt;- bio_rep_samplefactors$Day
+species &lt;- bio_rep_samplefactors$Species
+
+# Remove D0_28815 outlier
+
+counts_genes63 &lt;- counts_genes[,-2]
+dim(counts_genes63)</code></pre>
+<pre><code>[1] 30030    63</code></pre>
+<pre class="r"><code># Sum gene counts of technical replicates
+
+D0_28815_pre &lt;- as.data.frame(apply(counts_genes63[,5:6], 1, sum))
+D0_3647_pre &lt;- as.data.frame(apply(counts_genes63[,8:9], 1, sum))
+D0_3649_pre &lt;- as.data.frame(apply(counts_genes63[,10:11], 1, sum))
+D0_40300_pre &lt;- as.data.frame(apply(counts_genes63[,12:13], 1, sum))
+D0_4955_pre &lt;- as.data.frame(apply(counts_genes63[,14:15], 1, sum))
+  # Day 1 technical replicates
+D1_20157_pre &lt;- as.data.frame(apply(counts_genes63[,16:17], 1, sum))
+D1_28815_pre &lt;- as.data.frame(apply(counts_genes63[,21:22], 1, sum))
+D1_3647_pre &lt;- as.data.frame(apply(counts_genes63[,24:25], 1, sum))
+D1_3649_pre &lt;- as.data.frame(apply(counts_genes63[,26:27], 1, sum))
+D1_40300_pre &lt;- as.data.frame(apply(counts_genes63[,28:29], 1, sum))
+D1_4955_pre &lt;- as.data.frame(apply(counts_genes63[,30:31], 1, sum))
+  # Day 2 technical replicates
+D2_20157_pre &lt;- as.data.frame(apply(counts_genes63[,32:33], 1, sum))
+D2_28815_pre &lt;- as.data.frame(apply(counts_genes63[,37:38], 1, sum))
+D2_3647_pre &lt;- as.data.frame(apply(counts_genes63[,40:41], 1, sum))
+D2_3649_pre &lt;- as.data.frame(apply(counts_genes63[,42:43], 1, sum))
+D2_40300_pre &lt;- as.data.frame(apply(counts_genes63[,44:45], 1, sum))
+D2_4955_pre &lt;- as.data.frame(apply(counts_genes63[,46:47], 1, sum))
+  # Day 3 technical replicates
+D3_20157_pre &lt;- as.data.frame(apply(counts_genes63[,48:49], 1, sum))
+D3_28815_pre &lt;- as.data.frame(apply(counts_genes63[,53:54], 1, sum))
+D3_3647_pre &lt;- as.data.frame(apply(counts_genes63[,56:57], 1, sum))
+D3_3649_pre &lt;- as.data.frame(apply(counts_genes63[,58:59], 1, sum))
+D3_40300_pre &lt;- as.data.frame(apply(counts_genes63[,60:61], 1, sum))
+D3_4955_pre &lt;- as.data.frame(apply(counts_genes63[,62:63], 1, sum))
+
+# Create a new data frame with all of the combined technical replicates
+mean_tech_reps_pre &lt;- cbind(counts_genes63[,1:4], D0_28815_pre, counts_genes63[,7], D0_3647_pre, D0_3649_pre, D0_40300_pre, D0_4955_pre, D1_20157_pre, counts_genes63[,18:20], D1_28815_pre, counts_genes63[,23], D1_3647_pre, D1_3649_pre, D1_40300_pre, D1_4955_pre, D2_20157_pre, counts_genes63[,34:36], D2_28815_pre, counts_genes63[,39], D2_3647_pre, D2_3649_pre, D2_40300_pre, D2_4955_pre, D3_20157_pre, counts_genes63[,50:52], D3_28815_pre, counts_genes63[,55], D3_3647_pre, D3_3649_pre, D3_40300_pre, D3_4955_pre)
+
+
+colnames(mean_tech_reps_pre) &lt;- c(&quot;D0_20157&quot;, &quot;D0_20961&quot;, &quot;D0_21792&quot;, &quot;D0_28162&quot;, &quot;D0_28815&quot;, &quot;D0_29089&quot;, &quot;D0_3647&quot;, &quot;D0_3649&quot;, &quot;D0_40300&quot;, &quot;D0_4955&quot;, &quot;D1_20157&quot;, &quot;D1_20961&quot;, &quot;D1_21792&quot;, &quot;D1_28162&quot;, &quot;D1_28815&quot;, &quot;D1_29089&quot;, &quot;D1_3647&quot;, &quot;D1_3649&quot;, &quot;D1_40300&quot;, &quot;D1_4955&quot;, &quot;D2_20157&quot;, &quot;D2_20961&quot;, &quot;D2_21792&quot;, &quot;D2_28162&quot;, &quot;D2_28815&quot;, &quot;D2_29089&quot;, &quot;D2_3647&quot;, &quot;D2_3649&quot;, &quot;D2_40300&quot;, &quot;D2_4955&quot;, &quot;D3_20157&quot;, &quot;D3_20961&quot;, &quot;D3_21792&quot;, &quot;D3_28162&quot;, &quot;D3_28815&quot;, &quot;D3_29089&quot;, &quot;D3_3647&quot;, &quot;D3_3649&quot;, &quot;D3_40300&quot;, &quot;D3_4955&quot;)
+
+dim(mean_tech_reps_pre)</code></pre>
+<pre><code>[1] 30030    40</code></pre>
+<pre class="r"><code># Log2(CPM)
+
+cpm &lt;- cpm(mean_tech_reps_pre, log=TRUE)
+
+# Make plot 
+hist(cpm, main = &quot;log2(CPM) values in unfiltered data (n = 63 samples)&quot;, breaks = 100, ylim = c(0, 50000), xlab = &quot;log2(CPM) values&quot;)
+abline(v = 1.5, col = &quot;red&quot;, lwd = 3)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Filter lowly expressed genes
+
+humans &lt;- c(1:6, 11:16, 21:26, 31:36)
+chimps &lt;- c(7:10, 17:20, 27:30, 37:40)
+
+cpm_filtered &lt;- (rowSums(cpm[,humans] &gt; 1.5) &gt; 10 &amp; rowSums(cpm[,chimps] &gt; 1.5) &gt; 10)
+
+genes_in_cutoff_pre &lt;- cpm[cpm_filtered==TRUE,]
+dim(genes_in_cutoff_pre)</code></pre>
+<pre><code>[1] 10174    40</code></pre>
+<p>Using a cutoff of log2(CPM) &gt; 1.5 in at least half of the human and half of the chimpanzee samples, 10,179 genes remain. In order to compare the two methods, we will use the 10,304 genes from all other analyses.</p>
+<pre class="r"><code># Get the gene counts for the 10,304 genes
+
+inshared_lists = row.names(mean_tech_reps_pre) %in% rownames(mean_tech_reps)
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+counts_genes_in &lt;- cbind(mean_tech_reps_pre, inshared_lists_data)
+counts_genes_in_cutoff_pre &lt;- subset(counts_genes_in, inshared_lists_data == &quot;TRUE&quot;)
+counts_genes_in_cutoff_pre &lt;- counts_genes_in_cutoff_pre[,1:40]
+
+
+
+# Take the TMM of the counts only for the genes that remain after filtering
+
+  # Make day-species labels
+labels_pre &lt;- c(&quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;,  &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;)
+
+dge_in_cutoff_pre &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff_pre), genes=rownames(counts_genes_in_cutoff_pre), group = as.character(t(labels_pre)))
+dge_in_cutoff_pre &lt;- calcNormFactors(dge_in_cutoff_pre)
+
+# Find the cpm
+
+cpm_in_cutoff_pre &lt;- cpm(dge_in_cutoff_pre, normalized.lib.sizes=TRUE, log=TRUE)
+
+# Use voom to perform a cyclic loess normalization
+
+  # Make the design matrix
+condition &lt;- factor(paste(species,day,sep=&quot;.&quot;))
+design &lt;- model.matrix(~ 0 + condition)
+colnames(design) &lt;- gsub(&quot;condition&quot;, &quot;&quot;, dput(colnames(design)))</code></pre>
+<pre><code>c(&quot;conditionC.0&quot;, &quot;conditionC.1&quot;, &quot;conditionC.2&quot;, &quot;conditionC.3&quot;, 
+&quot;conditionH.0&quot;, &quot;conditionH.1&quot;, &quot;conditionH.2&quot;, &quot;conditionH.3&quot;
+)</code></pre>
+<pre class="r"><code>cpm.voom &lt;- voom(dge_in_cutoff_pre, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cpm_in_cutoff_pre_cyclic_loess &lt;- cpm.voom$E
+
+# Plot of cpm values
+
+hist(cpm_in_cutoff_pre, xlab = &quot;Log2(CPM)&quot;, main = &quot;Log2(CPM) values for genes meeting the filtering criteria&quot;, breaks = 100 )</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm_in_cutoff_pre, col=pal[as.factor(species)])</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-4-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm_in_cutoff_pre, col=pal[as.numeric(day)])</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-4-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>write.table(cpm_in_cutoff_pre_cyclic_loess, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess_40_pre_norm.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T) 
+
+
+# Examine PCs
+pca_genes &lt;- prcomp(t(cpm_in_cutoff_pre_cyclic_loess), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+averaged_status &lt;- c(1,1,1,1,2,1,3,3,3,3,2,1,1,1,2,1,3,3,3,3,2,1,1,1,2,1,3,3,3,3,2,1,1,1,2,1,3,3,3,3)
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day), shape=as.factor(averaged_status), size=2)) + geom_point(aes(colour = as.factor(day))) +  scale_colour_manual(name=&quot;Day&quot;,  
+                      values = c(&quot;0&quot;=rgb(239/255, 110/255, 99/255, 1), &quot;1&quot;= rgb(0/255, 180/255, 81/255, 1), &quot;2&quot;=rgb(0/255, 177/255, 219/255, 1),
+                                 &quot;3&quot;=rgb(199/255, 124/255, 255/255,1))) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100),&quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100),&quot;% of variance)&quot;)) + scale_size(guide = &#39;none&#39;)  + theme_bw()  + ggtitle(&quot;PCs 1 and 2 normalized expression with technical replicates summed prior to normalization (n=40)&quot;) + scale_shape_discrete(name  =&quot;Replicate status&quot;, labels = c(&quot;Human Single&quot; ,&quot;Human Averaged&quot;, &quot;Chimp Averaged&quot;)) </code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-4-5.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="compare-the-two-methods" class="section level2">
+<h2>Compare the two methods</h2>
+<pre class="r"><code># Calculate the Pearson&#39;s correlation for each sample
+
+Cor_values = matrix(data = NA, nrow = 40, ncol = 1, dimnames = list(c(&quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;,  &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;), c(&quot;Pearson&#39;s correlation&quot;)))
+
+for (i in 1:40){
+  Cor_values[i,1] &lt;- cor(mean_tech_reps[,i], cpm_in_cutoff_pre_cyclic_loess[,i])
+}
+
+summary(Cor_values)</code></pre>
+<pre><code> Pearson&#39;s correlation
+ Min.   :0.9954       
+ 1st Qu.:0.9989       
+ Median :0.9996       
+ Mean   :0.9991       
+ 3rd Qu.:0.9999       
+ Max.   :1.0000       </code></pre>
+<pre class="r"><code># Day 0 Chimp 3947
+plot(mean_tech_reps[,7], cpm_in_cutoff_pre_cyclic_loess[,7], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 0, Chimp Line 3947)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s r = 0.9965&quot;
+text(0, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,7], cpm_in_cutoff_pre_cyclic_loess[,7])</code></pre>
+<pre><code>[1] 0.9965309</code></pre>
+<pre class="r"><code># Day 0 Chimp 3949
+plot(mean_tech_reps[,8], cpm_in_cutoff_pre[,8], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 0, Chimp Line 3949)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9979&quot;
+text(0, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,8], cpm_in_cutoff_pre[,8])</code></pre>
+<pre><code>[1] 0.9979774</code></pre>
+<pre class="r"><code># Day 0 Chimp 40300
+
+plot(mean_tech_reps[,9], cpm_in_cutoff_pre[,9], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 0, Chimp Line 40300)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9989&quot;
+text(0, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,9], cpm_in_cutoff_pre[,9])</code></pre>
+<pre><code>[1] 0.9987857</code></pre>
+<pre class="r"><code># Day 0 Chimp 4955
+
+plot(mean_tech_reps[,10], cpm_in_cutoff_pre[,10], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 0, Chimp Line 4955)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9970&quot;
+text(0, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,10], cpm_in_cutoff_pre[,10])</code></pre>
+<pre><code>[1] 0.9971299</code></pre>
+<pre class="r"><code># Day 1 Chimp 3947
+
+plot(mean_tech_reps[,17], cpm_in_cutoff_pre[,17], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 1, Chimp Line 3947)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9994&quot;
+text(2, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,17], cpm_in_cutoff_pre[,17])</code></pre>
+<pre><code>[1] 0.9992265</code></pre>
+<pre class="r"><code># Day 1 Chimp 3949
+
+plot(mean_tech_reps[,18], cpm_in_cutoff_pre[,18], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 1, Chimp Line 3949)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9996&quot;
+text(2, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,18], cpm_in_cutoff_pre[,18])</code></pre>
+<pre><code>[1] 0.9994921</code></pre>
+<pre class="r"><code># Day 1 Chimp 40300
+
+plot(mean_tech_reps[,19], cpm_in_cutoff_pre[,19], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 1, Chimp Line 40300)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9979&quot;
+text(2, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,19], cpm_in_cutoff_pre[,19])</code></pre>
+<pre><code>[1] 0.9979052</code></pre>
+<pre class="r"><code># Day 1 Chimp 4955
+
+plot(mean_tech_reps[,20], cpm_in_cutoff_pre[,20], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 1, Chimp Line 4955)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9961&quot;
+text(2, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,20], cpm_in_cutoff_pre[,20])</code></pre>
+<pre><code>[1] 0.9960728</code></pre>
+<pre class="r"><code># Day 2 Chimp 3947
+
+plot(mean_tech_reps[,27], cpm_in_cutoff_pre[,27], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 2, Chimp Line 3947)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9992&quot;
+text(3, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,27], cpm_in_cutoff_pre[,27])</code></pre>
+<pre><code>[1] 0.9991663</code></pre>
+<pre class="r"><code># Day 2 Chimp 3949
+
+plot(mean_tech_reps[,28], cpm_in_cutoff_pre[,28], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 2, Chimp Line 3949)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9988&quot;
+text(3, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,28], cpm_in_cutoff_pre[,28])</code></pre>
+<pre><code>[1] 0.998994</code></pre>
+<pre class="r"><code># Day 2 Chimp 40300
+
+plot(mean_tech_reps[,29], cpm_in_cutoff_pre[,29], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 2, Chimp Line 40300)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9992&quot;
+text(3, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,29], cpm_in_cutoff_pre[,29])</code></pre>
+<pre><code>[1] 0.9991052</code></pre>
+<pre class="r"><code># Day 2 Chimp 4955
+
+plot(mean_tech_reps[,30], cpm_in_cutoff_pre[,30], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 2, Chimp Line 4955)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9970&quot;
+text(3, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,30], cpm_in_cutoff_pre[,30])</code></pre>
+<pre><code>[1] 0.997065</code></pre>
+<pre class="r"><code># Day 3 Chimp 3947
+
+plot(mean_tech_reps[,37], cpm_in_cutoff_pre[,37], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 3, Chimp Line 3947)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9976&quot;
+text(2, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,37], cpm_in_cutoff_pre[,37])</code></pre>
+<pre><code>[1] 0.9975502</code></pre>
+<pre class="r"><code># Day 3 Chimp 3949
+
+plot(mean_tech_reps[,38], cpm_in_cutoff_pre[,38], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 3, Chimp Line 3949)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9940&quot;
+text(2, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,38], cpm_in_cutoff_pre[,38])</code></pre>
+<pre><code>[1] 0.9953473</code></pre>
+<pre class="r"><code># Day 3 Chimp 40300
+
+plot(mean_tech_reps[,39], cpm_in_cutoff_pre[,39], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 3, Chimp Line 40300)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9991&quot;
+text(2, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,39], cpm_in_cutoff_pre[,39])</code></pre>
+<pre><code>[1] 0.998971</code></pre>
+<pre class="r"><code># Day 3 Chimp 4955
+
+plot(mean_tech_reps[,40], cpm_in_cutoff_pre[,40], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 3, Chimp Line 4955)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9989&quot;
+text(2, 12, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,40], cpm_in_cutoff_pre[,40])</code></pre>
+<pre><code>[1] 0.9986006</code></pre>
+<pre class="r"><code># Day 0 Human 28815
+plot(mean_tech_reps[,5], cpm_in_cutoff_pre[,5], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 0, Human Line 28815)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9997&quot;
+text(0, 10, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-17.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,5], cpm_in_cutoff_pre[,5])</code></pre>
+<pre><code>[1] 0.9995542</code></pre>
+<pre class="r"><code># Day 1 Human 20157
+
+plot(mean_tech_reps[,11], cpm_in_cutoff_pre[,11], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 1, Human Line 20157)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9998&quot;
+text(0, 10, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,11], cpm_in_cutoff_pre[,11])</code></pre>
+<pre><code>[1] 0.9998264</code></pre>
+<pre class="r"><code># Day 1 Human 28815
+
+plot(mean_tech_reps[,15], cpm_in_cutoff_pre[,15], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 1, Human Line 28815)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9999&quot;
+text(-1, 10, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-19.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,15], cpm_in_cutoff_pre[,15])</code></pre>
+<pre><code>[1] 0.9998606</code></pre>
+<pre class="r"><code># Day 2 Human 20157
+
+plot(mean_tech_reps[,21], cpm_in_cutoff_pre[,21], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 2, Human Line 20157)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9996&quot;
+text(0, 10, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-20.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,21], cpm_in_cutoff_pre[,21])</code></pre>
+<pre><code>[1] 0.9993741</code></pre>
+<pre class="r"><code># Day 2 Human 28815
+
+plot(mean_tech_reps[,25], cpm_in_cutoff_pre[,25], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 2, Human Line 28815)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9988&quot;
+text(0, 10, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-21.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,25], cpm_in_cutoff_pre[,25])</code></pre>
+<pre><code>[1] 0.998588</code></pre>
+<pre class="r"><code># Day 3 Human 20157
+
+plot(mean_tech_reps[,31], cpm_in_cutoff_pre[,31], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 3, Human Line 20157)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.9991&quot;
+text(0, 10, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-22.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,31], cpm_in_cutoff_pre[,31])</code></pre>
+<pre><code>[1] 0.9989673</code></pre>
+<pre class="r"><code># Day 3 Human 28815
+
+plot(mean_tech_reps[,36], cpm_in_cutoff_pre[,36], ylab = &quot;Method 1: avg. log2(CPM)&quot;, xlab = &quot;Method 2: sum counts then normalize&quot;, main = &quot;Combining tech. rep. (Day 3, Human Line 28815)&quot;)
+abline(0,1, col = &quot;red&quot;)
+var &lt;- &quot;Pearson&#39;s correlation = 0.99999&quot;
+text(0, 10, var, pos = 1)</code></pre>
+<p><img src="figure/Compare_methods_combining_technical_replicates_cyclic_loess.Rmd/unnamed-chunk-5-23.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cor(mean_tech_reps[,36], cpm_in_cutoff_pre[,36])</code></pre>
+<pre><code>[1] 0.9992846</code></pre>
+</div>
+<div id="testing-for-robustness-of-the-main-results-in-the-analysis-of-variance-section" class="section level1">
+<h1>Testing for robustness of the main results in the analysis of variance section</h1>
+<pre class="r"><code># Reduction Day 0 to 1 chimps
+chimp_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x &lt;- t(cpm_in_cutoff_pre_cyclic_loess[i,7:10])
+    y &lt;- t(cpm_in_cutoff_pre_cyclic_loess[i,17:20])
+    htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+    chimp_var_pval[i,1] &lt;- htest$p.value
+}
+rownames(chimp_var_pval) &lt;- rownames(mean_tech_reps)
+length(which(chimp_var_pval &lt; 0.05))</code></pre>
+<pre><code>[1] 677</code></pre>
+<pre class="r"><code>chimp_red_01 &lt;- as.data.frame(chimp_var_pval[which(chimp_var_pval &lt; 0.05), ])
+dim(chimp_red_01)</code></pre>
+<pre><code>[1] 677   1</code></pre>
+<pre class="r"><code># Reduction Day 0 to 1 humans
+human_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x &lt;- t(cpm_in_cutoff_pre[i,1:6])
+    y &lt;- t(cpm_in_cutoff_pre[i,11:16])
+    htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+    human_var_pval[i,1] &lt;- htest$p.value
+}
+rownames(human_var_pval) &lt;- rownames(mean_tech_reps)
+length(which(human_var_pval &lt; 0.05))</code></pre>
+<pre><code>[1] 2257</code></pre>
+<pre class="r"><code>human_red_01 &lt;- as.data.frame(human_var_pval[which(human_var_pval &lt; 0.05), ])
+dim(human_red_01)</code></pre>
+<pre><code>[1] 2257    1</code></pre>
+<pre class="r"><code># Increase Day 1 to 2 chimps
+
+chimp_var_pval &lt;- array(NA, dim = c(10304, 1))
+for(i in 1:10304){
+    x &lt;- t(cpm_in_cutoff_pre[i,17:20])
+    y &lt;- t(cpm_in_cutoff_pre[i,27:30])
+    htest &lt;- var.test(x, y, alternative = c(&quot;less&quot;))
+    chimp_var_pval[i,1] &lt;- htest$p.value
+}
+rownames(chimp_var_pval) &lt;- rownames(mean_tech_reps)
+length(which(chimp_var_pval &lt; 0.05))</code></pre>
+<pre><code>[1] 439</code></pre>
+<pre class="r"><code>chimp_inc_12 &lt;- as.data.frame(chimp_var_pval[which(chimp_var_pval &lt; 0.05), ])
+dim(chimp_inc_12)</code></pre>
+<pre><code>[1] 439   1</code></pre>
+<pre class="r"><code># Increase Day 1 to 2 humans
+human_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+for(i in 1:10304){
+    x &lt;- t(cpm_in_cutoff_pre[i,11:16])
+    y &lt;- t(cpm_in_cutoff_pre[i,21:26])
+    htest &lt;- var.test(x, y, alternative = c(&quot;less&quot;))
+    human_var_pval[i,1] &lt;- htest$p.value
+}
+rownames(human_var_pval) &lt;- rownames(mean_tech_reps)
+length(which(human_var_pval &lt; 0.05))</code></pre>
+<pre><code>[1] 1888</code></pre>
+<pre class="r"><code>human_inc_12 &lt;- as.data.frame(human_var_pval[which(human_var_pval &lt; 0.05), ])
+dim(human_inc_12)</code></pre>
+<pre><code>[1] 1888    1</code></pre>
+<p>Conclusion: The number of significant genes is approximately the same as the main results in the analysis of variance section.</p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

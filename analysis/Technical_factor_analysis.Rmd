@@ -14,7 +14,6 @@ The goal of this is to establish which, if any, technical factors are correlated
 ```{r}
 # Load libraries
 
-library("polycor")
 library("gdata")
 library("qvalue")
 library("glmnet")
@@ -96,6 +95,42 @@ dev.off()
 ## Testing association between a particular variable and PCs with a linear model
 
 ```{r}
+# TESTING BIOLOGICAL VARIABLES OF INTEREST
+
+# PC 1 versus day
+
+ checkPC1 <- lm(pcs[,1] ~ as.factor(day))
+
+#Get the summary statistics from it
+  summary(checkPC1)
+
+#Get the p-value of the F-statistic
+  summary(checkPC1)$fstatistic
+
+  fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  
+#Fraction of the variance explained by the model
+  r2_value <- summary(checkPC1)$r.squared
+
+# PC 2 versus species
+
+   checkPC2 <- lm(pcs[,2] ~ as.factor(species))
+
+#Get the summary statistics from it
+  summary(checkPC2)
+
+#Get the p-value of the F-statistic
+  summary(checkPC2)$fstatistic
+
+  fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  
+#Fraction of the variance explained by the model
+  r2_value <- summary(checkPC1)$r.squared
+
+# TESTING TECHNICAL VARIABLES OF INTEREST
+  
 #Make an empty matrix to put all of the data in
 # Note: Do not include TC day, as it is a biological variable of interest
 

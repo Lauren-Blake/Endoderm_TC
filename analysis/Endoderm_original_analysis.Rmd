@@ -1554,7 +1554,7 @@ table(df_plot$comparison)
 ggplot(df_plot, aes(x = day1, y = correlation)) +
   geom_boxplot() +
   facet_wrap(~comparison) +
-  labs(x = "Day", y = "Spearman's r", title = "Average of technical replicates when available (4 chimps, 6 humans")
+  labs(x = "Day", y = "Spearman's r", title = "Average of technical replicates when available (4 chimps, 6 humans)")
   
   day1cor_cross <- pair_cor_long[pair_cor_long$day1==1,]$cross
   day0cor_cross <- pair_cor_long[pair_cor_long$day1==0,]$cross
@@ -1630,6 +1630,8 @@ aov_groups <- cbind(corr_day_species, group)
 dim(aov_groups)
 
 oneway.test(aov_groups$correlations ~ aov_groups$Sample)
+
+# Results: F = 1.5518, num df = 3.000, denom df = 10.163, p-value = 0.2606
 
 #### For within species humans
 
@@ -2573,9 +2575,13 @@ colnames(TF_heatmap) <- c("PRDM1", "HHEX", "CXCR4", "SOX17", "GSC", "OTX2", "EOM
 dim(TF_heatmap)  
 View(TF_heatmap)
 
+
+
+
+
 # Find the correlations and then plot the results
 Species <- After_removal_sample_info$Species
-#Day <- After_removal_sample_info$Day
+Day <- After_removal_sample_info$Day
 
 # Get a library
 library("colorspace")
@@ -2594,7 +2600,131 @@ library("dendextend")
 
 gplots::heatmap.2(x=as.matrix(t(TF_heatmap)),
 #                  , distfun = dist(x, method = "euclidean"), 
-                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, col=colors, denscol="white", labCol= labels, ColSideColors=pal[as.integer(as.factor(Species))]) #RowSideColors=pal[as.integer(as.factor(Day))+9])
+                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, col=colors, denscol="white", labCol= labels, ColSideColors= pal[as.integer(as.factor(Day))+9])
+  
+  #pal[as.integer(as.factor(Species))]) #RowSideColors=pal[as.integer(as.factor(Day))+9])
+
+
+
+# New heatmap
+
+# EOMES (ENSG00000163508)
+
+exp_EOMES <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000163508", rownames(cpm_in_cutoff)), ])
+
+# GSC (ENSG00000133937)
+
+exp_GSC <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000133937", rownames(cpm_in_cutoff)), ])
+
+
+# EOMES (ENSG00000141448)
+
+exp_GATA6 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000141448", rownames(cpm_in_cutoff)), ])
+
+# FOXA2 (ENSG00000125798)
+
+exp_FOXA2 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000125798", rownames(cpm_in_cutoff)), ])
+
+# CER1 (ENSG00000147869)
+
+exp_CER1 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000147869", rownames(cpm_in_cutoff)), ])
+
+# Nodal (ENSG00000156574)
+
+exp_NODAL <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000156574", rownames(cpm_in_cutoff)), ])
+
+# WNT3 (ENSG00000108379)
+
+exp_WNT3 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000108379", rownames(cpm_in_cutoff)), ])
+
+# MIXL1 (ENSG00000185155)
+
+exp_MIXL1 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000185155", rownames(cpm_in_cutoff)), ])
+
+# SNAI1 (ENSG00000124216)
+
+exp_SNAI1 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000124216", rownames(cpm_in_cutoff)), ])
+
+# HHEX (ENSG00000152804)
+
+exp_HHEX <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000152804", rownames(cpm_in_cutoff)), ])
+
+# CXCR4 (ENSG00000121966)
+
+exp_CXCR4 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000121966", rownames(cpm_in_cutoff)), ])
+
+# SOX17 (ENSG00000164736)
+
+exp_SOX17 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000164736", rownames(cpm_in_cutoff)), ])
+
+# KLF8 (ENSG00000102349)
+
+exp_KLF8 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000102349", rownames(cpm_in_cutoff)), ])
+
+# OTX2 (ENSG00000165588)
+
+exp_OTX2 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000165588", rownames(cpm_in_cutoff)), ])
+
+# PRDM1 (ENSG00000057657)
+
+exp_PRDM1 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000057657", rownames(cpm_in_cutoff)), ])
+
+# KIT (ENSG00000157404)
+
+exp_KIT <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000157404", rownames(cpm_in_cutoff)), ])
+
+# FOXM1 (ENSG00000111206)
+
+exp_FOXM1 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000111206", rownames(cpm_in_cutoff)), ])
+
+# BRACHYURY (ENSG00000164458)
+
+exp_BRACHYURY <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000164458", rownames(cpm_in_cutoff)), ])
+
+# SHISA2 (ENSG00000180730)
+
+exp_SHISA2 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000180730", rownames(cpm_in_cutoff)), ])
+
+# CDH1 (ENSG00000039068)
+
+exp_CDH1 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000039068", rownames(cpm_in_cutoff)), ])
+
+# CDH2 (ENSG00000170558)
+
+exp_CDH2 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000170558", rownames(cpm_in_cutoff)), ])
+
+# PRDM14 (ENSG00000147596)
+
+exp_PRDM14 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000147596", rownames(cpm_in_cutoff)), ])
+
+# WNT5A (ENSG00000114251)
+
+exp_WNT5A <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000114251", rownames(cpm_in_cutoff)), ])
+
+# WNT5B (ENSG00000111186)
+
+exp_WNT5B <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000111186", rownames(cpm_in_cutoff)), ])
+
+# SOX2 (ENSG00000181449)
+
+exp_SOX2 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000181449", rownames(cpm_in_cutoff)), ])
+
+# PDGFRA (ENSG00000134853)
+
+exp_PDGFRA <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000134853", rownames(cpm_in_cutoff)), ])
+
+# DKK1 (ENSG00000107984)
+
+exp_DKK1 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000107984", rownames(cpm_in_cutoff)), ])
+
+# DKK4 (ENSG00000170558)
+
+exp_DKK4 <- as.data.frame(cpm_in_cutoff[grepl("ENSG00000104371", rownames(cpm_in_cutoff)), ])
+
+TF_heatmap <- cbind(exp_EOMES, exp_GSC, exp_GATA6, exp_FOXA2, exp_CER1, exp_NODAL, exp_WNT3, exp_MIXL1, exp_SNAI1, exp_HHEX, exp_CXCR4, exp_SOX17, exp_KLF8, exp_OTX2, exp_PRDM1, exp_KIT, exp_FOXM1, exp_BRACHYURY, exp_SHISA2, exp_CDH1, exp_CDH2, exp_PRDM14, exp_WNT5A, exp_WNT5B, exp_SOX2, exp_PDGFRA, exp_DKK1, exp_DKK4,  exp_FGF8)
+colnames(TF_heatmap) <- c("EOMES", "GSC", "GATA6", "FOXA2", "CER1", "NODAL", "WNT3", "MIXL1", "SNAI1", "HHEX", "CXCR4", "SOX17", "KLF8", "OTX2", "PRDM1", "KIT", "FOXM1", "BRACHYURY", "SHISA2", "CDH1", "CDH2", "PRDM14", "WNT5A", "WNT5B", "SOX2", "PDGFRA", "DKK1", "DKK4",  "FGF8")
+
+dim(TF_heatmap) 
 
 ```
 

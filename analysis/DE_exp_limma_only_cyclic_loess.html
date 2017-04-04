@@ -1,0 +1,2524 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>DE_exp_limma</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">DE_exp_limma</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>November 8, 2016</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#looking-at-cyclic-loess-normalization">Looking at cyclic loess normalization</a><ul>
+<li><a href="#tf-figures-and-heatmap-main-paper">TF figures and heatmap (main paper)</a></li>
+<li><a href="#data-visualization">Data visualization</a></li>
+<li><a href="#final-no-global-5-fdr-main-paper">Final, no global (5% FDR, main paper)</a></li>
+<li><a href="#final-no-global-at-fdr-1-both-batches-supplement">Final, no global at FDR 1%, both batches (supplement)</a></li>
+<li><a href="#final-no-global-at-fdr-10-both-batches-supplement">Final, no global at FDR 10%, both batches (supplement)</a></li>
+<li><a href="#final-no-global-at-fdr-5-batch1-supplement">Final, no global at FDR 5%, Batch1 (supplement)</a></li>
+<li><a href="#final-no-global-at-fdr-5-batch2-supplement">Final, no global at FDR 5%, Batch2 (supplement)</a></li>
+<li><a href="#robustness-with-respect-to-the-purity-samples-supplement">Robustness with respect to the purity samples (supplement)</a></li>
+<li><a href="#final-global-correction-supplement">Final global correction (supplement)</a></li>
+<li><a href="#final-looking-at-divergence-at-day-0-and-day-1-supplement">Final, looking at divergence at day 0 and day 1 (supplement)</a></li>
+<li><a href="#data-visualization-subset-of-samples-2-3-humans">Data visualization (subset of samples, 2-3 humans)</a></li>
+</ul></li>
+<li><a href="#de-genes-by-species-at-each-time-point-using-only-the-genes-that-remained-post-filtering-for-stem">DE genes by species at each time point using only the genes that remained post-filtering for STEM</a></li>
+</ul>
+</div>
+
+<p>The goal of this script to to assess differential gene expression with pairwise comparisons using Limma with cyclic loess normalized values. Since we want to compare results from multiple contrasts, we are going to correct for this. For more information, see <a href="https://support.bioconductor.org/p/27947/" class="uri">https://support.bioconductor.org/p/27947/</a>.</p>
+<pre class="r"><code># Load libraries
+
+library(&quot;gplots&quot;)</code></pre>
+<pre><code>## Warning: package &#39;gplots&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;scales&quot;)</code></pre>
+<pre><code>## Warning: package &#39;scales&#39; was built under R version 3.2.3</code></pre>
+<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre><code>## Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>theme_set(theme_bw(base_size = 16))
+library(&quot;biomaRt&quot;)
+library(&quot;colorfulVennPlot&quot;)</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre class="r"><code>library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>## Warning: package &#39;VennDiagram&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: futile.logger</code></pre>
+<pre><code>## Warning: package &#39;futile.logger&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;gridExtra&quot;)</code></pre>
+<pre><code>## Warning: package &#39;gridExtra&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;R.utils&quot;)</code></pre>
+<pre><code>## Warning: package &#39;R.utils&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: R.oo</code></pre>
+<pre><code>## Warning: package &#39;R.oo&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: R.methodsS3</code></pre>
+<pre><code>## Warning: package &#39;R.methodsS3&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## R.methodsS3 v1.7.1 (2016-02-15) successfully loaded. See ?R.methodsS3 for help.</code></pre>
+<pre><code>## R.oo v1.21.0 (2016-10-30) successfully loaded. See ?R.oo for help.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;R.oo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:methods&#39;:
+## 
+##     getClasses, getMethods</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     attach, detach, gc, load, save</code></pre>
+<pre><code>## R.utils v2.4.0 (2016-09-13) successfully loaded. See ?R.utils for help.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;R.utils&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:utils&#39;:
+## 
+##     timestamp</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cat, commandArgs, getOption, inherits, isOpen, parse, warnings</code></pre>
+<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code># Load colors 
+
+colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Load normalized data
+
+### Note: We want the object dge_in_cutoff for voom, which is why we import the counts data and do the normalization again. ###
+
+gene_counts_combined_raw_data &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/gene_counts_combined.txt&quot;)
+counts_genes &lt;- gene_counts_combined_raw_data[1:30030,2:65]
+rownames(counts_genes) &lt;- gene_counts_combined_raw_data[1:30030,1]
+
+# Get data and sample info
+
+counts_genes63 &lt;- counts_genes[,-2]
+dim(counts_genes63)</code></pre>
+<pre><code>## [1] 30030    63</code></pre>
+<pre class="r"><code>After_removal_sample_info &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/After_removal_sample_info.csv&quot;)
+
+Species &lt;- After_removal_sample_info$Species
+species &lt;- After_removal_sample_info$Species
+day &lt;- After_removal_sample_info$Day
+day &lt;- as.factor(day)
+individual &lt;- After_removal_sample_info$Individual
+Sample_ID &lt;- After_removal_sample_info$Sample_ID
+labels &lt;- paste(Sample_ID, day, sep=&quot; &quot;)
+
+
+# Log2(CPM)
+
+cpm &lt;- cpm(counts_genes63, log=TRUE)
+
+# Filter lowly expressed genes
+
+humans &lt;- c(1:7, 16:23, 32:39, 48:55)
+chimps &lt;- c(8:15, 24:31, 40:47, 56:63)
+
+cpm_filtered &lt;- (rowSums(cpm[,humans] &gt; 1.5) &gt; 15 &amp; rowSums(cpm[,chimps] &gt; 1.5) &gt; 16)
+
+genes_in_cutoff &lt;- cpm[cpm_filtered==TRUE,]
+dim(genes_in_cutoff)</code></pre>
+<pre><code>## [1] 10304    63</code></pre>
+<pre class="r"><code># Find the original counts of all of the genes that fit the criteria 
+
+counts_genes_in_cutoff &lt;- counts_genes63[cpm_filtered==TRUE,]
+dim(counts_genes_in_cutoff)</code></pre>
+<pre><code>## [1] 10304    63</code></pre>
+<pre class="r"><code># Take the TMM of the counts only for the genes that remain after filtering
+
+dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
+
+cpm_in_cutoff &lt;- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)</code></pre>
+<div id="looking-at-cyclic-loess-normalization" class="section level2">
+<h2>Looking at cyclic loess normalization</h2>
+<pre class="r"><code>col = as.data.frame(pal[as.numeric(Species)])
+
+all_day0 &lt;- c(1:15)
+all_day1 &lt;- c(16:31)
+all_day2 &lt;- c(32:47)
+all_day3 &lt;- c(48:63)
+
+humans &lt;- c(1:7, 16:23, 32:39, 48:55)
+chimps &lt;- c(8:15, 24:31, 40:47, 56:63)
+
+col = as.data.frame(pal[as.numeric(Species)])
+col_day0 &lt;- col[all_day0, ]
+col_day1 &lt;- col[all_day1, ]
+col_day2 &lt;- col[all_day2, ]
+col_day3 &lt;- col[all_day3, ]
+col_humans &lt;- col[humans, ]
+col_chimps &lt;- col[chimps, ]
+
+
+group = as.data.frame(Species)
+group_day0 = group[all_day0, ]
+group_day1 = group[all_day1, ]
+group_day2 = group[all_day2, ]
+group_day3 = group[all_day3, ]
+group_humans = group[humans, ]
+group_chimps = group[chimps, ]
+
+plotDensities(cpm_in_cutoff[,all_day0], col=col_day0, legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all day 0)&quot;)
+legend(&#39;topright&#39;, legend = levels(group_day0), col = levels(col_day0), pch = 20)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm_in_cutoff[,all_day1], col=col_day1, legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all day 1)&quot;)
+legend(&#39;topright&#39;, legend = levels(group_day1), col = levels(col_day1), pch = 20)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm_in_cutoff[,all_day2], col=col_day2, legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all day 2)&quot;)
+legend(&#39;topright&#39;, legend = levels(group_day2), col = levels(col_day2), pch = 20)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm_in_cutoff[,all_day3], col=col_day3, legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all day 3)&quot;)
+legend(&#39;topright&#39;, legend = levels(group_day3), col = levels(col_day3), pch = 20)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm_in_cutoff[,humans], col=col_day0, legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all humans)&quot;)
+legend(&#39;topright&#39;, legend = levels(group_humans), col = levels(col_day0), pch = 20)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm_in_cutoff[,humans], legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all humans)&quot;)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm_in_cutoff[,chimps], legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all chimps)&quot;)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;, &quot;3&quot;)
+
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;speciesH&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+#colnames(design) &lt;- gsub(&quot;batch2&quot;, &quot;batch&quot;, colnames(design))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation =   corfit$consensus.correlation
+
+# corfit.correlation = 0.196951
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+#write.table(cpm.voom.corfit$E, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T) 
+
+
+plotDensities(cpm.voom.corfit[,all_day0], col=col_day0, legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all day 0)&quot;)
+legend(&#39;topright&#39;, legend = levels(group_day0), col = levels(col_day0), pch = 20)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm.voom.corfit[,all_day1], col=col_day1, legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all day 1)&quot;)
+legend(&#39;topright&#39;, legend = levels(group_day1), col = levels(col_day1), pch = 20)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm.voom.corfit[,all_day2], col=col_day2, legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all day 2)&quot;)
+legend(&#39;topright&#39;, legend = levels(group_day2), col = levels(col_day2), pch = 20)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotDensities(cpm.voom.corfit[,all_day3], col=col_day3, legend = FALSE, main = &quot;Density plot for genes passing filtering criteria (all day 3)&quot;)
+legend(&#39;topright&#39;, legend = levels(group_day3), col = levels(col_day3), pch = 20)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-13.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="tf-figures-and-heatmap-main-paper" class="section level3">
+<h3>TF figures and heatmap (main paper)</h3>
+<pre class="r"><code>### TF heatmap (main paper)
+
+# HHEX (ENSG00000152804)
+
+exp &lt;- as.data.frame(cpm.voom.corfit$E[grepl(&quot;ENSG00000152804&quot;, rownames(cpm.voom.corfit$E)), ])
+
+
+make_exp_df &lt;- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle(&quot;HHEX Expression&quot;) + xlab(&quot;Day&quot;) + ylab(&quot;Normalized expression&quot;)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># LHX1 (ENSG00000132130)
+
+exp &lt;- as.data.frame(cpm.voom.corfit$E[grepl(&quot;ENSG00000132130&quot;, rownames(cpm.voom.corfit$E)), ])
+
+
+make_exp_df &lt;- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle(&quot;LHX1 Expression&quot;) + xlab(&quot;Day&quot;) + ylab(&quot;Normalized expression&quot;)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># PRDM14 (ENSG00000147596)
+
+exp &lt;- as.data.frame(cpm.voom.corfit$E[grepl(&quot;ENSG00000147596&quot;, rownames(cpm.voom.corfit$E)), ])
+
+
+make_exp_df &lt;- as.data.frame(cbind(exp, day, species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle(&quot;PRDM14 Expression&quot;) + xlab(&quot;Day&quot;) + ylab(&quot;Normalized expression&quot;)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cpm_in_cutoff &lt;- cpm.voom.corfit$E
+
+# New heatmap
+
+# EOMES (ENSG00000163508)
+
+exp_EOMES &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000163508&quot;, rownames(cpm_in_cutoff)), ])
+
+# GSC (ENSG00000133937)
+
+exp_GSC &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000133937&quot;, rownames(cpm_in_cutoff)), ])
+
+
+# EOMES (ENSG00000141448)
+
+exp_GATA6 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000141448&quot;, rownames(cpm_in_cutoff)), ])
+
+# FOXA2 (ENSG00000125798)
+
+exp_FOXA2 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000125798&quot;, rownames(cpm_in_cutoff)), ])
+
+# CER1 (ENSG00000147869)
+
+exp_CER1 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000147869&quot;, rownames(cpm_in_cutoff)), ])
+
+# Nodal (ENSG00000156574)
+
+exp_NODAL &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000156574&quot;, rownames(cpm_in_cutoff)), ])
+
+# WNT3 (ENSG00000108379)
+
+exp_WNT3 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000108379&quot;, rownames(cpm_in_cutoff)), ])
+
+# MIXL1 (ENSG00000185155)
+
+exp_MIXL1 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000185155&quot;, rownames(cpm_in_cutoff)), ])
+
+# SNAI1 (ENSG00000124216)
+
+exp_SNAI1 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000124216&quot;, rownames(cpm_in_cutoff)), ])
+
+# HHEX (ENSG00000152804)
+
+exp_HHEX &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000152804&quot;, rownames(cpm_in_cutoff)), ])
+
+# CXCR4 (ENSG00000121966)
+
+exp_CXCR4 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000121966&quot;, rownames(cpm_in_cutoff)), ])
+
+# SOX17 (ENSG00000164736)
+
+exp_SOX17 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000164736&quot;, rownames(cpm_in_cutoff)), ])
+
+# KLF8 (ENSG00000102349)
+
+exp_KLF8 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000102349&quot;, rownames(cpm_in_cutoff)), ])
+
+# OTX2 (ENSG00000165588)
+
+exp_OTX2 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000165588&quot;, rownames(cpm_in_cutoff)), ])
+
+# PRDM1 (ENSG00000057657)
+
+exp_PRDM1 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000057657&quot;, rownames(cpm_in_cutoff)), ])
+
+# KIT (ENSG00000157404)
+
+exp_KIT &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000157404&quot;, rownames(cpm_in_cutoff)), ])
+
+# FOXM1 (ENSG00000111206)
+
+exp_FOXM1 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000111206&quot;, rownames(cpm_in_cutoff)), ])
+
+# BRACHYURY (ENSG00000164458)
+
+exp_BRACHYURY &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000164458&quot;, rownames(cpm_in_cutoff)), ])
+
+# SHISA2 (ENSG00000180730)
+
+exp_SHISA2 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000180730&quot;, rownames(cpm_in_cutoff)), ])
+
+# CDH1 (ENSG00000039068)
+
+exp_CDH1 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000039068&quot;, rownames(cpm_in_cutoff)), ])
+
+# CDH2 (ENSG00000170558)
+
+exp_CDH2 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000170558&quot;, rownames(cpm_in_cutoff)), ])
+
+# PRDM14 (ENSG00000147596)
+
+exp_PRDM14 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000147596&quot;, rownames(cpm_in_cutoff)), ])
+
+# WNT5A (ENSG00000114251)
+
+exp_WNT5A &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000114251&quot;, rownames(cpm_in_cutoff)), ])
+
+# WNT5B (ENSG00000111186)
+
+exp_WNT5B &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000111186&quot;, rownames(cpm_in_cutoff)), ])
+
+# SOX2 (ENSG00000181449)
+
+exp_SOX2 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000181449&quot;, rownames(cpm_in_cutoff)), ])
+
+# PDGFRA (ENSG00000134853)
+
+exp_PDGFRA &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000134853&quot;, rownames(cpm_in_cutoff)), ])
+
+# DKK1 (ENSG00000107984)
+
+exp_DKK1 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000107984&quot;, rownames(cpm_in_cutoff)), ])
+
+# DKK4 (ENSG00000104371)
+
+exp_DKK4 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000104371&quot;, rownames(cpm_in_cutoff)), ])
+
+# FGF8 (ENSG00000107831)
+
+exp_FGF8 &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000107831&quot;, rownames(cpm_in_cutoff)), ])
+
+
+TF_heatmap &lt;- cbind(exp_EOMES, exp_GSC, exp_GATA6, exp_FOXA2, exp_CER1, exp_NODAL, exp_WNT3, exp_MIXL1, exp_SNAI1, exp_HHEX, exp_CXCR4, exp_SOX17, exp_KLF8, exp_OTX2, exp_PRDM1, exp_KIT, exp_FOXM1, exp_BRACHYURY, exp_SHISA2, exp_CDH1, exp_CDH2, exp_PRDM14, exp_WNT5A, exp_WNT5B, exp_SOX2, exp_PDGFRA, exp_DKK1, exp_DKK4,  exp_FGF8)
+colnames(TF_heatmap) &lt;- c(&quot;EOMES&quot;, &quot;GSC&quot;, &quot;GATA6&quot;, &quot;FOXA2&quot;, &quot;CER1&quot;, &quot;NODAL&quot;, &quot;WNT3&quot;, &quot;MIXL1&quot;, &quot;SNAI1&quot;, &quot;HHEX&quot;, &quot;CXCR4&quot;, &quot;SOX17&quot;, &quot;KLF8&quot;, &quot;OTX2&quot;, &quot;PRDM1&quot;, &quot;KIT&quot;, &quot;FOXM1&quot;, &quot;BRACHYURY&quot;, &quot;SHISA2&quot;, &quot;CDH1&quot;, &quot;CDH2&quot;, &quot;PRDM14&quot;, &quot;WNT5A&quot;, &quot;WNT5B&quot;, &quot;SOX2&quot;, &quot;PDGFRA&quot;, &quot;DKK1&quot;, &quot;DKK4&quot;,  &quot;FGF8&quot;)
+
+dim(TF_heatmap) </code></pre>
+<pre><code>[1] 63 29</code></pre>
+<pre class="r"><code>gplots::heatmap.2(x=as.matrix(t(TF_heatmap)),
+#                  , distfun = dist(x, method = &quot;euclidean&quot;), 
+                  hclustfun = function(x) hclust(dist(x), method = &quot;average&quot;), tracecol=NA, col=colors, denscol=&quot;white&quot;, labCol= labels, ColSideColors=pal[as.integer(as.factor(day))])</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="data-visualization" class="section level3">
+<h3>Data visualization</h3>
+<pre class="r"><code># Make PCA plots with the factors colored by day
+
+cpm_cyclicloess &lt;- read.table(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess.txt&quot;)
+
+pca_genes &lt;- prcomp(t(cpm_cyclicloess), scale = T, retx = TRUE, center = TRUE)
+scores &lt;- pca_genes$x
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day), shape=as.factor(species), size=2)) + geom_point() + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;))  + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;) + labs(title = &quot;PCA of normalized endoderm data &quot;)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="final-no-global-5-fdr-main-paper" class="section level3">
+<h3>Final, no global (5% FDR, main paper)</h3>
+<pre class="r"><code>species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;, &quot;3&quot;)
+
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;speciesH&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+#colnames(design) &lt;- gsub(&quot;batch2&quot;, &quot;batch&quot;, colnames(design))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation =   corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day1 =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day2 =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day3 =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+#write.table(fit2, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/unscaled_SD.txt&quot;, sep=&quot;\t&quot;)
+
+
+# Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+#FDR_level &lt;- 0.01
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 4475    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 4408    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), important_columns]) </code></pre>
+<pre><code>[1] 4712    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 5077    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+#4475
+#4408
+#4712
+#5077
+
+
+dim(HvCday0_adj_pval)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(HvCday1_adj_pval)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(HvCday2_adj_pval)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(HvCday3_adj_pval)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>write.table(HvCday0, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day0_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(HvCday1, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day1_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(HvCday2, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day2_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(HvCday3, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day3_all_genes.txt&quot;, sep=&quot;\t&quot;)
+
+
+# Table 2
+write.table(HvCday0_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day0_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(HvCday1_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day1_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(HvCday2_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day2_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(HvCday3_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day3_all_genes.txt&quot;, sep=&quot;\t&quot;)
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Human Day 0 to Day 1
+H_day01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day01[which(H_day01$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 3231    3</code></pre>
+<pre class="r"><code>#H_day01 &lt;- H_day01[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+H_day12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day12[which(H_day12$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 4293    3</code></pre>
+<pre class="r"><code>#H_day12 &lt;- H_day12[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+H_day23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day23[which(H_day23$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 1444    3</code></pre>
+<pre class="r"><code>#H_day23 &lt;- H_day23[, important_columns]  
+
+
+# 3231
+# 4293
+# 1444
+
+# Find the genes that are DE at Chimp Day 0 to Day 1
+C_day01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day01[which(C_day01$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 3360    3</code></pre>
+<pre class="r"><code>#C_day01 &lt;- C_day01[, important_columns]    
+
+# Find the genes that are DE at Chimp Day 1 to Day 2
+C_day12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day12[which(C_day12$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 4449    3</code></pre>
+<pre class="r"><code>#C_day12 &lt;- C_day12[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 2 to Day 3
+C_day23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day23[which(C_day23$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 3728    3</code></pre>
+<pre class="r"><code>#C_day23 &lt;- C_day23[, important_columns]  
+
+
+# 3360
+# 4449
+# 3728
+
+# Check dimensions
+dim(H_day01)</code></pre>
+<pre><code>[1] 10304     7</code></pre>
+<pre class="r"><code>dim(H_day12)</code></pre>
+<pre><code>[1] 10304     7</code></pre>
+<pre class="r"><code>dim(H_day23)</code></pre>
+<pre><code>[1] 10304     7</code></pre>
+<pre class="r"><code>dim(C_day01)</code></pre>
+<pre><code>[1] 10304     7</code></pre>
+<pre class="r"><code>dim(C_day12)</code></pre>
+<pre><code>[1] 10304     7</code></pre>
+<pre class="r"><code>dim(C_day23)</code></pre>
+<pre><code>[1] 10304     7</code></pre>
+<pre class="r"><code>##### Day 0 --&gt; 1 #####
+
+D01bind &lt;- cbind(H_day01, C_day01)
+
+# Human only 
+
+D01_human_only &lt;- D01bind[which(D01bind[,6] &lt;= 0.01 &amp; D01bind[,13] &gt; 0.05) , ]
+nrow(D01_human_only) #508</code></pre>
+<pre><code>[1] 508</code></pre>
+<pre class="r"><code># Chimp only
+
+D01_chimp_only &lt;- D01bind[which(D01bind[,13] &lt;= 0.01 &amp; D01bind[,6] &gt; 0.05) , ]
+nrow(D01_chimp_only) #602</code></pre>
+<pre><code>[1] 602</code></pre>
+<pre class="r"><code># Shared (intersection)
+
+D01_shared &lt;- D01bind[which(D01bind[,13] &lt;= 0.01 &amp; D01bind[,6] &lt;= 0.05 | D01bind[,6] &lt;= 0.01 &amp; D01bind[,13] &lt;= 0.05) , ]
+
+# Check for duplicate rows
+anyDuplicated(D01_shared)</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>nrow(D01_shared) # 1993</code></pre>
+<pre><code>[1] 1993</code></pre>
+<pre class="r"><code># Test- naive sharing
+
+D01_shared_naive &lt;- D01bind[which(D01bind[,13] &lt;= 0.01 &amp; D01bind[,6] &lt;= 0.01) , ]
+nrow(D01_shared_naive) #1433</code></pre>
+<pre><code>[1] 1433</code></pre>
+<pre class="r"><code># Sign chimps | sign in humans
+
+D01_incomp &lt;- D01bind[which(D01bind[,6] &lt;= 0.01 &amp; D01bind[,13] &lt;= 0.05) , ]
+nrow(D01_incomp) #1669</code></pre>
+<pre><code>[1] 1669</code></pre>
+<pre class="r"><code>##### Day 1 --&gt; 2 #####
+
+D12bind &lt;- cbind(H_day12, C_day12)
+
+# Human only 
+
+D12_human_only &lt;- D12bind[which(D12bind[,6] &lt;= 0.01 &amp; D12bind[,13] &gt; 0.05) , ]
+nrow(D12_human_only) # 705</code></pre>
+<pre><code>[1] 705</code></pre>
+<pre class="r"><code># Chimp only
+
+D12_chimp_only &lt;- D12bind[which(D12bind[,13] &lt;= 0.01 &amp; D12bind[,6] &gt; 0.05) , ]
+nrow(D12_chimp_only) #833</code></pre>
+<pre><code>[1] 833</code></pre>
+<pre class="r"><code># Shared (intersection)
+
+D12_shared &lt;- D01bind[which(D12bind[,13] &lt;= 0.01 &amp; D12bind[,6] &lt;= 0.05 | D12bind[,6] &lt;= 0.01 &amp; D12bind[,13] &lt;= 0.05) , ]
+
+# Check for duplicate rows
+anyDuplicated(D12_shared)</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>nrow(D12_shared) # 2786</code></pre>
+<pre><code>[1] 2786</code></pre>
+<pre class="r"><code># Sign chimps | sign in humans
+
+D12_incomp &lt;- D12bind[which(D12bind[,6] &lt;= 0.01 &amp; D12bind[,13] &lt;= 0.05) , ]
+nrow(D12_incomp) #2376</code></pre>
+<pre><code>[1] 2376</code></pre>
+<pre class="r"><code>##### Day 2 --&gt; 3 #####
+
+D23bind &lt;- cbind(H_day23, C_day23)
+
+# Human only 
+
+D23_human_only &lt;- D23bind[which(D23bind[,6] &lt;= 0.01 &amp; D23bind[,13] &gt; 0.05) , ]
+nrow(D23_human_only) # 146</code></pre>
+<pre><code>[1] 146</code></pre>
+<pre class="r"><code># Chimp only
+
+D23_chimp_only &lt;- D23bind[which(D23bind[,13] &lt;= 0.01 &amp; D23bind[,6] &gt; 0.05) , ]
+nrow(D23_chimp_only) #1641</code></pre>
+<pre><code>[1] 1641</code></pre>
+<pre class="r"><code># Shared (intersection)
+
+D23_shared &lt;- D23bind[which(D23bind[,13] &lt;= 0.01 &amp; D23bind[,6] &lt;= 0.05 | D23bind[,6] &lt;= 0.01 &amp; D23bind[,13] &lt;= 0.05) , ]
+
+# Check for duplicate rows
+anyDuplicated(D23_shared)</code></pre>
+<pre><code>[1] 0</code></pre>
+<pre class="r"><code>nrow(D23_shared) # 932</code></pre>
+<pre><code>[1] 932</code></pre>
+<pre class="r"><code># Sign chimps | sign in humans
+
+D23_incomp &lt;- D23bind[which(D23bind[,6] &lt;= 0.01 &amp; D23bind[,13] &lt;= 0.05) , ]
+nrow(D23_incomp) #576</code></pre>
+<pre><code>[1] 576</code></pre>
+<pre class="r"><code># Make a table of the sections
+
+write.table(H_day01, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(H_day12, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(H_day23, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
+
+write.table(C_day01, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/C_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(C_day12, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/C_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(C_day23, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/C_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
+
+# Table 3
+write.table(H_day01, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(H_day12, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(H_day23, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
+
+write.table(C_day01, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/C_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(C_day12, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/C_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(C_day23, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/C_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
+
+
+
+# Interactions
+
+# Find the genes with sign interactions Day 1
+Sign_day1_inter =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day1_inter[which(Sign_day1_inter$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 272   3</code></pre>
+<pre class="r"><code>#Sign_day1_inter &lt;- Sign_day1_inter[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+Sign_day2_inter =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day2_inter[which(Sign_day2_inter$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 540   3</code></pre>
+<pre class="r"><code>#Sign_day2_inter &lt;- Sign_day2_inter[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+Sign_day3_inter =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 342   3</code></pre>
+<pre class="r"><code>#Sign_day3_inter &lt;- Sign_day3_inter[, important_columns]  
+
+# 272
+# 540
+# 342
+
+# Make a table of the sections
+
+write.table(Sign_day1_inter, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day1_interact.txt&quot;, sep=&quot;\t&quot;)
+write.table(Sign_day2_inter, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day2_interact.txt&quot;, sep=&quot;\t&quot;)
+write.table(Sign_day3_inter, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day3_interact.txt&quot;, sep=&quot;\t&quot;)
+
+# Table 4
+
+write.table(Sign_day1_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day1_interact.txt&quot;, sep=&quot;\t&quot;)
+write.table(Sign_day2_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day2_interact.txt&quot;, sep=&quot;\t&quot;)
+write.table(Sign_day3_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day3_interact.txt&quot;, sep=&quot;\t&quot;)
+
+##################### VENN DIAGRAMS ############################
+
+## DE across species
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/DE_across_species_March_13_5FDR.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_humans_by_day &lt;- list()
+mylist_humans_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[7]]])[top3[[names(top3)[7]]]$adj.P.Val &lt; FDR_level]
+
+
+Three_comp_humans &lt;- venn.diagram(mylist_humans_by_day, filename= NULL, main=&quot;DE genes across days in humans (5% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/DE_across_time_humans_March_13_5FDR.pdf&quot;)
+  grid.draw(Three_comp_humans)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_chimps_by_day &lt;- list()
+mylist_chimps_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[8]]])[top3[[names(top3)[8]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[9]]])[top3[[names(top3)[9]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[10]]])[top3[[names(top3)[10]]]$adj.P.Val &lt; FDR_level]
+
+Three_comp_chimps &lt;- venn.diagram(mylist_chimps_by_day, filename= NULL, main=&quot;DE genes across days in chimpanzees (5% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/DE_across_time_chimps_March_13_5FDR.pdf&quot;)
+  grid.draw(Three_comp_chimps)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_interact &lt;- list()
+mylist_interact[[&quot;Human x Day 1&quot;]] &lt;- row.names(top3[[names(top3)[11]]])[top3[[names(top3)[11]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 2&quot;]] &lt;- row.names(top3[[names(top3)[12]]])[top3[[names(top3)[12]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 3&quot;]] &lt;- row.names(top3[[names(top3)[13]]])[top3[[names(top3)[13]]]$adj.P.Val &lt; FDR_level]
+
+Sig_interaction &lt;- venn.diagram(mylist_interact, filename= NULL, main=&quot;Genes with a significant species-by-day interaction (5% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/Significant_interactions_March_13_5FDR.pdf&quot;)
+  grid.draw(Sig_interaction)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+<div id="final-no-global-at-fdr-1-both-batches-supplement" class="section level3">
+<h3>Final, no global at FDR 1%, both batches (supplement)</h3>
+<pre class="r"><code># Set FDR level at 1% 
+
+FDR_level &lt;- 0.01
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; FDR_level), important_columns])                  </code></pre>
+<pre><code>[1] 3267    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 3239    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; FDR_level), important_columns]) </code></pre>
+<pre><code>[1] 3477    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; FDR_level), important_columns])                  </code></pre>
+<pre><code>[1] 3820    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+#3267
+#3239
+#3477
+#3820
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Human Day 0 to Day 1
+H_day01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day01[which(H_day01$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2177    3</code></pre>
+<pre class="r"><code>H_day01 &lt;- H_day01[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+H_day12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day12[which(H_day12$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 3081    3</code></pre>
+<pre class="r"><code>H_day12 &lt;- H_day12[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+H_day23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day23[which(H_day23$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 722   3</code></pre>
+<pre class="r"><code>H_day23 &lt;- H_day23[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 0 to Day 1
+C_day01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day01[which(C_day01$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2359    3</code></pre>
+<pre class="r"><code>C_day01 &lt;- C_day01[, important_columns]    
+
+# Find the genes that are DE at Chimp Day 1 to Day 2
+C_day12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day12[which(C_day12$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 3287    3</code></pre>
+<pre class="r"><code>C_day12 &lt;- C_day12[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 2 to Day 3
+C_day23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day23[which(C_day23$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2504    3</code></pre>
+<pre class="r"><code>C_day23 &lt;- C_day23[, important_columns]  
+
+
+# Interactions
+
+# Find the genes with sign interactions Day 1
+Sign_day1_inter =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day1_inter[which(Sign_day1_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 135   3</code></pre>
+<pre class="r"><code>Sign_day1_inter &lt;- Sign_day1_inter[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+Sign_day2_inter =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day2_inter[which(Sign_day2_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 226   3</code></pre>
+<pre class="r"><code>Sign_day2_inter &lt;- Sign_day2_inter[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+Sign_day3_inter =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 100   3</code></pre>
+<pre class="r"><code>Sign_day3_inter &lt;- Sign_day3_inter[, important_columns]  
+
+                
+##################### VENN DIAGRAMS ############################
+
+## DE across species
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (1% FDR)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4a_DE_across_species_March_13_1FDR.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_humans_by_day &lt;- list()
+mylist_humans_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[7]]])[top3[[names(top3)[7]]]$adj.P.Val &lt; FDR_level]
+
+
+Three_comp_humans &lt;- venn.diagram(mylist_humans_by_day, filename= NULL, main=&quot;DE genes across days in humans (1% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4b_DE_by_day_human_March_13_1FDR.pdf&quot;)
+  grid.draw(Three_comp_humans)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_chimps_by_day &lt;- list()
+mylist_chimps_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[8]]])[top3[[names(top3)[8]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[9]]])[top3[[names(top3)[9]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[10]]])[top3[[names(top3)[10]]]$adj.P.Val &lt; FDR_level]
+
+Three_comp_chimps &lt;- venn.diagram(mylist_chimps_by_day, filename= NULL, main=&quot;DE genes across days in chimpanzees (1% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4c_DE_by_day_chimp_March_13_1FDR.pdf&quot;)
+  grid.draw(Three_comp_chimps)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_interact &lt;- list()
+mylist_interact[[&quot;Human x Day 1&quot;]] &lt;- row.names(top3[[names(top3)[11]]])[top3[[names(top3)[11]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 2&quot;]] &lt;- row.names(top3[[names(top3)[12]]])[top3[[names(top3)[12]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 3&quot;]] &lt;- row.names(top3[[names(top3)[13]]])[top3[[names(top3)[13]]]$adj.P.Val &lt; FDR_level]
+
+Sig_interaction &lt;- venn.diagram(mylist_interact, filename= NULL, main=&quot;Genes with a significant species-by-day interaction (1% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4d_Sign_interactions_March_13_1FDR.pdf&quot;)
+  grid.draw(Sig_interaction)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+<div id="final-no-global-at-fdr-10-both-batches-supplement" class="section level3">
+<h3>Final, no global at FDR 10%, both batches (supplement)</h3>
+<pre class="r"><code># Set FDR level at 1% 
+
+FDR_level &lt;- 0.10
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; FDR_level), important_columns])                  </code></pre>
+<pre><code>[1] 5241    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 5147    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; FDR_level), important_columns]) </code></pre>
+<pre><code>[1] 5421    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; FDR_level), important_columns])                  </code></pre>
+<pre><code>[1] 5777    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+#5241
+#5147
+#5421
+#5777
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Human Day 0 to Day 1
+H_day01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day01[which(H_day01$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 3892    3</code></pre>
+<pre class="r"><code>H_day01 &lt;- H_day01[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+H_day12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day12[which(H_day12$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 5009    3</code></pre>
+<pre class="r"><code>H_day12 &lt;- H_day12[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+H_day23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day23[which(H_day23$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2028    3</code></pre>
+<pre class="r"><code>H_day23 &lt;- H_day23[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 0 to Day 1
+C_day01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day01[which(C_day01$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 3990    3</code></pre>
+<pre class="r"><code>C_day01 &lt;- C_day01[, important_columns]    
+
+# Find the genes that are DE at Chimp Day 1 to Day 2
+C_day12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day12[which(C_day12$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 5134    3</code></pre>
+<pre class="r"><code>C_day12 &lt;- C_day12[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 2 to Day 3
+C_day23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day23[which(C_day23$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 4473    3</code></pre>
+<pre class="r"><code>C_day23 &lt;- C_day23[, important_columns]  
+
+
+# Interactions
+
+# Find the genes with sign interactions Day 1
+Sign_day1_inter =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day1_inter[which(Sign_day1_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 409   3</code></pre>
+<pre class="r"><code>Sign_day1_inter &lt;- Sign_day1_inter[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+Sign_day2_inter =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day2_inter[which(Sign_day2_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 797   3</code></pre>
+<pre class="r"><code>Sign_day2_inter &lt;- Sign_day2_inter[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+Sign_day3_inter =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 615   3</code></pre>
+<pre class="r"><code>Sign_day3_inter &lt;- Sign_day3_inter[, important_columns]  
+
+                
+##################### VENN DIAGRAMS ############################
+
+## DE across species
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (10% FDR)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4e_DE_by_day_March_13_10FDR.pdf&quot;)
+
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_humans_by_day &lt;- list()
+mylist_humans_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[7]]])[top3[[names(top3)[7]]]$adj.P.Val &lt; FDR_level]
+
+
+Three_comp_humans &lt;- venn.diagram(mylist_humans_by_day, filename= NULL, main=&quot;DE genes across days in humans (1% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4f_DE_by_day_human_March_13_10FDR.pdf&quot;)
+
+  grid.draw(Three_comp_humans)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_chimps_by_day &lt;- list()
+mylist_chimps_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[8]]])[top3[[names(top3)[8]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[9]]])[top3[[names(top3)[9]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[10]]])[top3[[names(top3)[10]]]$adj.P.Val &lt; FDR_level]
+
+Three_comp_chimps &lt;- venn.diagram(mylist_chimps_by_day, filename= NULL, main=&quot;DE genes across days in chimpanzees (1% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4g_DE_by_day_chimp_March_13_10FDR.pdf&quot;)
+
+  grid.draw(Three_comp_chimps)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_interact &lt;- list()
+mylist_interact[[&quot;Human x Day 1&quot;]] &lt;- row.names(top3[[names(top3)[11]]])[top3[[names(top3)[11]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 2&quot;]] &lt;- row.names(top3[[names(top3)[12]]])[top3[[names(top3)[12]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 3&quot;]] &lt;- row.names(top3[[names(top3)[13]]])[top3[[names(top3)[13]]]$adj.P.Val &lt; FDR_level]
+
+Sig_interaction &lt;- venn.diagram(mylist_interact, filename= NULL, main=&quot;Genes with a significant species-by-day interaction (1% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4h_Sign_interaction_March_13_10FDR.pdf&quot;)
+
+  grid.draw(Sig_interaction)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+<div id="final-no-global-at-fdr-5-batch1-supplement" class="section level3">
+<h3>Final, no global at FDR 5%, Batch1 (supplement)</h3>
+<pre class="r"><code># Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+
+batch1_info &lt;- After_removal_sample_info[which(After_removal_sample_info$Differentiation_batch == &quot;1&quot; ), ]
+
+batch1_samples &lt;- which(After_removal_sample_info$Differentiation_batch == &quot;1&quot;)
+
+species &lt;-  batch1_info$Species
+day &lt;- as.factor(batch1_info$Day)
+individual &lt;- batch1_info$Individual
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;specieshuman&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+#colnames(design) &lt;- gsub(&quot;batch2&quot;, &quot;batch&quot;, colnames(design))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff[,batch1_samples], design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation =   corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff[,batch1_samples], design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day1 =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day2 =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day3 =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+#write.table(fit2, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/unscaled_SD.txt&quot;, sep=&quot;\t&quot;)
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 3444    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 3238    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), important_columns]) </code></pre>
+<pre><code>[1] 3739    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 3706    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; FDR_level), important_columns])                  </code></pre>
+<pre><code>[1] 3444    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 3238    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; FDR_level), important_columns]) </code></pre>
+<pre><code>[1] 3739    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; FDR_level), important_columns])                  </code></pre>
+<pre><code>[1] 3706    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+#3444
+#3238
+#3739
+#3706
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Human Day 0 to Day 1
+H_day01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day01[which(H_day01$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2539    3</code></pre>
+<pre class="r"><code>H_day01 &lt;- H_day01[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+H_day12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day12[which(H_day12$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 3907    3</code></pre>
+<pre class="r"><code>H_day12 &lt;- H_day12[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+H_day23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day23[which(H_day23$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 854   3</code></pre>
+<pre class="r"><code>H_day23 &lt;- H_day23[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 0 to Day 1
+C_day01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day01[which(C_day01$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2816    3</code></pre>
+<pre class="r"><code>C_day01 &lt;- C_day01[, important_columns]    
+
+# Find the genes that are DE at Chimp Day 1 to Day 2
+C_day12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day12[which(C_day12$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2899    3</code></pre>
+<pre class="r"><code>C_day12 &lt;- C_day12[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 2 to Day 3
+C_day23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day23[which(C_day23$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2940    3</code></pre>
+<pre class="r"><code>C_day23 &lt;- C_day23[, important_columns]  
+
+
+# Interactions
+
+# Find the genes with sign interactions Day 1
+Sign_day1_inter =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day1_inter[which(Sign_day1_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 250   3</code></pre>
+<pre class="r"><code>Sign_day1_inter &lt;- Sign_day1_inter[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+Sign_day2_inter =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day2_inter[which(Sign_day2_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 139   3</code></pre>
+<pre class="r"><code>Sign_day2_inter &lt;- Sign_day2_inter[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+Sign_day3_inter =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 72  3</code></pre>
+<pre class="r"><code>Sign_day3_inter &lt;- Sign_day3_inter[, important_columns]  
+
+                
+##################### VENN DIAGRAMS ############################
+
+## DE across species
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, batch 1)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4i_DE_by_species_March_13_5FDR_Batch1.pdf&quot;)
+
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_humans_by_day &lt;- list()
+mylist_humans_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[7]]])[top3[[names(top3)[7]]]$adj.P.Val &lt; FDR_level]
+
+
+Three_comp_humans &lt;- venn.diagram(mylist_humans_by_day, filename= NULL, main=&quot;DE genes across days in humans (5% FDR, batch 1)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4j_DE_by_day_human_March_13_5FDR_Batch1.pdf&quot;)
+
+  grid.draw(Three_comp_humans)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_chimps_by_day &lt;- list()
+mylist_chimps_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[8]]])[top3[[names(top3)[8]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[9]]])[top3[[names(top3)[9]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[10]]])[top3[[names(top3)[10]]]$adj.P.Val &lt; FDR_level]
+
+Three_comp_chimps &lt;- venn.diagram(mylist_chimps_by_day, filename= NULL, main=&quot;DE genes across days in chimpanzees (5% FDR, batch 1)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4k_DE_by_day_chimp_March_13_5FDR_Batch1.pdf&quot;)
+
+  grid.draw(Three_comp_chimps)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_interact &lt;- list()
+mylist_interact[[&quot;Human x Day 1&quot;]] &lt;- row.names(top3[[names(top3)[11]]])[top3[[names(top3)[11]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 2&quot;]] &lt;- row.names(top3[[names(top3)[12]]])[top3[[names(top3)[12]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 3&quot;]] &lt;- row.names(top3[[names(top3)[13]]])[top3[[names(top3)[13]]]$adj.P.Val &lt; FDR_level]
+
+Sig_interaction &lt;- venn.diagram(mylist_interact, filename= NULL, main=&quot;Genes with a significant species-by-day interaction (5% FDR, batch 1)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4l_Sign_interaction_March_13_5FDR_Batch1.pdf&quot;)
+  grid.draw(Sig_interaction)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+<div id="final-no-global-at-fdr-5-batch2-supplement" class="section level3">
+<h3>Final, no global at FDR 5%, Batch2 (supplement)</h3>
+<pre class="r"><code># Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+
+batch2_info &lt;- After_removal_sample_info[which(After_removal_sample_info$Differentiation_batch == &quot;2&quot; ), ]
+
+batch2_samples &lt;- which(After_removal_sample_info$Differentiation_batch == &quot;2&quot;)
+
+species &lt;-  batch2_info$Species
+day &lt;- as.factor(batch2_info$Day)
+individual &lt;- batch2_info$Individual
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;specieshuman&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+#colnames(design) &lt;- gsub(&quot;batch2&quot;, &quot;batch&quot;, colnames(design))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff[,batch2_samples], design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation =   corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff[,batch2_samples], design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day1 =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day2 =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day3 =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+#write.table(fit2, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/unscaled_SD.txt&quot;, sep=&quot;\t&quot;)
+
+
+# Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+#FDR_level &lt;- 0.01
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 3205    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 3024    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), important_columns]) </code></pre>
+<pre><code>[1] 3417    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 3848    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+# 3205
+# 3024
+# 3417
+# 3848
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; FDR_level), important_columns])                  </code></pre>
+<pre><code>[1] 3205    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 3024    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; FDR_level), important_columns]) </code></pre>
+<pre><code>[1] 3417    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; FDR_level), important_columns])                  </code></pre>
+<pre><code>[1] 3848    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+#3444
+#3238
+#3739
+#3706
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Human Day 0 to Day 1
+H_day01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day01[which(H_day01$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2077    3</code></pre>
+<pre class="r"><code>H_day01 &lt;- H_day01[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+H_day12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day12[which(H_day12$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2932    3</code></pre>
+<pre class="r"><code>H_day12 &lt;- H_day12[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+H_day23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day23[which(H_day23$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 953   3</code></pre>
+<pre class="r"><code>H_day23 &lt;- H_day23[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 0 to Day 1
+C_day01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day01[which(C_day01$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2875    3</code></pre>
+<pre class="r"><code>C_day01 &lt;- C_day01[, important_columns]    
+
+# Find the genes that are DE at Chimp Day 1 to Day 2
+C_day12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day12[which(C_day12$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 4330    3</code></pre>
+<pre class="r"><code>C_day12 &lt;- C_day12[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 2 to Day 3
+C_day23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(C_day23[which(C_day23$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 2685    3</code></pre>
+<pre class="r"><code>C_day23 &lt;- C_day23[, important_columns]  
+
+
+# Interactions
+
+# Find the genes with sign interactions Day 1
+Sign_day1_inter =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day1_inter[which(Sign_day1_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 136   3</code></pre>
+<pre class="r"><code>Sign_day1_inter &lt;- Sign_day1_inter[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+Sign_day2_inter =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day2_inter[which(Sign_day2_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 646   3</code></pre>
+<pre class="r"><code>Sign_day2_inter &lt;- Sign_day2_inter[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+Sign_day3_inter =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; FDR_level), important_columns])</code></pre>
+<pre><code>[1] 282   3</code></pre>
+<pre class="r"><code>Sign_day3_inter &lt;- Sign_day3_inter[, important_columns]  
+
+                
+##################### VENN DIAGRAMS ############################
+
+## DE across species
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, batch 2)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4m_DE_by_species_March_13_5FDR_Batch2.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_humans_by_day &lt;- list()
+mylist_humans_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[7]]])[top3[[names(top3)[7]]]$adj.P.Val &lt; FDR_level]
+
+
+Three_comp_humans &lt;- venn.diagram(mylist_humans_by_day, filename= NULL, main=&quot;DE genes across days in humans (1% FDR, batch 2)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4n_DE_by_day_humans_March_13_5FDR_Batch2.pdf&quot;)
+  grid.draw(Three_comp_humans)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_chimps_by_day &lt;- list()
+mylist_chimps_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[8]]])[top3[[names(top3)[8]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[9]]])[top3[[names(top3)[9]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[10]]])[top3[[names(top3)[10]]]$adj.P.Val &lt; FDR_level]
+
+Three_comp_chimps &lt;- venn.diagram(mylist_chimps_by_day, filename= NULL, main=&quot;DE genes across days in chimpanzees (5% FDR, batch 2)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4o_DE_by_day_chimps_March_13_5FDR_Batch2.pdf&quot;)
+  grid.draw(Three_comp_chimps)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_interact &lt;- list()
+mylist_interact[[&quot;Human x Day 1&quot;]] &lt;- row.names(top3[[names(top3)[11]]])[top3[[names(top3)[11]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 2&quot;]] &lt;- row.names(top3[[names(top3)[12]]])[top3[[names(top3)[12]]]$adj.P.Val &lt; FDR_level]
+mylist_interact[[&quot;Human x Day 3&quot;]] &lt;- row.names(top3[[names(top3)[13]]])[top3[[names(top3)[13]]]$adj.P.Val &lt; FDR_level]
+
+Sig_interaction &lt;- venn.diagram(mylist_interact, filename= NULL, main=&quot;Genes with a significant species-by-day interaction (5% FDR, batch 2)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4p_Sign_interaction_March_13_5FDR_Batch2.pdf&quot;)
+  grid.draw(Sig_interaction)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+<div id="robustness-with-respect-to-the-purity-samples-supplement" class="section level3">
+<h3>Robustness with respect to the purity samples (supplement)</h3>
+<p>We have a total of 30 samples with high confidence purity estimates. At Days 0 and 3, we have high confidence purity estimates for 3 human samples and 4 chimp samples. At Days 1 and 2, we have high confidence purity estimates for 4 human and 4 chimp samples.</p>
+<p>First we will look at the the DE by species for all samples that we have high confidence purity estimates for.</p>
+<pre class="r"><code># Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+
+purity_info &lt;- c(4, 6:7, 9, 11, 13, 15, 17, 20,22,23,25, 27,29,31,33,36,38,39,41,43,45,47,49,54,55,57,59,61,63)
+
+purity_samples &lt;- After_removal_sample_info[purity_info, ]
+
+species &lt;-  purity_samples$Species
+day &lt;- as.factor(purity_samples$Day)
+individual &lt;- purity_samples$Individual
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;specieshuman&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+#colnames(design) &lt;- gsub(&quot;batch2&quot;, &quot;batch&quot;, colnames(design))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff[,purity_info], design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation =   corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff[,purity_info], design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-11-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day1 =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day2 =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day3 =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+#write.table(fit2, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/unscaled_SD.txt&quot;, sep=&quot;\t&quot;)
+
+
+# Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+#FDR_level &lt;- 0.01
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 3230    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 3059    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), important_columns]) </code></pre>
+<pre><code>[1] 3466    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 3551    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+# 3230
+# 3059
+# 3466
+# 3551
+
+
+##################### VENN DIAGRAMS ############################
+
+## DE across species
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, batch 2)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4q_DE_by_species_March_13_5FDR_All_high_conf_purity.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<p>Now, we can subset and compare 3 humans to 3 chimps that have the highest confidence purity estimates.</p>
+<pre class="r"><code># Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+
+purity_info &lt;- c(4, 6:7, 11, 13, 15, 17, 22, 23, 27, 29, 31,33,36, 38, 41,43, 47, 49,54, 55, 59,61,63)
+
+purity_samples &lt;- After_removal_sample_info[purity_info, ]
+
+species &lt;-  purity_samples$Species
+day &lt;- as.factor(purity_samples$Day)
+individual &lt;- purity_samples$Individual
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;specieshuman&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+#colnames(design) &lt;- gsub(&quot;batch2&quot;, &quot;batch&quot;, colnames(design))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff[,purity_info], design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation =   corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff[,purity_info], design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-12-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-12-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day1 =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day2 =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day3 =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+#write.table(fit2, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/unscaled_SD.txt&quot;, sep=&quot;\t&quot;)
+
+
+# Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+#FDR_level &lt;- 0.01
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 2290    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 2242    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), important_columns]) </code></pre>
+<pre><code>[1] 2694    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 2829    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+# 2290
+# 2242
+# 2694
+# 2829
+
+
+##################### VENN DIAGRAMS ############################
+
+## DE across species
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, batch 2)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4r_DE_by_species_March_13_5FDR_3_high_conf_purity.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<p>Now, we can subset and compare 3 humans to 3 chimps that have the lowest high confidence purity estimates.</p>
+<pre class="r"><code># Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+
+purity_info &lt;- c(4, 6:7, 9, 13, 15, 20, 22, 23, 25, 27, 29, 36,38, 39, 43,45, 47, 49,54, 55, 57,61,63)
+
+purity_samples &lt;- After_removal_sample_info[purity_info, ]
+
+species &lt;-  purity_samples$Species
+day &lt;- as.factor(purity_samples$Day)
+individual &lt;- purity_samples$Individual
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;specieshuman&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+#colnames(design) &lt;- gsub(&quot;batch2&quot;, &quot;batch&quot;, colnames(design))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff[,purity_info], design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation =   corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff[,purity_info], design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-13-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day1 =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day2 =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day3 =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+#write.table(fit2, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/unscaled_SD.txt&quot;, sep=&quot;\t&quot;)
+
+
+# Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+#FDR_level &lt;- 0.01
+
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 2787    3</code></pre>
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 2214    3</code></pre>
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), important_columns]) </code></pre>
+<pre><code>[1] 2724    3</code></pre>
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+<pre><code>[1] 3013    3</code></pre>
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+
+# 2787
+# 2214
+# 2724
+# 3013
+
+
+##################### VENN DIAGRAMS ############################
+
+## DE across species
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, batch 2)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4s_DE_by_species_March_13_5FDR_3_low_conf_purity.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+<div id="final-global-correction-supplement" class="section level3">
+<h3>Final global correction (supplement)</h3>
+<pre class="r"><code>species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;, &quot;3&quot;)
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;speciesH&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+#colnames(design) &lt;- gsub(&quot;batch2&quot;, &quot;batch&quot;, colnames(design))
+
+individual &lt;- After_removal_sample_info$Individual
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit.correlation = corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Plot the density to see shape of the distribution
+
+plotDensities(cpm.voom.corfit, col=pal[as.numeric(day)], legend = F)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-14-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day1 =topTable(fit2, coef=11, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day2 =topTable(fit2, coef=12, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Sig_inter_day3 =topTable(fit2, coef=13, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+# Compare separate versus global
+
+separate_rank &lt;- decideTests(fit2, method = &quot;separate&quot;, adjust.method = &quot;BH&quot;)
+summary(decideTests(fit2, method = &quot;separate&quot;, adjust.method = &quot;BH&quot;, p.value = 0.05))</code></pre>
+<pre><code>   HvCday0 HvCday1 HvCday2 HvCday3 Hday01 Hday12 Hday23 Cday01 Cday12
+-1    1641    1628    1700    1905   1725   2324    873   1785   2458
+0     7060    7148    6855    6502   6832   5720   8596   6678   5594
+1     1603    1528    1749    1897   1747   2260    835   1841   2252
+   Cday23 Sig_inter_day1 Sig_inter_day2 Sig_inter_day3
+-1   1931            197            324            253
+0    6337           9930           9627           9797
+1    2036            177            353            254</code></pre>
+<pre class="r"><code>global_rank &lt;- decideTests(fit2, method = &quot;global&quot;, adjust.method = &quot;BH&quot;)
+
+summary(decideTests(fit2, method = &quot;global&quot;, adjust.method = &quot;BH&quot;, p.value = 0.05))</code></pre>
+<pre><code>   HvCday0 HvCday1 HvCday2 HvCday3 Hday01 Hday12 Hday23 Cday01 Cday12
+-1    1604    1599    1644    1792   1676   2138   1022   1711   2271
+0     7151    7206    6968    6707   6940   6066   8295   6820   5937
+1     1549    1499    1692    1805   1688   2100    987   1773   2096
+   Cday23 Sig_inter_day1 Sig_inter_day2 Sig_inter_day3
+-1   1844            408            543            541
+0    6557           9518           9153           9199
+1    1903            378            608            564</code></pre>
+<pre class="r"><code># Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+#FDR_level &lt;- 0.01
+
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 &lt;- row.names(as.data.frame(which(global_rank[,1] !=0)  ))
+
+# Find the genes that are DE at Day 1
+HvCday1 &lt;- row.names(as.data.frame(which(global_rank[,2] !=0)  ))
+
+# Find the genes that are DE at Day 2
+HvCday2 &lt;- row.names(as.data.frame(which(global_rank[,3] !=0)  ))
+
+# Find the genes that are DE at Day 3
+HvCday3 &lt;- row.names(as.data.frame(which(global_rank[,4] !=0)  ))
+
+length(HvCday0)</code></pre>
+<pre><code>[1] 3153</code></pre>
+<pre class="r"><code># 3153
+length(HvCday1)</code></pre>
+<pre><code>[1] 3098</code></pre>
+<pre class="r"><code># 3098
+length(HvCday2)</code></pre>
+<pre><code>[1] 3336</code></pre>
+<pre class="r"><code># 3336
+length(HvCday3)</code></pre>
+<pre><code>[1] 3597</code></pre>
+<pre class="r"><code># 3597
+
+write.table(HvCday0, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/HvC_day0_sign_p_0.05&quot;, sep=&quot;\t&quot;)
+write.table(HvCday1, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/HvC_day1_sign_p_0.05&quot;, sep=&quot;\t&quot;)
+write.table(HvCday2, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/HvC_day2_sign_p_0.05&quot;, sep=&quot;\t&quot;)
+write.table(HvCday3, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/HvC_day3_sign_p_0.05&quot;, sep=&quot;\t&quot;)
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Human Day 0 to Day 1
+H_day01 = row.names(as.data.frame(which(global_rank[,5] !=0)  )) 
+
+# Find the genes that are DE at Human Day 1 to Day 2
+H_day12 = row.names(as.data.frame(which(global_rank[,6] !=0)  ))
+
+# Find the genes that are DE at Human Day 2 to Day 3
+H_day23 = row.names(as.data.frame(which(global_rank[,7] !=0)  )) 
+
+# Find the genes that are DE at Chimp Day 0 to Day 1
+C_day01 = row.names(as.data.frame(which(global_rank[,8] !=0)  ))
+
+# Find the genes that are DE at Chimp Day 1 to Day 2
+C_day12 = row.names(as.data.frame(which(global_rank[,9] !=0)  ))
+
+# Find the genes that are DE at Chimp Day 2 to Day 3
+C_day23 = row.names(as.data.frame(which(global_rank[,10] !=0)  ))
+
+
+
+# Make a table of the sections
+
+write.table(H_day01, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/H_day01_sign_p_0.05.txt&quot;, sep=&quot;\t&quot;)
+write.table(H_day12, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/H_day12_sign_p_0.05&quot;, sep=&quot;\t&quot;)
+write.table(H_day23, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/H_day12_sign_p_0.05.txt&quot;, sep=&quot;\t&quot;)
+
+write.table(C_day01, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/C_day01_sign_p_0.05.txt&quot;, sep=&quot;\t&quot;)
+write.table(C_day12, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/C_day12_sign_p_0.05.txt&quot;, sep=&quot;\t&quot;)
+write.table(C_day23, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/C_day23_sign_p_0.05.txt&quot;, sep=&quot;\t&quot;)
+
+# Interactions
+
+# Find the genes with sign interactions Day 1
+Sign_day1_inter = row.names(as.data.frame(which(global_rank[,11] !=0)  ))   
+
+# Find the genes that are DE at Human Day 1 to Day 2
+Sign_day2_inter = row.names(as.data.frame(which(global_rank[,12] !=0)  ))
+
+# Find the genes that are DE at Human Day 2 to Day 3
+Sign_day3_inter = row.names(as.data.frame(which(global_rank[,13] !=0)  ))
+
+                
+# Make a table of the sections
+
+write.table(Sign_day1_inter, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/H_day1_interact_sign_p_0.05.txt&quot;, sep=&quot;\t&quot;)
+write.table(Sign_day2_inter, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/H_day2_interact_sign_p_0.05.txt&quot;, sep=&quot;\t&quot;)
+write.table(Sign_day3_inter, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Final_global/H_day3_interact_sign_p_0.05.txt&quot;, sep=&quot;\t&quot;)
+
+
+##################### VENN DIAGRAMS ############################
+
+## DE across species
+
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- HvCday0
+mylist[[&quot;DE Day 1&quot;]] &lt;-  HvCday1
+mylist[[&quot;DE Day 2&quot;]] &lt;- HvCday2
+mylist[[&quot;DE Day 3&quot;]] &lt;- HvCday3
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, global correction)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4t_DE_by_species_March_13_5FDR_global_correction.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_humans_by_day &lt;- list()
+mylist_humans_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- H_day01
+mylist_humans_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  H_day12
+mylist_humans_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- H_day23
+
+
+Three_comp_humans &lt;- venn.diagram(mylist_humans_by_day, filename= NULL, main=&quot;DE genes across days in humans (5% FDR, global correction)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4v_DE_by_day_human_March_13_5FDR_global_correction.pdf&quot;)
+  grid.draw(Three_comp_humans)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_chimps_by_day &lt;- list()
+mylist_chimps_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- C_day01
+mylist_chimps_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;- C_day12
+mylist_chimps_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- C_day23
+
+Three_comp_chimps &lt;- venn.diagram(mylist_chimps_by_day, filename= NULL, main=&quot;DE genes across days in chimpanzees (5% FDR, global correction)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4w_DE_by_day_chimp_March_13_5FDR_global_correction.pdf&quot;)
+  grid.draw(Three_comp_chimps)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_interact &lt;- list()
+mylist_interact[[&quot;Human x Day 1&quot;]] &lt;- Sign_day1_inter
+
+mylist_interact[[&quot;Human x Day 2&quot;]] &lt;- Sign_day2_inter
+mylist_interact[[&quot;Human x Day 3&quot;]] &lt;- Sign_day3_inter
+
+Sig_interaction &lt;- venn.diagram(mylist_interact, filename= NULL, main=&quot;Genes with a significant species-by-day interaction (5% FDR, global correction)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4x_DE_by_day_human_March_13_5FDR_global_correction.pdf&quot;)
+  grid.draw(Sig_interaction)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+<div id="final-looking-at-divergence-at-day-0-and-day-1-supplement" class="section level3">
+<h3>Final, looking at divergence at day 0 and day 1 (supplement)</h3>
+<pre class="r"><code>species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;, &quot;3&quot;)
+
+After_removal_sample_info &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/After_removal_sample_info.csv&quot;)
+
+individual &lt;- After_removal_sample_info$Individual
+
+
+
+condition &lt;- factor(paste(species,day,sep=&quot;.&quot;))
+design &lt;- model.matrix(~ 0 + condition)
+colnames(design) &lt;- gsub(&quot;condition&quot;, &quot;&quot;, dput(colnames(design)))</code></pre>
+<pre><code>c(&quot;conditionC.0&quot;, &quot;conditionC.1&quot;, &quot;conditionC.2&quot;, &quot;conditionC.3&quot;, 
+&quot;conditionH.0&quot;, &quot;conditionH.1&quot;, &quot;conditionH.2&quot;, &quot;conditionH.3&quot;
+)</code></pre>
+<pre class="r"><code># We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit.correlation = corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# Effect size
+
+effect_size &lt;- as.data.frame(fit)
+
+# Log2(CPM) C day 0 - log2(CPM) H day 0
+
+div_day0 &lt;- effect_size[,1] - effect_size[,5]
+
+# Log2(CPM) C day 1 - log2(CPM) H day 1
+
+div_day1 &lt;- effect_size[,2] - effect_size[,6]
+
+
+# Make a dataframe with all
+divergence_01 &lt;- cbind(div_day0, div_day1)
+
+colnames(divergence_01) &lt;- c(&quot;0&quot;, &quot;1&quot;)
+
+boxplot(divergence_01, ylab = &quot;Effect size (chimpanzee - human)&quot;, main = &quot;Divergence at days 0-1&quot;, xlab = &quot;Day&quot;)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-15-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Perform t tests to look at differences in distributions of effect sizes
+t.test(div_day0, div_day1)</code></pre>
+<pre><code>
+    Welch Two Sample t-test
+
+data:  div_day0 and div_day1
+t = -0.56384, df = 20578, p-value = 0.5729
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -0.02425358  0.01341710
+sample estimates:
+  mean of x   mean of y 
+-0.01933453 -0.01391629 </code></pre>
+<pre class="r"><code># t = -0.62268, df = 20576, p-value = 0.5335
+
+
+# Make the dataframe for ggplot2
+day0_array &lt;- array(&quot;0&quot;, dim = c(10304,1))
+day1_array &lt;- array(&quot;1&quot;, dim = c(10304,1))
+
+divergence_day0 &lt;- cbind(as.data.frame((div_day0)), as.factor(day0_array))
+colnames(divergence_day0) &lt;- c(&quot;Effect_size&quot;, &quot;Day&quot;)
+divergence_day1 &lt;- cbind(as.data.frame(div_day1), day1_array)
+colnames(divergence_day1) &lt;- c(&quot;Effect_size&quot;, &quot;Day&quot;)
+
+divergence_plot &lt;- rbind(divergence_day0, divergence_day1)
+divergence_plot$Effect_size &lt;- as.numeric(divergence_plot[,1])
+
+ggplot(data=divergence_plot, aes(x=as.factor(Day), y=Effect_size)) + geom_boxplot() + xlab(&quot;Day&quot;) + ylab(&quot;Effect size Difference (Chimp - Human)&quot;) + theme_bw() + labs(title = &quot;Divergence&quot;)</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-15-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="data-visualization-subset-of-samples-2-3-humans" class="section level3">
+<h3>Data visualization (subset of samples, 2-3 humans)</h3>
+<pre class="r"><code># Make PCA plots with the factors colored by day
+
+#pca_genes &lt;- prcomp(t(cpm_in_cutoff), scale = T, retx = TRUE, center = TRUE)
+#scores &lt;- pca_genes$x
+
+#matrixpca &lt;- pca_genes$x
+#pc1 &lt;- matrixpca[,1]
+#pc2 &lt;- matrixpca[,2]
+#pc3 &lt;- matrixpca[,3]
+#pc4 &lt;- matrixpca[,4]
+#pc5 &lt;- matrixpca[,5]
+
+#pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+#summary &lt;- summary(pca_genes)
+
+
+#ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day1), shape=as.factor(species1), size=2)) + geom_point() + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;))  + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;) + labs(title = &quot;PCA of normalized endoderm data (Humans subset to match chimps)&quot;)</code></pre>
+</div>
+</div>
+<div id="de-genes-by-species-at-each-time-point-using-only-the-genes-that-remained-post-filtering-for-stem" class="section level2">
+<h2>DE genes by species at each time point using only the genes that remained post-filtering for STEM</h2>
+<pre class="r"><code># Use only the genes from the final step of the STEM analysis
+
+STEM_post_filtering_ensg_only &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/STEM_post_filtering_ensg_only.txt&quot;, sep=&quot;&quot;)
+
+
+inshared_lists = row.names(genes_in_cutoff) %in% STEM_post_filtering_ensg_only$ensg
+inshared_lists_data &lt;- as.data.frame(inshared_lists)
+
+STEM_gene_number &lt;- which(inshared_lists_data==&#39;TRUE&#39;)
+
+cpm_in_cutoff_STEM_genes &lt;- cpm(dge_in_cutoff[STEM_gene_number,], normalized.lib.sizes=TRUE, log=TRUE)
+
+cpm.voom_STEM &lt;- voom(dge_in_cutoff[STEM_gene_number,], design, normalize.method=&quot;none&quot;)
+
+# We want a random effect term for individual
+#corfit &lt;- duplicateCorrelation(cpm.voom_STEM, design,block=individual)
+corfit.correlation = 0.2024655
+
+cpm.voom.corfit_STEM &lt;- voom(dge_in_cutoff[STEM_gene_number,], design, plot = TRUE, normalize.method=&quot;none&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-17-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit_STEM , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HCday0 = c(1,0,0,0,-1,0,0,0), HCday1 = c(0,1,0,0,0,-1,0,0), HCday2 = c(0,0,1,0,0,0,-1,0), HCday3 = c(0,0,0,1,0,0,0,-1), Hday01 = c(0,0,0,0,1,-1, 0, 0), Hday12 = c(0,0,0,0,0,1,-1,0), Hday23 = c(0,0,0,0,0,0,1,-1), Cday01 = c(1,-1,0,0,0,0,0,0), Cday12 = c(0,1,-1,0,0,0,0,0), Cday23 = c(0,0,1,-1, 0,0,0,0), levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+
+# Set FDR level at 5% 
+
+FDR_level &lt;- 0.05
+
+# Pull out DE across species at each day
+mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR; 3940 genes with log2 fold change &gt;= 1)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;DE_by_species_3940_STEM_genes.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_humans_by_day &lt;- list()
+mylist_humans_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
+mylist_humans_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[7]]])[top3[[names(top3)[7]]]$adj.P.Val &lt; FDR_level]
+
+
+Three_comp_humans &lt;- venn.diagram(mylist_humans_by_day, filename= NULL, main=&quot;DE genes across days in humans (5% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;Humans_day_3940_STEM_genes.pdf&quot;)
+  grid.draw(Three_comp_humans)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+<pre class="r"><code>mylist_chimps_by_day &lt;- list()
+mylist_chimps_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[8]]])[top3[[names(top3)[8]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[9]]])[top3[[names(top3)[9]]]$adj.P.Val &lt; FDR_level]
+mylist_chimps_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[10]]])[top3[[names(top3)[10]]]$adj.P.Val &lt; FDR_level]
+
+Three_comp_chimps &lt;- venn.diagram(mylist_chimps_by_day, filename= NULL, main=&quot;DE genes across days in chimpanzees (5% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
+pdf(file = &quot;Chimps_day_3940_STEM_genes.pdf&quot;)
+  grid.draw(Three_comp_chimps)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

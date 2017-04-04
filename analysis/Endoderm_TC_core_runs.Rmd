@@ -12,11 +12,12 @@ There are 2 species (humans and chimps) with 6 human iPSC lines with 2 replicate
 
 ## PLOTS OF UNMAPPED AND MAPPED READS
 
-```{r}
+```{r load}
 # Load necessary libraries
 library(ggplot2)
 ## Warning: package 'ggplot2' was built under R version 3.2.3
 library(scales)
+source("~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R")
 
 # Get data for unmapped and mapped reads
 Endoderm_mapping_2_core_runs <- read.csv("~/Desktop/Endoderm_TC/Endoderm_mapping_2_core_runs.csv")
@@ -52,7 +53,7 @@ ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_po
 
 
 
-```{r}
+```{r both cores}
 # Plot for unmapped reads/sample for both core runs
 
 ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Total_unmapped, fill = Species)) + ylab("Number of unmapped reads") + xlab("Sample name") + geom_bar(stat = "identity", colour = "black") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) + xlab("Sample name") + ggtitle("Unmapped reads for all samples (2 core runs)") + geom_hline(yintercept = 10000000) + scale_y_continuous(labels = comma)
@@ -77,7 +78,7 @@ ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Lane_run2), y = Reads_unmapp
 ```
 
 Originally, we had considered subsampling to the median. 
-```{r}
+```{r re subsampling}
 # Originally, we had considered subsampling to the median. Find the median of the mapped reads (not including sample D0_3647_0116)
 
 median_test <- as.data.frame(Endoderm_mapping_2_core_runs$Total_mapped)
@@ -91,7 +92,7 @@ median(as.numeric(t(median_run)))
 
 Given the distribution of the mapped reads, we will subsample to the second highest value.
 
-```{r}
+```{r subsample to second highest value}
 
 # Plot mapped reads per sample with a line at 10 million reads
 
@@ -123,7 +124,7 @@ ggplot(Endoderm_mapping_2_core_runs, aes(x = factor(Sample), y = Reads_mapped_po
 
 ## VISUALIZATION OF THE RAW DATA 
 
-```{r}
+```{r raw data}
 # Load libraries
 
 library("gplots")
@@ -154,6 +155,7 @@ Endoderm_mapping_core_1 <- read.csv("~/Desktop/Endoderm_TC/Endoderm_mapping_core
 
 # Make labels with species and day
 species <- Endoderm_mapping_core_1$Species
+Species <- Endoderm_mapping_core_1$Species
 day <- Endoderm_mapping_core_1$Day
 individual <- Endoderm_mapping_core_1$Individual
 Sample_ID <- Endoderm_mapping_core_1$Sample_ID
@@ -172,7 +174,7 @@ heatmap.2( cors, scale="column", col = colors, margins = c(12, 12), trace='none'
  
 ```
 
-```{r}
+```{r functions}
 #PCA function (original code from Julien Roux)
 #Load in the plot_scores function
 plot_scores <- function(pca, scores, n, m, cols, points=F, pchs =20, legend=F){
@@ -224,7 +226,7 @@ for (n in 1:1){
 
 ## INITIALIZE NORMALIZATION
 
-```{r}
+```{r normalization 1}
 # Let's see what happens when we take the log2 of the raw counts
 
 log_counts_genes <- as.data.frame(log2(counts_genes))
@@ -261,7 +263,7 @@ plotDensities(cpm, col=pal[as.numeric(Endoderm_mapping_core_1$Day)], legend="top
 We are beginning with 30030 genes and 64 samples (8 samples/species x 4 timepoints/species x 2 species)
 Based on what we have learned from Roux and Blake (http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Correlation_bet_tech_factors_in_best_set_and_expression_stringent_filtering.html), we will use a cutoff of log2(CPM) > 1.5 in at least 16 of the human samples and 16 of the chimp samples.
 
-```{r}
+```{r filter lowly expressed genes}
 expr_cutoff <- 1.5
 
 # Make plot 
@@ -291,7 +293,7 @@ Roux and Blake's comparative analysis (http://lauren-blake.github.io/Reg_Evo_Pri
 
 ## Correction for library size
 
-```{r}
+```{r correct for library size}
 # Find the original counts of all of the genes that fit the criteria 
 
 counts_genes_in_cutoff <- counts_genes[cpm_filtered==TRUE,]
@@ -341,13 +343,84 @@ for (n in 2:2){
   col.v <- pal[as.integer(species)]
   plot_scores(pca_genes, scores, n, n+1, col.v)
 }
+
 ```
+
+## PCA with 64 samples (supplement)
+
+### Without cyclic loess normalization (supplement)
+
+```{r PCA 63}
+# Make PCA plots with the factors colored by day
+
+pca_genes <- prcomp(t(cpm_in_cutoff), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=day, shape=Species, size=2)) + geom_point(aes(colour = as.factor(day))) +  scale_colour_manual(name="Day",  
+                      values = c("0"=rgb(239/255, 110/255, 99/255, 1), "1"= rgb(0/255, 180/255, 81/255, 1), "2"=rgb(0/255, 177/255, 219/255, 1),
+                                 "3"=rgb(199/255, 124/255, 255/255,1))) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + scale_size(guide = 'none')  + theme_bw()  + ggtitle("PCs 1 and 2 from TMM normalized expression (64 samples)")
+
+```
+
+### With cyclic loess normalization (supplement)
+
+```{r cyclic loess norm}
+# Cyclic loess normalization
+
+# Make the design matrix (so that you can use voom to perform the cyclic loess normalization )
+condition <- factor(paste(species,day,sep="."))
+design <- model.matrix(~ 0 + condition)
+colnames(design) <- gsub("condition", "", dput(colnames(design)))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom <- voom(dge_in_cutoff, design, normalize.method="cyclicloess")
+
+
+# Make PCA plots with the factors colored by day
+
+pca_genes <- prcomp(t(cpm.voom$E), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=day, shape=Species, size=2)) + geom_point(aes(colour = as.factor(day))) +  scale_colour_manual(name="Day",  
+                      values = c("0"=rgb(239/255, 110/255, 99/255, 1), "1"= rgb(0/255, 180/255, 81/255, 1), "2"=rgb(0/255, 177/255, 219/255, 1),
+                                 "3"=rgb(199/255, 124/255, 255/255,1))) + xlab(paste("PC1 (",(summary$importance[2,1]*100),"% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100),"% of variance)")) + scale_size(guide = 'none')  + theme_bw()  + ggtitle("PCs 1 and 2 from TMM+cyclic loess normalized expression (64 samples)")
+
+
+
+```
+
+
 
 From the PCA plot, we see that Sample D0201570116 is a clear outlier and doesn't cluster with anything, including its technical replicate. We will remove this sample and then go through the same process as above to visualize the data. 
 
 ## Normalization after removal of Sample D0201570116
 
-```{r}
+```{r 63 samples}
 # Get data and sample info
 
 counts_genes63 <- counts_genes[,-2]
@@ -407,11 +480,9 @@ hist(cpm_in_cutoff, main = "log2(CPM) values in filtered data (10,304 genes from
 There are 10,304 genes remaining. 
 
 
-```{r}
+```{r PCA}
 library("ggplot2")
 dev.off()
-
-sample <- Endoderm_mapping_2_core_runs$Sample[-2]
 
 # Make PCA plots with the factors colored by day
 
@@ -445,49 +516,68 @@ pcs <- data.frame(pc1, pc2, pc3, pc4, pc5, pc6, pc7, pc8, pc9, pc10)
 
 summary <- summary(pca_genes)
 
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=day, shape=Species, size=2)) + geom_point(aes(colour = as.factor(day))) +  scale_colour_manual(name="Day",  
+                      values = c("0"=rgb(239/255, 110/255, 99/255, 1), "1"= rgb(0/255, 180/255, 81/255, 1), "2"=rgb(0/255, 177/255, 219/255, 1),
+                                 "3"=rgb(199/255, 124/255, 255/255,1))) + xlab(paste("PC1 (",(summary$importance[2,1]*100),"% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100),"% of variance)")) + scale_size(guide = 'none')  + theme_bw()  + ggtitle("PCs 1 and 2 from TMM normalized log2 CPM (63 samples)")
 
-ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=species, size=2)) +geom_point(aes(text = sample)) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2))  + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + labs(title = "PCA plot of normalized endoderm time course data")
-#ggplotly()
 
-# PCs 2 and 3
-for (n in 2:2){
-  col.v <- pal[as.integer(species)]
-  plot_scores(pca_genes, scores, n, n+1, col.v)
-}
-ggplot(data=pcs, aes(x=pc2, y=pc3, color=as.factor(day), shape=Species, size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC2 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC3 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 2 and 3 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCA plot of normalized endoderm time course data")
-#ggplotly()
 
-# PCs 3 and 4
-#for (n in 3:3){
-#  col.v <- pal[as.integer(species)]
-#  plot_scores(pca_genes, scores, n, n+1, col.v)
-#}
 
-ggplot(data=pcs, aes(x=pc3, y=pc4, color=as.factor(day), shape=Species, size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC3 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC4 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 3 and 4 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCA plot of normalized endoderm time course data")
-#ggplotly()
 
-# PCs 4 and 5
-#for (n in 4:4){
-#  col.v <- pal[as.integer(species)]
-#  plot_scores(pca_genes, scores, n, n+1, col.v)
-#}
 
-ggplot(data=pcs, aes(x=pc4, y=pc5, color=as.factor(day), shape=Species, size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC4 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC5 (",(summary$importance[2,2]*100), "% of variance)")) + title("PCs 4 and 5 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day") + labs(title = "PCA plot of normalized endoderm time course data")
-#ggplotly()
+```
+
+### PCA of TMM+cyclic loess normalized data (main paper and supplement)
+
+```{r PCA TMM+cyclic}
+cpm_cyclicloess <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess.txt")
+
+pca_genes <- prcomp(t(cpm_cyclicloess), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5, pc6, pc7, pc8, pc9, pc10)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=day, shape=Species, size=2)) + geom_point(aes(colour = as.factor(day))) +  scale_colour_manual(name="Day",  
+                      values = c("0"=rgb(239/255, 110/255, 99/255, 1), "1"= rgb(0/255, 180/255, 81/255, 1), "2"=rgb(0/255, 177/255, 219/255, 1),
+                                 "3"=rgb(199/255, 124/255, 255/255,1))) + xlab(paste("PC1 (",(summary$importance[2,1]*100),"% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100),"% of variance)")) + scale_size(guide = 'none')  + theme_bw()  + ggtitle("PCs 1 and 2 from TMM+loess normalized expression (63 samples)")
+     
+
+```
+
+```{r}
+
+# From https://github.com/jdblischak/tb-suscept/blob/master/analysis/lbb2012.Rmd
+library(ggdendro)
+library(gridGraphics)
+library("gplots")
+
+d1 <- dist(t(cpm_cyclicloess))
+h1 <- hclust(d1)
+ggdendrogram(h1, rotate = FALSE)
 
 
 # Hierarchical clustering on normalized data
 #dev.off()
-cors <- cor(cpm_in_cutoff, method="pearson", use="pairwise.complete.obs")
+cors <- cor(cpm_cyclicloess, method="spearman", use="pairwise.complete.obs")
 
-heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels,labRow=' ', ColSideColors=pal[as.integer(as.factor(species))], RowSideColors=pal[as.integer(as.factor(day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+pal <- c(rgb(239/255, 110/255, 99/255, 1), rgb(0/255, 180/255, 81/255, 1), rgb(0/255, 177/255, 219/255, 1), rgb(199/255, 124/255, 255/255,1))
 
-#gplots::heatmap.2(x=as.matrix(t(cpm_in_cutoff)),
+make_heatmap <- heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels,labRow=' ', ColSideColors=pal[as.integer(as.factor(day))], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+#gplots::heatmap.2(x=as.matrix(t(cpm_cyclicloess)),
 #                  , distfun = dist(x, method = "euclidean"), 
-#                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, col=colors, denscol="white", ColSideColors=pal[as.integer(as.factor(Day))+9])
-          
-
-
+#                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, #col=colors, denscol="white", ColSideColors=pal[as.integer(as.factor(Day))+9])
+     
 ```
 
 
@@ -500,6 +590,13 @@ PC 1 is correlated with day, PC 2 with species, PC 3 is somewhat by species, PC 
 
 differentiation_batch <- After_removal_sample_info$Reprogramming_batch
 
+# Find the numbers in each batch (should be 32 in batch 1 and 31 in batch 2)
+def_batch1 <- which(differentiation_batch == 1)
+length(def_batch1)
+
+def_batch2 <- which(differentiation_batch == 2)
+length(def_batch2)
+
 # Load data about Individual
 
 individual <- After_removal_sample_info$Individual
@@ -511,6 +608,20 @@ We want to make sure that differentiation batch nor individual is perfectly corr
 
 ### Differentiation batch
 ```{r}
+
+After_removal_sample_info <- read.csv("~/Desktop/Endoderm_TC/After_removal_sample_info.csv")
+
+Species <- After_removal_sample_info$Species
+species <- After_removal_sample_info$Species
+day <- After_removal_sample_info$Day
+individual <- After_removal_sample_info$Individual
+Sample_ID <- After_removal_sample_info$Sample_ID
+labels <- paste(Sample_ID, day, sep=" ")
+
+
+# Check dimension of pcs
+
+dim(pcs)
 
 # Differentiation batch
 
@@ -544,16 +655,21 @@ pvaluesandr2_differentiation_batch
 
 # PCs 1 and 2 by differentiation batch
 
-ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(differentiation_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + ggtitle("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Differentiation Batch", labels=c("2015", "2016")) 
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day), shape=as.factor(differentiation_batch), size=2)) + geom_point() + theme_bw() + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + ggtitle("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Differentiation Batch", labels=c("2015", "2016")) 
 
 
 
-# PCs 9 and 10 by differentiation batch
+# PCs 3 and 4 by differentiation batch
 
-ggplot(data=pcs, aes(x=pc9, y=pc10, color=as.factor(day+1), shape=as.factor(differentiation_batch), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC9 (",(summary$importance[2,9]*100), "% of variance)")) + ylab(paste("PC10 (",(summary$importance[2,10]*100), "% of variance)")) + ggtitle("PCs 9 and 10 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Differentiation Batch", labels=c("2015", "2016")) 
+ggplot(data=pcs, aes(x=pc3, y=pc4, color=as.factor(day+1), shape=as.factor(differentiation_batch), size=2)) + geom_point() + theme_bw()  + xlab(paste("PC3 (",(summary$importance[2,3]*100), "% of variance)")) + ylab(paste("PC4 (",(summary$importance[2,4]*100), "% of variance)")) + ggtitle("PCs 3 and 4 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Differentiation Batch", labels=c("2015", "2016")) 
+
+# PCs 4 and 5 by differentiation batch
+
+ggplot(data=pcs, aes(x=pc4, y=pc5, color=as.factor(day+1), shape=as.factor(differentiation_batch), size=2)) + geom_point() + theme_bw() + xlab(paste("PC4 (",(summary$importance[2,4]*100), "% of variance)")) + ylab(paste("PC5 (",(summary$importance[2,5]*100), "% of variance)")) + ggtitle("PCs 4 and 5 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3")) + scale_shape_discrete(name  ="Differentiation Batch", labels=c("2015", "2016")) 
+#ggplotly()
 ```
 
-Differentiation batch is most highly correlated with PC10 (p-value = 0.014), then PC5, then PC2.
+Differentiation batch is most highly correlated with PC5 (p-value = 0.00994664), then PC3, then PC8. Note that in PC5, the sample 28815 is an outlier. Therefore, we will perform this analysis below without the sample. 
 
 ### Individual
 
@@ -590,11 +706,11 @@ pvaluesandr2_individual
 
 # PCs 1 and 2 by individual
 
-ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(individual), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + ggtitle("PCs 1 and 2 of Normalized Data") + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8,9,10)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape=as.factor(individual), size=2)) + geom_point() + theme_bw()  + xlab(paste("PC1 (",(summary$importance[2,1]*100), "% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100), "% of variance)")) + ggtitle("PCs 1 and 2 of Normalized Data") + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8,9,10)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
 
 # PCs 3 and 4 by individual
 
-ggplot(data=pcs, aes(x=pc3, y=pc4, color=as.factor(day+1), shape=as.factor(individual), size=2)) + geom_point(aes(text = sample)) + xlab(paste("PC3 (",(summary$importance[2,3]*100), "% of variance)")) + ylab(paste("PC4 (",(summary$importance[2,4]*100), "% of variance)")) + ggtitle("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + theme_bw() + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8,9,10)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
+ggplot(data=pcs, aes(x=pc3, y=pc4, color=as.factor(day+1), shape=as.factor(individual), size=2))  + geom_point() + theme_bw()  + xlab(paste("PC3 (",(summary$importance[2,3]*100), "% of variance)")) + ylab(paste("PC4 (",(summary$importance[2,4]*100), "% of variance)")) + ggtitle("PCs 1 and 2 of Normalized Data") + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + theme_bw() + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8,9,10)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
 
 # PCs 3 and 4 by individual
 
@@ -606,10 +722,104 @@ summary <- summary(pca_genes)
 humans <- c(1:7, 16:23, 32:39, 48:55)
 chimps <- c(8:15, 24:31, 40:47, 56:63)
 
-ggplot(data=pcs[humans,], aes(x=pc1, y=pc3, color=as.factor(day[humans]+1), shape=as.factor(individual[humans]), size=2)) + geom_point(aes(text = sample[humans])) + xlab("PC1") + ylab("PC3") + ggtitle("PCs 1 and 3 of Normalized Data- Humans Only") + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
+ggplot(data=pcs[humans,], aes(x=pc1, y=pc3, color=as.factor(day[humans]+1), shape=as.factor(individual[humans]), size=2)) + geom_point() + xlab("PC1") + ylab("PC3") + ggtitle("PCs 1 and 3 of Normalized Data- Humans Only") + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
 
-ggplot(data=pcs[chimps,], aes(x=pc1, y=pc3, color=as.factor(day[chimps]+1), shape=as.factor(individual[chimps]), size=2)) + geom_point(aes(text = sample[chimps])) + xlab("PC1") + ylab("PC3") + ggtitle("PCs 1 and 3 of Normalized Data- Chimpanzees Only") + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
+ggplot(data=pcs[chimps,], aes(x=pc1, y=pc3, color=as.factor(day[chimps]+1), shape=as.factor(individual[chimps]), size=2)) + geom_point() + xlab("PC1") + ylab("PC3") + ggtitle("PCs 1 and 3 of Normalized Data- Chimpanzees Only") + theme_bw() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_shape_manual(values = c( 0,1,2,3,4,6,7,8)) + scale_color_discrete(name  ="Day", labels=c("0", "1", "2", "3"))
 
 ```
 
-Individual is most highly correlated with PC2 because there are no individuals that are both humans and chimpanzees. It is next most correlated with PC3 (p-value = 0.005). 
+Individual is most highly correlated with PC2 because there are no individuals that are both humans and chimpanzees. It is next most correlated with PC3 (p-value = 0.004732411). 
+
+```{r}
+# Relationship between batch and individual
+
+#Performing this test of significance for variables that are categorical data (Using Pearson's chi-squared test)
+pval_chi <- chisq.test(as.factor(differentiation_batch), as.factor(individual), simulate.p.value = TRUE)$p.value
+pval_chi  
+
+```
+
+### Differentiation batch without 28815 day 2
+
+```{r}
+individual_62 <- individual[-21]
+
+differentiation_batch_62 <- differentiation_batch[-21]
+
+pcs_62 <- pcs[-21,]
+  
+# Differentiation batch
+
+pvaluesandr2_differentiation_batch_62 = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"), c("Diff_batch p_val", "Diff_batch R^2")))
+
+j = 1
+  for (j in 1:10){
+  
+  checkPC1 <- lm(pcs_62[,j] ~ as.factor(differentiation_batch_62))
+
+#Get the summary statistics from it
+  summary(checkPC1)
+
+#Get the p-value of the F-statistic
+  summary(checkPC1)$fstatistic
+
+  fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  
+#Fraction of the variance explained by the model
+  r2_value <- summary(checkPC1)$r.squared
+
+#Put the summary statistics into the matrix w
+
+  pvaluesandr2_differentiation_batch_62[j, 1] <- p_fstat
+  pvaluesandr2_differentiation_batch_62[j, 2] <- r2_value
+  
+  }
+
+pvaluesandr2_differentiation_batch_62
+
+
+```
+
+
+```{r}
+# Individual
+
+pvaluesandr2_individual_62 = matrix(data = NA, nrow = 10, ncol = 2, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5", "PC6", "PC7", "PC8", "PC9", "PC10"), c("Individual p_val", "Individual R^2")))
+
+j = 1
+  for (j in 1:10){
+  
+  checkPC1 <- lm(pcs_62[,j] ~ as.factor(individual_62))
+
+#Get the summary statistics from it
+  summary(checkPC1)
+
+#Get the p-value of the F-statistic
+  summary(checkPC1)$fstatistic
+
+  fstat <- as.data.frame(summary(checkPC1)$fstatistic)
+  p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])
+  
+#Fraction of the variance explained by the model
+  r2_value <- summary(checkPC1)$r.squared
+
+#Put the summary statistics into the matrix w
+
+  pvaluesandr2_individual_62[j, 1] <- p_fstat
+  pvaluesandr2_individual_62[j, 2] <- r2_value
+  
+}
+
+pvaluesandr2_individual_62
+```
+
+```{r}
+# Relationship between batch and individual
+
+#Performing this test of significance for variables that are categorical data (Using Pearson's chi-squared test)
+pval_chi <- chisq.test(as.factor(differentiation_batch_62), as.factor(individual_62), simulate.p.value = TRUE)$p.value
+pval_chi  
+
+```
+

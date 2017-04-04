@@ -1,0 +1,378 @@
+---
+title: "Gene_length_effect"
+author: "Lauren Blake"
+date: "February 21, 2017"
+output: html_document
+---
+
+The goal of this script is to check the relationship between the length of a gene and its propensity to be called DE. 
+
+```{r}
+# Load libraries
+
+library("gplots")
+library("ggplot2")
+source("~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R")
+library("colorfulVennPlot")
+library("VennDiagram")
+
+# Load data
+
+length_diff <- read.delim("~/Dropbox/Endoderm TC/length_diff.txt")
+```
+
+## Basic plot of length difference by DE status 
+```{r}
+# For each day
+
+p <- ggplot(length_diff, aes(factor(DEsig), lengthdiff)) + geom_boxplot()
+
+p
+
+
+# Each day plotted individually
+
+p <- ggplot(length_diff, aes(factor(DEsig), lengthdiff)) + geom_boxplot(aes(fill=day)) + ylab("Human length -  chimp length (bp)") + xlab("DE (5% FDR)")
+
+p
+
+q <- p + facet_wrap( ~ day) 
+q
+
+# Zoom in
+
+p <- ggplot(length_diff, aes(factor(DEsig), lengthdiff)) + geom_boxplot(aes(fill=day)) 
+
+q <- p + facet_wrap( ~ day) + ylim(c(-50,50))
+q
+
+```
+
+## Genes with difference > 10bp between species
+
+```{r}
+
+length_diff_10 <- length_diff[which(length_diff$abld > 10) , ]
+
+# Each day plotted individually
+
+p <- ggplot(length_diff_10, aes(factor(DEsig), lengthdiff)) + geom_boxplot(aes(fill=day)) + ylab("Human length -  chimp length (bp)") + xlab("DE (5% FDR)")
+
+q <- p + facet_wrap( ~ day) +geom_jitter(position=position_jitter(width=.1, height=0)) + ylim(c(-200,200))
+q
+
+
+```
+
+## Genes with difference > 10bp between species further divided into direction of effect size
+
+```{r}
+# Separate by direction
+
+length_diff_10$logFC[length_diff_10$logFC <= 0] <- -1
+length_diff_10$logFC[length_diff_10$logFC > 0] <- 1
+
+length_diff_10$inter <- interaction(length_diff_10$day, length_diff_10$logFC)
+
+# Each day plotted individually
+
+p <- ggplot(length_diff_10, aes(factor(DEsig), lengthdiff)) + geom_boxplot(aes(fill=inter)) + ylab("Human length -  chimp length (bp)") + xlab("DE at 5% FDR (neg. logFC / pos. logFC)")
+
+q <- p + facet_wrap( ~ day) +geom_jitter(position=position_jitter(width=0.8, height=1)) + ylim(c(-200,200))
+q
+```
+
+## RPKM
+
+```{r}
+
+# Get orth exon lengths
+
+ortho_exon_lengths <- read.delim("~/Dropbox/Endoderm TC/ortho_exon_lengths.txt")
+
+totalNumReads <- as.data.frame(t(colSums(counts_genes_in_cutoff, na.rm = FALSE, dims = 1) ))
+
+# Calculate per species RPKM
+
+humans <- c(1:7, 16:23, 32:39, 48:55)
+chimps <- c(8:15, 24:31, 40:47, 56:63)
+   
+  # humans         
+#RPKM_humans_trans <- as.data.frame(counts_genes_in_cutoff[1:10304, humans] * 1000000 / (ortho_exon_lengths$hutotal /1000))
+
+#humans_reads <-  totalNumReads[,humans]
+
+#RPKM_humans[,1:31] <-   RPKM_humans_trans[,1:31] / humans_reads
+
+# Make RPKM into a row
+
+RPKM_humans <- rpkm(counts_genes_in_cutoff, gene.length=ortho_exon_lengths$hutotal/1000, normalized.lib.sizes=TRUE, log=TRUE) 
+
+RPKM_chimps <- rpkm(counts_genes_in_cutoff, gene.length=ortho_exon_lengths$chtotal/1000, normalized.lib.sizes=TRUE, log=TRUE) 
+
+# Take human samples from the human RPKM and chimp samples from the chimp RPKM data frames
+
+RPKM_all <- cbind(RPKM_humans[,1:7], RPKM_chimps[,8:15], RPKM_humans[,16:23], RPKM_chimps[,24:31], RPKM_humans[,32:39], RPKM_chimps[,40:47], RPKM_humans[,48:55], RPKM_chimps[,56:63])
+
+# Calculate the Pearson's correlation for each sample
+
+Cor_values = matrix(data = NA, nrow = 63, ncol = 1, dimnames = list(c("human 0", "human 0", "human 0", "human 0", "human 0", "human 0", "human 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "human 1", "human 1", "human 1", "human 1", "human 1", "human 1", "human 1", "human 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1",  "human 2", "human 2", "human 2", "human 2", "human 2", "human 2",  "human 2", "human 2",  "chimp 2", "chimp 2", "chimp 2", "chimp 2", "chimp 2", "chimp 2", "chimp 2", "chimp 2", "human 3", "human 3", "human 3", "human 3", "human 3", "human 3", "human 3", "human 3", "chimp 3",  "chimp 3",  "chimp 3",  "chimp 3", "chimp 3",  "chimp 3",  "chimp 3",  "chimp 3"), c("Pearson's correlation")))
+
+for (i in 1:63){
+  Cor_values[i,1] <- cor(RPKM_all[,i], cpm_cyclicloess[,i])
+}
+
+summary(Cor_values)
+```
+
+## Check RPKM 
+
+```{r}
+kb_gene_length_human <- ortho_exon_lengths$hutotal / 1000
+
+kb_gene_length_chimp <- ortho_exon_lengths$chtotal /1000
+
+gene_length_all <- cbind(kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human,
+                        kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp,
+                         kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, 
+                          kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp,
+                              kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human,
+                         kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp,
+                         kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human, kb_gene_length_human,
+                         kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp, kb_gene_length_chimp)
+```
+
+
+
+
+## Here, we want to identify DE genes across species and timepoints with an individual random effect (Set 1)
+
+```{r}
+
+# Make the dge object
+
+# Load the data 
+
+gene_counts_cutoff_norm_data <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_cutoff_norm_data.txt")
+
+Endoderm_mapping_core_1 <- read.csv("~/Desktop/Endoderm_TC/Endoderm_mapping_core_1.csv")
+
+# Make labels with species and day
+
+individual <- After_removal_sample_info$Individual
+
+species <- c("H", "H","H","H","H","H","H", "C", "C","C","C","C","C","C","C","H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C", "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C", "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C")
+
+day <- c("0", "0","0","0","0","0","0", "0", "0", "0","0","0","0","0", "0", "1","1","1","1","1","1","1","1", "1","1","1","1","1","1","1","1",  "2", "2","2","2","2","2","2","2","2", "2","2","2","2","2","2","2",  "3", "3","3","3","3","3","3","3",  "3", "3","3","3","3","3","3", "3")
+
+labels <- paste(species, day, sep=" ")
+
+# Take the TMM of the genes that meet the criteria
+
+dge_in_cutoff <- DGEList(counts=as.matrix(gene_counts_cutoff_norm_data), genes=rownames(gene_counts_cutoff_norm_data), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+
+
+design <- model.matrix(~ species*day )
+
+colnames(design)[1] <- "Intercept"
+colnames(design) <- gsub("speciesH", "Human", colnames(design))
+colnames(design) <- gsub(":", ".", colnames(design))
+
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+
+cpm.voom <- voom(dge_in_cutoff, design, normalize.method="cyclicloess")
+
+corfit.correlation = corfit$consensus.correlation
+cpm.voom.corfit <- voom(dge_in_cutoff, design, plot = TRUE, normalize.method="cyclicloess", block=individual, correlation = corfit.correlation )
+
+# Replace expression with RPKM values in the dge object
+#cpm.voom.corfit$E <- cpm.voom.corfit$E - log2(gene_length_all)
+
+cpm.voom.corfit$E <- as.data.frame(RPKM_all)
+RPKM_vals <- cpm.voom.corfit$E
+
+
+pca_genes <- prcomp(t(RPKM_vals), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca <- pca_genes$x
+pc1 <- matrixpca[,1]
+pc2 <- matrixpca[,2]
+pc3 <- matrixpca[,3]
+pc4 <- matrixpca[,4]
+pc5 <- matrixpca[,5]
+
+pcs <- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary <- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=day, shape=Species, size=2)) + geom_point(aes(colour = as.factor(day))) +  scale_colour_manual(name="Day",  
+                      values = c("0"=rgb(239/255, 110/255, 99/255, 1), "1"= rgb(0/255, 180/255, 81/255, 1), "2"=rgb(0/255, 177/255, 219/255, 1),
+                                 "3"=rgb(199/255, 124/255, 255/255,1))) + xlab(paste("PC1 (",(summary$importance[2,1]*100),"% of variance)")) + ylab(paste("PC2 (",(summary$importance[2,2]*100),"% of variance)")) + scale_size(guide = 'none')  + theme_bw()  + ggtitle("PCs 1 and 2 from TMM normalized RPKM (63 samples)")
+     
+
+# Run lmFit and eBayes in limma
+
+fit <- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 <- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species <- contrasts.fit(fit, cm2)
+fit2 <- eBayes(diff_species)
+
+top3 <- list(HvCday0 =topTable(fit2, coef=1, adjust="BH", number=Inf, sort.by="none"), HvCday1 =topTable(fit2, coef=2, adjust="BH", number=Inf, sort.by="none"),  HvCday2 =topTable(fit2, coef=3, adjust="BH", number=Inf, sort.by="none"),  HvCday3 =topTable(fit2, coef=4, adjust="BH", number=Inf, sort.by="none"), Hday01 =topTable(fit2, coef=5, adjust="BH", number=Inf, sort.by="none"), Hday12 =topTable(fit2, coef=6, adjust="BH", number=Inf, sort.by="none"),  Hday23 =topTable(fit2, coef=7, adjust="BH", number=Inf, sort.by="none"),  Cday01 =topTable(fit2, coef=8, adjust="BH", number=Inf, sort.by="none"), Cday12 =topTable(fit2, coef=9, adjust="BH", number=Inf, sort.by="none"), Cday23 =topTable(fit2, coef=10, adjust="BH", number=Inf, sort.by="none"))
+
+important_columns <- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust="BH", number=Inf, sort.by="none")
+nrow(HvCday0[which(HvCday0$adj.P.Val < 0.05), important_columns])
+HvCday0 <- HvCday0[which(HvCday0$adj.P.Val < 0.05), 1]             
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust="BH", number=Inf, sort.by="none")
+nrow(HvCday1[which(HvCday1$adj.P.Val < 0.05), important_columns])
+HvCday1 <- HvCday1[which(HvCday1$adj.P.Val < 0.05), 1]
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust="BH", number=Inf, sort.by="none")
+nrow(HvCday2[which(HvCday2$adj.P.Val < 0.05), important_columns])
+HvCday2 <- HvCday2[which(HvCday2$adj.P.Val < 0.05), 1]
+
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust="BH", number=Inf, sort.by="none")
+nrow(HvCday3[which(HvCday3$adj.P.Val < 0.05), important_columns])
+HvCday3 <- HvCday3[which(HvCday3$adj.P.Val < 0.05), 1]
+
+
+important_columns <- c(1,2,6)
+
+# Find the genes that are DE at Human Day 0 to Day 1
+H_day01 =topTable(fit2, coef=5, adjust="BH", number=Inf, sort.by="none")
+dim(H_day01[which(H_day01$adj.P.Val < 0.05),])
+H_day01 <- H_day01[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+H_day12 =topTable(fit2, coef=6, adjust="BH", number=Inf, sort.by="none")
+H_day12 <- H_day12[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+H_day23 =topTable(fit2, coef=7, adjust="BH", number=Inf, sort.by="none")
+H_day23 <- H_day23[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 0 to Day 1
+C_day01 =topTable(fit2, coef=8, adjust="BH", number=Inf, sort.by="none")
+C_day01 <- C_day01[, important_columns]    
+
+# Find the genes that are DE at Chimp Day 1 to Day 2
+C_day12 =topTable(fit2, coef=9, adjust="BH", number=Inf, sort.by="none")
+C_day12 <- C_day12[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 2 to Day 3
+C_day23 =topTable(fit2, coef=10, adjust="BH", number=Inf, sort.by="none")
+C_day23 <- C_day23[, important_columns]  
+
+
+
+# Check dimensions
+dim(H_day01)
+dim(H_day12)
+dim(H_day23)
+dim(C_day01)
+dim(C_day12)
+dim(C_day23)
+
+
+mylist <- list()
+mylist[["DE Day 0"]] <- HvCday0
+mylist[["DE Day 1"]] <- HvCday1 
+mylist[["DE Day 2"]] <- HvCday2
+mylist[["DE Day 3"]] <- HvCday3
+
+
+# Make as pdf 
+Four_comp <- venn.diagram(mylist, filename= NULL, main="DE genes between species per day (5% FDR, RPKM, 63 samples)", cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = "~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF4w_Four_comparisons_RPKM.pdf")
+  grid.draw(Four_comp)
+dev.off()
+
+
+```
+
+
+## Basic plot of length difference by DE status (RPKM values) 
+```{r}
+# Load data
+
+#length_diff <- read.delim("~/Dropbox/Endoderm TC/length_diff_RPKM.txt")
+
+# For each day
+
+#p <- ggplot(length_diff, aes(factor(DEsig), lengthdiff)) + geom_boxplot()
+
+#p
+
+
+# Each day plotted individually
+
+#p <- ggplot(length_diff, aes(factor(DEsig), lengthdiff)) + geom_boxplot(aes(fill=day)) + ylab("Human length -  chimp length (bp)") + xlab("DE based on 2 value cutoff")
+
+#p
+
+#q <- p + facet_wrap( ~ day) 
+#q
+
+# Zoom in
+
+#p <- ggplot(length_diff, aes(factor(DEsig), lengthdiff)) + geom_boxplot(aes(fill=day)) 
+
+#q <- p + facet_wrap( ~ day) + ylim(c(-50,50))
+#q
+
+```
+
+## Genes with difference > 10bp between species
+
+```{r}
+
+#length_diff_10 <- length_diff[which(length_diff$abld > 10) , ]
+
+# Each day plotted individually
+
+#p <- ggplot(length_diff_10, aes(factor(DEsig), lengthdiff)) + geom_boxplot(aes(fill=day)) + ylab("Human length -  chimp length (bp)") + xlab("DE (5% FDR)")
+
+#q <- p + facet_wrap( ~ day) +geom_jitter(position=position_jitter(width=.1, height=0)) + ylim(c(-200,200))
+#q
+
+
+```
+
+## Genes with difference > 10bp between species further divided into direction of effect size
+
+```{r}
+# Separate by direction
+
+#length_diff_10$logFC[length_diff_10$logFC <= 0] <- -1
+#length_diff_10$logFC[length_diff_10$logFC > 0] <- 1
+
+#length_diff_10$inter <- interaction(length_diff_10$day, length_diff_10$logFC)
+
+# Each day plotted individually
+
+#p <- ggplot(length_diff_10, aes(factor(DEsig), lengthdiff)) + geom_boxplot(aes(fill=inter)) + ylab("Human length -  chimp length (bp)") + xlab("DE based on 2 value cutoff (neg. logFC / pos. logFC)")
+
+#q <- p + facet_wrap( ~ day) +geom_jitter(position=position_jitter(width=0.8, height=1)) + ylim(c(-200,200))
+#q
+```
+
+

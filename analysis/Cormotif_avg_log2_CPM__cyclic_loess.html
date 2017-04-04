@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>Cormotif_avg_log2(CPM)</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Cormotif_avg_log2(CPM)</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>January 8, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#section"></a></li>
+<li><a href="#cormotif-analysis-main-paper">Cormotif analysis (Main paper)</a><ul>
+<li><a href="#identifying-genes-with-interspecies-differences-by-day">Identifying genes with interspecies differences by day</a></li>
+</ul></li>
+<li><a href="#cormotif-analysis-de-probabilities-for-consecutive-days">Cormotif analysis (DE probabilities for consecutive days)</a><ul>
+<li><a href="#testing-out-different-ks">Testing out different Ks</a></li>
+</ul></li>
+<li><a href="#cormotif-analysis--supplement">Cormotif analysis- supplement</a><ul>
+<li><a href="#de-probabilities-all-relative-to-day-0-rather-than-the-previous-day">DE probabilities all relative to day 0 rather than the previous day</a></li>
+<li><a href="#de-probabilities-all-relative-to-the-previous-day-but-using-the-data-that-was-combined-pre-normalization">DE probabilities all relative to the previous day but using the data that was combined pre-normalization</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>The goal of this script is to perform the main analyses and the supplemental analyses using Cormotif.</p>
+<div id="section" class="section level2">
+<h2></h2>
+<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre><code>## Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;R.utils&quot;)</code></pre>
+<pre><code>## Warning: package &#39;R.utils&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: R.oo</code></pre>
+<pre><code>## Warning: package &#39;R.oo&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: R.methodsS3</code></pre>
+<pre><code>## Warning: package &#39;R.methodsS3&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## R.methodsS3 v1.7.1 (2016-02-15) successfully loaded. See ?R.methodsS3 for help.</code></pre>
+<pre><code>## R.oo v1.21.0 (2016-10-30) successfully loaded. See ?R.oo for help.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;R.oo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:methods&#39;:
+## 
+##     getClasses, getMethods</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     attach, detach, gc, load, save</code></pre>
+<pre><code>## R.utils v2.4.0 (2016-09-13) successfully loaded. See ?R.utils for help.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;R.utils&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:utils&#39;:
+## 
+##     timestamp</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     cat, commandArgs, getOption, inherits, isOpen, parse, warnings</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;plyr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;limma&quot;)
+library(&quot;Biobase&quot;)</code></pre>
+<pre><code>## Loading required package: BiocGenerics</code></pre>
+<pre><code>## Loading required package: parallel</code></pre>
+<pre><code>## 
+## Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:parallel&#39;:
+## 
+##     clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+##     clusterExport, clusterMap, parApply, parCapply, parLapply,
+##     parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>## The following object is masked from &#39;package:limma&#39;:
+## 
+##     plotMA</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     IQR, mad, xtabs</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     anyDuplicated, append, as.data.frame, as.vector, cbind,
+##     colnames, do.call, duplicated, eval, evalq, Filter, Find, get,
+##     grep, grepl, intersect, is.unsorted, lapply, lengths, Map,
+##     mapply, match, mget, order, paste, pmax, pmax.int, pmin,
+##     pmin.int, Position, rank, rbind, Reduce, rownames, sapply,
+##     setdiff, sort, table, tapply, union, unique, unlist, unsplit</code></pre>
+<pre><code>## Welcome to Bioconductor
+## 
+##     Vignettes contain introductory material; view with
+##     &#39;browseVignettes()&#39;. To cite Bioconductor, see
+##     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre class="r"><code>library(&quot;GEOquery&quot;)</code></pre>
+<pre><code>## Setting options(&#39;download.file.method.GEOquery&#39;=&#39;auto&#39;)</code></pre>
+<pre><code>## Setting options(&#39;GEOquery.inmemory.gpl&#39;=FALSE)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;GEOquery&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:R.utils&#39;:
+## 
+##     gunzip</code></pre>
+<pre class="r"><code>library(&quot;plyr&quot;)
+#theme_set(theme_bw(base_size = 16))
+library(&quot;biomaRt&quot;)
+library(&quot;colorfulVennPlot&quot;)</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre class="r"><code>library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>## Warning: package &#39;VennDiagram&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: futile.logger</code></pre>
+<pre><code>## Warning: package &#39;futile.logger&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;gridExtra&quot;)</code></pre>
+<pre><code>## Warning: package &#39;gridExtra&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gridExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:Biobase&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following object is masked from &#39;package:BiocGenerics&#39;:
+## 
+##     combine</code></pre>
+<pre class="r"><code>library(&quot;car&quot;)</code></pre>
+<pre><code>## Warning: package &#39;car&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;car&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:VennDiagram&#39;:
+## 
+##     ellipse</code></pre>
+<pre class="r"><code>library(&quot;topGO&quot;)</code></pre>
+<pre><code>## Loading required package: graph</code></pre>
+<pre><code>## 
+## Attaching package: &#39;graph&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     join</code></pre>
+<pre><code>## Loading required package: GO.db</code></pre>
+<pre><code>## Loading required package: AnnotationDbi</code></pre>
+<pre><code>## Warning: package &#39;AnnotationDbi&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## Loading required package: stats4</code></pre>
+<pre><code>## Loading required package: IRanges</code></pre>
+<pre><code>## Warning: package &#39;IRanges&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## Loading required package: S4Vectors</code></pre>
+<pre><code>## Warning: package &#39;S4Vectors&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     rename</code></pre>
+<pre><code>## 
+## Attaching package: &#39;IRanges&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     desc</code></pre>
+<pre><code>## The following object is masked from &#39;package:R.oo&#39;:
+## 
+##     trim</code></pre>
+<pre><code>## Loading required package: DBI</code></pre>
+<pre><code>## Warning: package &#39;DBI&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## </code></pre>
+<pre><code>## Loading required package: SparseM</code></pre>
+<pre><code>## Warning: package &#39;SparseM&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;SparseM&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:base&#39;:
+## 
+##     backsolve</code></pre>
+<pre><code>## Warning: replacing previous import by &#39;graph::.__C__dist&#39; when loading
+## &#39;topGO&#39;</code></pre>
+<pre><code>## 
+## groupGOTerms:    GOBPTerm, GOMFTerm, GOCCTerm environments built.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;topGO&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     members</code></pre>
+<pre><code>## The following object is masked from &#39;package:grid&#39;:
+## 
+##     depth</code></pre>
+<pre class="r"><code>library(&quot;rowr&quot;)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;rowr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:plyr&#39;:
+## 
+##     count</code></pre>
+<pre class="r"><code>library(&quot;Cormotif&quot;)</code></pre>
+<pre><code>## Loading required package: affy</code></pre>
+<pre class="r"><code>library(&quot;ggfortify&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggfortify&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: ggplot2</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;dplyr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:rowr&#39;:
+## 
+##     coalesce, count</code></pre>
+<pre><code>## The following object is masked from &#39;package:AnnotationDbi&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following objects are masked from &#39;package:IRanges&#39;:
+## 
+##     collapse, desc, intersect, setdiff, slice, union</code></pre>
+<pre><code>## The following objects are masked from &#39;package:S4Vectors&#39;:
+## 
+##     intersect, rename, setdiff, union</code></pre>
+<pre><code>## The following object is masked from &#39;package:graph&#39;:
+## 
+##     union</code></pre>
+<pre><code>## The following object is masked from &#39;package:car&#39;:
+## 
+##     recode</code></pre>
+<pre><code>## The following object is masked from &#39;package:gridExtra&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following object is masked from &#39;package:biomaRt&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following object is masked from &#39;package:Biobase&#39;:
+## 
+##     combine</code></pre>
+<pre><code>## The following objects are masked from &#39;package:BiocGenerics&#39;:
+## 
+##     combine, intersect, setdiff, union</code></pre>
+<pre><code>## The following objects are masked from &#39;package:plyr&#39;:
+## 
+##     arrange, count, desc, failwith, id, mutate, rename, summarise,
+##     summarize</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(&quot;tidyr&quot;)</code></pre>
+<pre><code>## Warning: package &#39;tidyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;tidyr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:IRanges&#39;:
+## 
+##     expand</code></pre>
+<pre><code>## The following object is masked from &#39;package:R.utils&#39;:
+## 
+##     extract</code></pre>
+<pre class="r"><code>library(&quot;statmod&quot;)</code></pre>
+<pre><code>## Warning: package &#39;statmod&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;qtlcharts&quot;)</code></pre>
+<pre><code>## Warning: package &#39;qtlcharts&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;mygene&quot;)</code></pre>
+<pre><code>## Loading required package: GenomicFeatures</code></pre>
+<pre><code>## Warning: package &#39;GenomicFeatures&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## Loading required package: GenomeInfoDb</code></pre>
+<pre><code>## Warning: package &#39;GenomeInfoDb&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## Loading required package: GenomicRanges</code></pre>
+<pre><code>## Warning: package &#39;GenomicRanges&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## 
+## Attaching package: &#39;GenomicFeatures&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:topGO&#39;:
+## 
+##     genes</code></pre>
+<pre><code>## 
+## Attaching package: &#39;mygene&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     query</code></pre>
+<pre><code>## The following object is masked from &#39;package:biomaRt&#39;:
+## 
+##     getGene</code></pre>
+<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code># Load the data 
+
+cpm_cyclicloess_40 &lt;- read.table(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess_40.txt&quot;)
+
+# Setup matrix
+mean_tech_reps_matrix &lt;- as.matrix(cpm_cyclicloess_40, nrow=10304, ncol = 40)
+
+mean_tech_reps_matrix[1:10304,1:40] = as.numeric(as.character(mean_tech_reps_matrix[1:10304,1:40]))
+colnames(mean_tech_reps_matrix) &lt;- colnames(cpm_cyclicloess_40)
+rownames(mean_tech_reps_matrix) &lt;- rownames(cpm_cyclicloess_40)</code></pre>
+</div>
+<div id="cormotif-analysis-main-paper" class="section level2">
+<h2>Cormotif analysis (Main paper)</h2>
+<div id="identifying-genes-with-interspecies-differences-by-day" class="section level3">
+<h3>Identifying genes with interspecies differences by day</h3>
+<pre class="r"><code># Create a factor for the experiments, with the levels ordered such that as.numeric converts them to numbers in a defined manner
+
+# Note: there are 6 human biological replicates and 4 chimp biological replicates
+
+species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;, 
+             &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,
+             &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,
+             &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,
+         &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;, 
+         &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;)
+
+group_fac &lt;- factor(paste(species, day, sep = &quot;.&quot;),
+                    levels = c( 
+                               &quot;H.0&quot;, &quot;H.1&quot;, &quot;H.2&quot;, &quot;H.3&quot;, &quot;C.0&quot;, &quot;C.1&quot;, &quot;C.2&quot;, &quot;C.3&quot;))
+groupid &lt;- as.numeric(group_fac)
+
+# Conditions to compare:
+# day0, day1, day2, day3, 
+compid_day &lt;- data.frame(c1 = c(1, 2, 3, 4),
+                         c2 = c(5, 6, 7, 8))
+
+
+#interspecies differences at each day
+set.seed(12345)
+cormotif_day &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid, compid = compid_day, K = 3:5)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=3&quot;
+[1] &quot;We have run the first 100 iterations for K=3&quot;
+[1] &quot;We have run the first 50 iterations for K=4&quot;
+[1] &quot;We have run the first 100 iterations for K=4&quot;
+[1] &quot;We have run the first 50 iterations for K=5&quot;
+[1] &quot;We have run the first 100 iterations for K=5&quot;</code></pre>
+<pre class="r"><code>plotIC(cormotif_day)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/cormotif%20species%20diff-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMotif(cormotif_day)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/cormotif%20species%20diff-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>gene_prob_day &lt;- cormotif_day$bestmotif$p.post
+rownames(gene_prob_day) &lt;- rownames(cpm_cyclicloess_40)
+
+
+prob_sp_1 &lt;- rownames(gene_prob_day[(gene_prob_day[,1] &lt; 0.5 &amp; gene_prob_day[,2] &lt;0.5 &amp; gene_prob_day[,3] &lt;0.5 &amp; gene_prob_day[,4] &lt;0.5),])
+length(prob_sp_1)</code></pre>
+<pre><code>[1] 4447</code></pre>
+<pre class="r"><code>#4495
+
+prob_sp_2 &lt;- rownames(gene_prob_day[(gene_prob_day[,1] &gt;0.7 &amp; gene_prob_day[,2] &gt;0.9 &amp; gene_prob_day[,3] &lt;0.5 &amp; gene_prob_day[,4] &lt;0.5),])
+length(prob_sp_2)</code></pre>
+<pre><code>[1] 305</code></pre>
+<pre class="r"><code>#352
+
+prob_sp_3 &lt;- rownames(gene_prob_day[(gene_prob_day[,1] &lt;0.5 &amp; gene_prob_day[,2] &lt;0.5 &amp; gene_prob_day[,3] &gt; 0.9 &amp; gene_prob_day[,4] &gt; 0.9),])
+length(prob_sp_3)</code></pre>
+<pre><code>[1] 214</code></pre>
+<pre class="r"><code>#221
+
+prob_sp_4 &lt;- rownames(gene_prob_day[(gene_prob_day[,1] &gt;0.9&amp; gene_prob_day[,2] &gt;0.9 &amp; gene_prob_day[,3]&gt;0.9 &amp; gene_prob_day[,4] &gt;0.9),])
+length(prob_sp_4)</code></pre>
+<pre><code>[1] 2565</code></pre>
+<pre class="r"><code>#2509</code></pre>
+</div>
+</div>
+<div id="cormotif-analysis-de-probabilities-for-consecutive-days" class="section level2">
+<h2>Cormotif analysis (DE probabilities for consecutive days)</h2>
+<div id="testing-out-different-ks" class="section level3">
+<h3>Testing out different Ks</h3>
+<pre class="r"><code># Create a factor for the experiments, with the levels ordered such that as.numeric converts them to numbers in a defined manner
+
+# Note: there are 6 human biological replicates and 4 chimp biological replicates
+
+species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;, 
+             &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,
+             &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,
+             &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,
+         &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;, 
+         &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;)
+
+group_fac &lt;- factor(paste(species, day, sep = &quot;.&quot;),
+                    levels = c(&quot;H.0&quot;, &quot;H.1&quot;, &quot;H.2&quot;, &quot;H.3&quot;,
+                               &quot;C.0&quot;, &quot;C.1&quot;, &quot;C.2&quot;, &quot;C.3&quot;))
+groupid &lt;- as.numeric(group_fac)
+# Conditions to compare:
+# day0, day1, day2, day3, 
+
+compid_tran &lt;- data.frame(c1 = c(1, 2, 3, 5, 6, 7),
+                          c2 = c(2, 3, 4, 6, 7, 8))
+
+                         
+# Differences during diffentiation
+
+set.seed(1)
+cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 5:10, max.iter=500)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=5&quot;
+[1] &quot;We have run the first 100 iterations for K=5&quot;
+[1] &quot;We have run the first 150 iterations for K=5&quot;
+[1] &quot;We have run the first 200 iterations for K=5&quot;
+[1] &quot;We have run the first 50 iterations for K=6&quot;
+[1] &quot;We have run the first 100 iterations for K=6&quot;
+[1] &quot;We have run the first 150 iterations for K=6&quot;
+[1] &quot;We have run the first 50 iterations for K=7&quot;
+[1] &quot;We have run the first 100 iterations for K=7&quot;
+[1] &quot;We have run the first 150 iterations for K=7&quot;
+[1] &quot;We have run the first 200 iterations for K=7&quot;
+[1] &quot;We have run the first 50 iterations for K=8&quot;
+[1] &quot;We have run the first 100 iterations for K=8&quot;
+[1] &quot;We have run the first 150 iterations for K=8&quot;
+[1] &quot;We have run the first 200 iterations for K=8&quot;
+[1] &quot;We have run the first 250 iterations for K=8&quot;
+[1] &quot;We have run the first 300 iterations for K=8&quot;
+[1] &quot;We have run the first 350 iterations for K=8&quot;
+[1] &quot;We have run the first 400 iterations for K=8&quot;
+[1] &quot;We have run the first 450 iterations for K=8&quot;
+[1] &quot;We have run the first 500 iterations for K=8&quot;
+[1] &quot;We have run the first 50 iterations for K=9&quot;
+[1] &quot;We have run the first 100 iterations for K=9&quot;
+[1] &quot;We have run the first 150 iterations for K=9&quot;
+[1] &quot;We have run the first 200 iterations for K=9&quot;
+[1] &quot;We have run the first 250 iterations for K=9&quot;
+[1] &quot;We have run the first 300 iterations for K=9&quot;
+[1] &quot;We have run the first 350 iterations for K=9&quot;
+[1] &quot;We have run the first 400 iterations for K=9&quot;
+[1] &quot;We have run the first 450 iterations for K=9&quot;
+[1] &quot;We have run the first 500 iterations for K=9&quot;
+[1] &quot;We have run the first 50 iterations for K=10&quot;
+[1] &quot;We have run the first 100 iterations for K=10&quot;
+[1] &quot;We have run the first 150 iterations for K=10&quot;
+[1] &quot;We have run the first 200 iterations for K=10&quot;
+[1] &quot;We have run the first 250 iterations for K=10&quot;
+[1] &quot;We have run the first 300 iterations for K=10&quot;
+[1] &quot;We have run the first 350 iterations for K=10&quot;
+[1] &quot;We have run the first 400 iterations for K=10&quot;
+[1] &quot;We have run the first 450 iterations for K=10&quot;</code></pre>
+<pre class="r"><code>cormotif_tran$bestmotif$loglike</code></pre>
+<pre><code>[1] -165215.3</code></pre>
+<pre class="r"><code>set.seed(12345)
+cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 5:10, max.iter=500)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=5&quot;
+[1] &quot;We have run the first 100 iterations for K=5&quot;
+[1] &quot;We have run the first 150 iterations for K=5&quot;
+[1] &quot;We have run the first 200 iterations for K=5&quot;
+[1] &quot;We have run the first 50 iterations for K=6&quot;
+[1] &quot;We have run the first 100 iterations for K=6&quot;
+[1] &quot;We have run the first 150 iterations for K=6&quot;
+[1] &quot;We have run the first 200 iterations for K=6&quot;
+[1] &quot;We have run the first 250 iterations for K=6&quot;
+[1] &quot;We have run the first 300 iterations for K=6&quot;
+[1] &quot;We have run the first 50 iterations for K=7&quot;
+[1] &quot;We have run the first 100 iterations for K=7&quot;
+[1] &quot;We have run the first 150 iterations for K=7&quot;
+[1] &quot;We have run the first 200 iterations for K=7&quot;
+[1] &quot;We have run the first 50 iterations for K=8&quot;
+[1] &quot;We have run the first 100 iterations for K=8&quot;
+[1] &quot;We have run the first 150 iterations for K=8&quot;
+[1] &quot;We have run the first 200 iterations for K=8&quot;
+[1] &quot;We have run the first 250 iterations for K=8&quot;
+[1] &quot;We have run the first 300 iterations for K=8&quot;
+[1] &quot;We have run the first 350 iterations for K=8&quot;
+[1] &quot;We have run the first 400 iterations for K=8&quot;
+[1] &quot;We have run the first 450 iterations for K=8&quot;
+[1] &quot;We have run the first 500 iterations for K=8&quot;
+[1] &quot;We have run the first 50 iterations for K=9&quot;
+[1] &quot;We have run the first 100 iterations for K=9&quot;
+[1] &quot;We have run the first 150 iterations for K=9&quot;
+[1] &quot;We have run the first 200 iterations for K=9&quot;
+[1] &quot;We have run the first 250 iterations for K=9&quot;
+[1] &quot;We have run the first 300 iterations for K=9&quot;
+[1] &quot;We have run the first 350 iterations for K=9&quot;
+[1] &quot;We have run the first 400 iterations for K=9&quot;
+[1] &quot;We have run the first 450 iterations for K=9&quot;
+[1] &quot;We have run the first 500 iterations for K=9&quot;
+[1] &quot;We have run the first 50 iterations for K=10&quot;
+[1] &quot;We have run the first 100 iterations for K=10&quot;
+[1] &quot;We have run the first 150 iterations for K=10&quot;
+[1] &quot;We have run the first 200 iterations for K=10&quot;
+[1] &quot;We have run the first 250 iterations for K=10&quot;
+[1] &quot;We have run the first 300 iterations for K=10&quot;
+[1] &quot;We have run the first 350 iterations for K=10&quot;
+[1] &quot;We have run the first 400 iterations for K=10&quot;
+[1] &quot;We have run the first 450 iterations for K=10&quot;
+[1] &quot;We have run the first 500 iterations for K=10&quot;</code></pre>
+<pre class="r"><code>plotIC(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/cormotif%20day%20diff-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMotif(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/cormotif%20day%20diff-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cormotif_tran$bestmotif$loglike</code></pre>
+<pre><code>[1] -165189</code></pre>
+<pre class="r"><code>set.seed(12345)
+cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 7, max.iter=500)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=7&quot;
+[1] &quot;We have run the first 100 iterations for K=7&quot;
+[1] &quot;We have run the first 150 iterations for K=7&quot;
+[1] &quot;We have run the first 200 iterations for K=7&quot;
+[1] &quot;We have run the first 250 iterations for K=7&quot;
+[1] &quot;We have run the first 300 iterations for K=7&quot;
+[1] &quot;We have run the first 350 iterations for K=7&quot;
+[1] &quot;We have run the first 400 iterations for K=7&quot;
+[1] &quot;We have run the first 450 iterations for K=7&quot;
+[1] &quot;We have run the first 500 iterations for K=7&quot;</code></pre>
+<pre class="r"><code>plotIC(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/cormotif%20day%20diff-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMotif(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/cormotif%20day%20diff-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cormotif_tran$bestmotif$loglike</code></pre>
+<pre><code>[1] -165217.8</code></pre>
+<pre class="r"><code>set.seed(12345)
+cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 8, max.iter=500)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=8&quot;
+[1] &quot;We have run the first 100 iterations for K=8&quot;
+[1] &quot;We have run the first 150 iterations for K=8&quot;
+[1] &quot;We have run the first 200 iterations for K=8&quot;
+[1] &quot;We have run the first 250 iterations for K=8&quot;
+[1] &quot;We have run the first 300 iterations for K=8&quot;
+[1] &quot;We have run the first 350 iterations for K=8&quot;
+[1] &quot;We have run the first 400 iterations for K=8&quot;
+[1] &quot;We have run the first 450 iterations for K=8&quot;
+[1] &quot;We have run the first 500 iterations for K=8&quot;</code></pre>
+<pre class="r"><code>plotIC(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/cormotif%20day%20diff-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMotif(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/cormotif%20day%20diff-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cormotif_tran$bestmotif$loglike</code></pre>
+<pre><code>[1] -165217.5</code></pre>
+<pre class="r"><code>gene_prob_tran &lt;- cormotif_tran$bestmotif$p.post
+rownames(gene_prob_tran) &lt;- rownames( cpm_cyclicloess_40)
+
+# Seed 12345
+prob_day_1  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_1)</code></pre>
+<pre><code>[1] 3786</code></pre>
+<pre class="r"><code>#3789
+
+prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt; 0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6 ]&gt;0.5),])
+length(prob_day_2)</code></pre>
+<pre><code>[1] 616</code></pre>
+<pre class="r"><code>#616
+
+prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_3)</code></pre>
+<pre><code>[1] 1024</code></pre>
+<pre class="r"><code>#1024
+
+prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_4)</code></pre>
+<pre><code>[1] 97</code></pre>
+<pre class="r"><code># 97
+
+prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt; 0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_5)</code></pre>
+<pre><code>[1] 654</code></pre>
+<pre class="r"><code>#654
+
+prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_6)</code></pre>
+<pre><code>[1] 215</code></pre>
+<pre class="r"><code>#215
+
+prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_7)</code></pre>
+<pre><code>[1] 223</code></pre>
+<pre class="r"><code>#223
+
+prob_day_8  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_8)</code></pre>
+<pre><code>[1] 1157</code></pre>
+<pre class="r"><code>#1157</code></pre>
+<p>The seed number with the greatest log likelihood is seed # 66 for K = 8 and #4 for K = 7. It should be noted that the log likehood values are relatively similar.</p>
+<pre class="r"><code># Re-run Cormotif with the best seed
+
+compid_tran &lt;- data.frame(c1 = c(1, 2, 3, 5, 6, 7),
+                          c2 = c(2, 3, 4, 6, 7, 8))
+
+set.seed(4)
+cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 7, max.iter=500)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=7&quot;
+[1] &quot;We have run the first 100 iterations for K=7&quot;
+[1] &quot;We have run the first 150 iterations for K=7&quot;
+[1] &quot;We have run the first 200 iterations for K=7&quot;
+[1] &quot;We have run the first 250 iterations for K=7&quot;</code></pre>
+<pre class="r"><code>cormotif_tran$bestmotif$loglike</code></pre>
+<pre><code>[1] -165185.8</code></pre>
+<pre class="r"><code>rownames(gene_prob_tran) &lt;- rownames( cpm_cyclicloess_40)
+plotIC(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMotif(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/unnamed-chunk-2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>dim(gene_prob_tran)</code></pre>
+<pre><code>[1] 10304     6</code></pre>
+<pre class="r"><code>set.seed(66)
+cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 8, max.iter=500)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=8&quot;
+[1] &quot;We have run the first 100 iterations for K=8&quot;
+[1] &quot;We have run the first 150 iterations for K=8&quot;
+[1] &quot;We have run the first 200 iterations for K=8&quot;
+[1] &quot;We have run the first 250 iterations for K=8&quot;
+[1] &quot;We have run the first 300 iterations for K=8&quot;</code></pre>
+<pre class="r"><code>cormotif_tran$bestmotif$loglike</code></pre>
+<pre><code>[1] -165165</code></pre>
+<pre class="r"><code>gene_prob_tran &lt;- cormotif_tran$bestmotif$p.post
+rownames(gene_prob_tran) &lt;- rownames( cpm_cyclicloess_40)
+plotIC(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/unnamed-chunk-2-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMotif(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/unnamed-chunk-2-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>dim(gene_prob_tran)</code></pre>
+<pre><code>[1] 10304     6</code></pre>
+<pre class="r"><code># Pull the genes from seed #66 when K = 8. 
+
+prob_day_1  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_1)</code></pre>
+<pre><code>[1] 3789</code></pre>
+<pre class="r"><code>#3810
+write.table(prob_day_1, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_1.txt&quot;)
+
+prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_2)</code></pre>
+<pre><code>[1] 1017</code></pre>
+<pre class="r"><code>#1130
+write.table(prob_day_2, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_2.txt&quot;)
+
+prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_3)</code></pre>
+<pre><code>[1] 219</code></pre>
+<pre class="r"><code>#217
+write.table(prob_day_3, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_3.txt&quot;)
+
+prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_4)</code></pre>
+<pre><code>[1] 187</code></pre>
+<pre class="r"><code>#164
+write.table(prob_day_4, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_4.txt&quot;)
+
+prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt; 0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_5)</code></pre>
+<pre><code>[1] 620</code></pre>
+<pre class="r"><code>#673
+write.table(prob_day_5, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_5.txt&quot;)
+
+prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_6)</code></pre>
+<pre><code>[1] 1147</code></pre>
+<pre class="r"><code>#1030
+write.table(prob_day_6, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_6.txt&quot;)
+
+prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_7)</code></pre>
+<pre><code>[1] 686</code></pre>
+<pre class="r"><code>#700
+write.table(prob_day_7, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_7.txt&quot;)
+
+prob_day_8  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_8)</code></pre>
+<pre><code>[1] 339</code></pre>
+<pre class="r"><code>#334
+write.table(prob_day_8, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_8.txt&quot;)</code></pre>
+</div>
+</div>
+<div id="cormotif-analysis--supplement" class="section level2">
+<h2>Cormotif analysis- supplement</h2>
+<div id="de-probabilities-all-relative-to-day-0-rather-than-the-previous-day" class="section level3">
+<h3>DE probabilities all relative to day 0 rather than the previous day</h3>
+<pre class="r"><code># The only thing we are changing is the compid_tran. Now, we are comparing everything to day 0 rather than the previous day
+
+compid_tran &lt;- data.frame(c1 = c(1, 1, 1, 5, 5, 5),
+                          c2 = c(2, 3, 4, 6, 7, 8))
+
+   
+
+set.seed(66)
+cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 8, max.iter=500)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=8&quot;
+[1] &quot;We have run the first 100 iterations for K=8&quot;
+[1] &quot;We have run the first 150 iterations for K=8&quot;</code></pre>
+<pre class="r"><code>cormotif_tran$bestmotif$loglike</code></pre>
+<pre><code>[1] -188523.9</code></pre>
+<pre class="r"><code>gene_prob_tran &lt;- cormotif_tran$bestmotif$p.post
+
+rownames(gene_prob_tran) &lt;- rownames( cpm_cyclicloess_40)
+plotIC(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMotif(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>dim(gene_prob_tran)</code></pre>
+<pre><code>[1] 10304     6</code></pre>
+<pre class="r"><code># Pull the genes from seed #66 when K = 8. 
+
+prob_day_1  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_1)</code></pre>
+<pre><code>[1] 3446</code></pre>
+<pre class="r"><code>#3446
+
+prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt; 0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_2)</code></pre>
+<pre><code>[1] 249</code></pre>
+<pre class="r"><code>#249
+
+prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_3)</code></pre>
+<pre><code>[1] 601</code></pre>
+<pre class="r"><code>#601
+
+prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_4)</code></pre>
+<pre><code>[1] 449</code></pre>
+<pre class="r"><code>#449
+
+prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt; 0.5 &amp; gene_prob_tran[,2] &lt; 0.5 &amp; gene_prob_tran[,3] &lt; 0.5 &amp; gene_prob_tran[,4] &gt; 0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_5)</code></pre>
+<pre><code>[1] 188</code></pre>
+<pre class="r"><code>#188
+
+prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_6)</code></pre>
+<pre><code>[1] 1898</code></pre>
+<pre class="r"><code>#1898
+
+prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_7)</code></pre>
+<pre><code>[1] 2</code></pre>
+<pre class="r"><code>#2
+
+prob_day_8  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_8)</code></pre>
+<pre><code>[1] 2078</code></pre>
+<pre class="r"><code>#2078</code></pre>
+</div>
+<div id="de-probabilities-all-relative-to-the-previous-day-but-using-the-data-that-was-combined-pre-normalization" class="section level3">
+<h3>DE probabilities all relative to the previous day but using the data that was combined pre-normalization</h3>
+<pre class="r"><code># Load the data 
+
+cpm_cyclicloess_40 &lt;- read.table(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess_40_pre_norm.txt&quot;)
+
+# Setup matrix
+mean_tech_reps_matrix &lt;- as.matrix(cpm_cyclicloess_40, nrow=10304, ncol = 40)
+
+mean_tech_reps_matrix[1:10304,1:40] = as.numeric(as.character(mean_tech_reps_matrix[1:10304,1:40]))
+colnames(mean_tech_reps_matrix) &lt;- colnames(cpm_cyclicloess_40)
+rownames(mean_tech_reps_matrix) &lt;- rownames(cpm_cyclicloess_40)
+
+compid_tran &lt;- data.frame(c1 = c(1, 2, 3, 5, 6, 7),
+                          c2 = c(2, 3, 4, 6, 7, 8))
+
+set.seed(66)
+cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 8, max.iter=500)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=8&quot;
+[1] &quot;We have run the first 100 iterations for K=8&quot;
+[1] &quot;We have run the first 150 iterations for K=8&quot;
+[1] &quot;We have run the first 200 iterations for K=8&quot;
+[1] &quot;We have run the first 250 iterations for K=8&quot;
+[1] &quot;We have run the first 300 iterations for K=8&quot;
+[1] &quot;We have run the first 350 iterations for K=8&quot;</code></pre>
+<pre class="r"><code>cormotif_tran$bestmotif$loglike</code></pre>
+<pre><code>[1] -166482.3</code></pre>
+<pre class="r"><code>gene_prob_tran &lt;- cormotif_tran$bestmotif$p.post
+rownames(gene_prob_tran) &lt;- rownames( cpm_cyclicloess_40)
+plotIC(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMotif(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM__cyclic_loess.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>dim(gene_prob_tran)</code></pre>
+<pre><code>[1] 10304     6</code></pre>
+<pre class="r"><code># Pull the genes from seed #66 when K = 8. 
+
+prob_day_1  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_1)</code></pre>
+<pre><code>[1] 3540</code></pre>
+<pre class="r"><code>#3540
+
+prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_2)</code></pre>
+<pre><code>[1] 1033</code></pre>
+<pre class="r"><code>#1033
+
+prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_3)</code></pre>
+<pre><code>[1] 213</code></pre>
+<pre class="r"><code>#213
+
+prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_4)</code></pre>
+<pre><code>[1] 205</code></pre>
+<pre class="r"><code>#205
+
+prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt; 0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_5)</code></pre>
+<pre><code>[1] 536</code></pre>
+<pre class="r"><code>#536
+
+prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_6)</code></pre>
+<pre><code>[1] 1067</code></pre>
+<pre class="r"><code>#1067
+
+prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_7)</code></pre>
+<pre><code>[1] 700</code></pre>
+<pre class="r"><code>#700
+
+prob_day_8  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_8)</code></pre>
+<pre><code>[1] 334</code></pre>
+<pre class="r"><code>#334</code></pre>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

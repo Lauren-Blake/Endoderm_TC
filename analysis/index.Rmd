@@ -11,15 +11,9 @@ title: "Home"
 
 ## Analysis
 
-*  [Plots of unmapped and mapped reads](../analysis/Unmapped_mapped_plots.html)
-*  [Normalization steps](../analysis/Normalize_again.html)
-*  [Analysis of technical factors](../analysis/Technical_factor_analysis.html)
-*  [Effect of Differentiation Batch](../analysis/Endoderm_TC_core_runs.html)
-*  [Pairwise Differential Expression](../analysis/DE_exp_limma_only.html)
-*  [Comparison of Two Methods of Combining Technical Replicates](../analysis/Compare_methods_combining_technical_replicates.html)
-*  [Cormotif using averaged technical ](../analysis/Cormotif_avg_log2_CPM_.html)
-*  [Analysis of variance](../analysis/Temporal_changes_variation.html) 
-
-## Other
-
-*  [Original Analysis](../analysis/Endoderm_original_analysis.html)
+*  [Data exploration and normalization](../analysis/Endoderm_core_runs.html)
+*  [Analysis of technical factors](../analysis/Technical_factor_analysis_cyclic_loess.html)
+*  [Pairwise Differential Expression](../analysis/DE_exp_limma_only_cyclic_loess.html)
+*  [Comparison of Two Methods of Combining Technical Replicates](../analysis/Compare_methods_combining_technical_replicates_cyclic_loess.html)
+*  [Cormotif using averaged technical ](../analysis/Cormotif_avg_log2_CPM_new.html)
+*  [Analysis of variance](../analysis/Temporal_changes_variation_cyclic_loess.html) 
