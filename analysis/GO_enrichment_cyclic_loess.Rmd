@@ -12,7 +12,7 @@ Gene_ID_Conversion <- read.csv("~/Downloads/Gene_ID_Conversion.csv", stringsAsFa
 
 # All motifs
 
-ENSG_Motif_Number <- read.csv("~/Desktop/Endoderm_TC/ashlar-trial/data/ENSG_Motif_Number.csv", stringsAsFactors = FALSE)
+ENSG_Motif_Number <- read.csv("~/Desktop/Endoderm_TC/ashlar-trial/data/ENSG_Motif_Number_TMM_cyclic_loess.csv", stringsAsFactors = FALSE)
 
 # Get Gene name for ENSG- all Motifs 
 
@@ -26,14 +26,14 @@ Gene_motif <- cbind(ENSG_Motif_Number[,1], get_gene, ENSG_Motif_Number[,2])
 
 # Separate into motifs
 
-motif1 <-  Gene_motif[1:3810,] 
-motif2 <-  Gene_motif[3811:4940, ] 
-motif3 <-  Gene_motif[4941:5157, ] 
-motif4 <-  as.data.frame(Gene_motif[5158:5321, ]) 
-motif5 <-  Gene_motif[5322:5994, ]
-motif6 <-  Gene_motif[5995:7024, ] 
-motif7 <-  as.data.frame(Gene_motif[7025:7724, ])
-motif8 <-  Gene_motif[7725:8058, ] 
+motif1 <-  Gene_motif[1:3789,] 
+motif2 <-  Gene_motif[3790:4806, ] 
+motif3 <-  Gene_motif[4807:5025, ] 
+motif4 <-  as.data.frame(Gene_motif[5026:5212, ]) 
+motif5 <-  Gene_motif[5213:5832, ]
+motif6 <-  Gene_motif[5833:6979, ] 
+motif7 <-  as.data.frame(Gene_motif[6980:7665, ])
+motif8 <-  Gene_motif[7666:8004, ] 
 
 dim(motif1)
 dim(motif2)
@@ -55,7 +55,7 @@ motif47 <- rbind(A, B)
 
 write.table(motif47, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif47.txt", sep="\t",  quote = F, col.names = F, row.names = F)
 
-# Let's compare to a similarly sized group but with the same DE pattern across species (motifs 3 + 5, 890 genes)
+# Let's compare to a similarly sized group but with the same DE pattern across species (motifs 3 + 5, 839 genes compared to 873 genes in motifs 4+7)
 
 motif3 <- data.frame(lapply(motif3, as.character), stringsAsFactors=FALSE)
 motif5 <- data.frame(lapply(motif5, as.character), stringsAsFactors=FALSE)
@@ -68,7 +68,7 @@ motif35 <- rbind(A, B)
 
 write.table(motif35, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif35.txt", sep="\t",  quote = F, col.names = F, row.names = F)
 
-# Let's compare to one motif (rather than a combination of motifs; motif 2, 1130)
+# Let's compare to one motif (rather than a combination of motifs; motif 2, 1017)
 
 motif2 <- data.frame(lapply(motif2, as.character), stringsAsFactors=FALSE)
 motif2 <- as.data.frame(motif2[ ,2])
@@ -85,8 +85,6 @@ A <- as.data.frame(motif1[ ,2])
 colnames(A) <- c("Gene name")
 
 write.table(A, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif1.txt", sep="\t",  quote = F, col.names = F, row.names = F)
-
-
 
 ```
 

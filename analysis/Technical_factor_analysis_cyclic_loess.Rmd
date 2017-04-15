@@ -796,7 +796,7 @@ for(i in 1:5){
   summary(checkPC1)
 
 #Get the p-value of the F-statistic
-  summary(checkPC2)$fstatistic
+  summary(checkPC1)$fstatistic
 
   fstat <- as.data.frame(summary(checkPC1)$fstatistic)
   p_fstat <- 1-pf(fstat[1,], fstat[2,], fstat[3,])

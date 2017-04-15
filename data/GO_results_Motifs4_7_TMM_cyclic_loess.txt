@@ -1,0 +1,43 @@
+
+
+
+
+
+Analysis Type:	PANTHER Overrepresentation Test (release 20170413)
+Annotation Version and Release Date:	GO Ontology database  Released 2017-02-28
+Analyzed List:	motif47.txt (Homo sapiens)
+Reference List:	Background.txt (Homo sapiens)	There are duplicate IDs in the file. The unique set of IDs will be used.
+Bonferroni correction:	true
+Bonferroni count:	6125
+GO biological process complete	Background.txt - REFLIST (10089)	motif47.txt (875)	motif47.txt (expected)	motif47.txt (over/under)	motif47.txt (fold Enrichment)	motif47.txt (P-value)
+neuron projection morphogenesis (GO:0048812)	272	48	23.59	+	2.03	2.92E-02
+animal organ morphogenesis (GO:0009887)	449	74	38.94	+	1.90	1.08E-03
+positive regulation of developmental process (GO:0051094)	641	96	55.59	+	1.73	1.23E-03
+regulation of anatomical structure morphogenesis (GO:0022603)	588	88	51.00	+	1.73	4.25E-03
+positive regulation of multicellular organismal process (GO:0051240)	727	107	63.05	+	1.70	5.34E-04
+regulation of multicellular organismal development (GO:2000026)	980	134	84.99	+	1.58	7.17E-04
+regulation of cell differentiation (GO:0045595)	859	114	74.50	+	1.53	2.87E-02
+anatomical structure morphogenesis (GO:0009653)	1109	147	96.18	+	1.53	9.89E-04
+animal organ development (GO:0048513)	1532	202	132.87	+	1.52	3.21E-06
+regulation of multicellular organismal process (GO:0051239)	1410	179	122.29	+	1.46	6.18E-04
+regulation of developmental process (GO:0050793)	1301	165	112.83	+	1.46	2.40E-03
+system development (GO:0048731)	2221	269	192.62	+	1.40	8.05E-06
+regulation of signal transduction (GO:0009966)	1701	202	147.52	+	1.37	8.82E-03
+regulation of cell communication (GO:0010646)	1845	217	160.01	+	1.36	6.10E-03
+regulation of signaling (GO:0023051)	1877	220	162.79	+	1.35	6.39E-03
+multicellular organism development (GO:0007275)	2544	295	220.64	+	1.34	7.55E-05
+single-multicellular organism process (GO:0044707)	2891	328	250.73	+	1.31	6.69E-05
+anatomical structure development (GO:0048856)	2711	303	235.12	+	1.29	1.67E-03
+multicellular organismal process (GO:0032501)	3127	349	271.20	+	1.29	9.77E-05
+single-organism developmental process (GO:0044767)	2877	309	249.52	+	1.24	4.57E-02
+Unclassified (UNCLASSIFIED)	900	96	78.06	+	1.23	0.00E00
+cellular metabolic process (GO:0044237)	5641	422	489.23	-	.86	1.84E-02
+cellular macromolecule metabolic process (GO:0044260)	4501	323	390.36	-	.83	1.42E-02
+nitrogen compound metabolic process (GO:0006807)	3664	252	317.77	-	.79	9.45E-03
+cellular aromatic compound metabolic process (GO:0006725)	3121	210	270.68	-	.78	2.08E-02
+heterocycle metabolic process (GO:0046483)	3114	205	270.07	-	.76	3.93E-03
+nucleobase-containing compound metabolic process (GO:0006139)	3033	199	263.05	-	.76	4.73E-03
+cellular nitrogen compound metabolic process (GO:0034641)	3398	219	294.70	-	.74	1.09E-04
+nucleic acid metabolic process (GO:0090304)	2682	168	232.60	-	.72	1.23E-03
+RNA processing (GO:0006396)	716	31	62.10	-	.50	3.27E-02
+mRNA metabolic process (GO:0016071)	533	20	46.23	-	.43	4.73E-02

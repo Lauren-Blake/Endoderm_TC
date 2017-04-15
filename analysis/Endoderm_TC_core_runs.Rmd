@@ -572,7 +572,7 @@ cors <- cor(cpm_cyclicloess, method="spearman", use="pairwise.complete.obs")
 
 pal <- c(rgb(239/255, 110/255, 99/255, 1), rgb(0/255, 180/255, 81/255, 1), rgb(0/255, 177/255, 219/255, 1), rgb(199/255, 124/255, 255/255,1))
 
-make_heatmap <- heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels,labRow=' ', ColSideColors=pal[as.integer(as.factor(day))], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+make_heatmap <- heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels, labRow=' ', ColSideColors=pal[as.integer(as.factor(day))], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
 
 #gplots::heatmap.2(x=as.matrix(t(cpm_cyclicloess)),
 #                  , distfun = dist(x, method = "euclidean"), 

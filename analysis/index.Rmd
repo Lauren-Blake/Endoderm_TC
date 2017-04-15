@@ -17,3 +17,4 @@ title: "Home"
 *  [Comparison of Two Methods of Combining Technical Replicates](../analysis/Compare_methods_combining_technical_replicates_cyclic_loess.html)
 *  [Cormotif using averaged technical ](../analysis/Cormotif_avg_log2_CPM_new.html)
 *  [Analysis of variance](../analysis/Temporal_changes_variation_cyclic_loess.html) 
+*  [GO information](../analysis/GO_enrichment_cyclic_loess.html)

@@ -182,6 +182,21 @@ plotIC(cormotif_tran)
 plotMotif(cormotif_tran)
 dim(gene_prob_tran)
 
+# Test degree of conservation- posterior probability difference between the humans and the chimps within a motif 
+
+# 0.3 (7734 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) <= 0.3) & (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) <= 0.3) & (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) <= 0.3), ]))
+
+# 0.2 (6663 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) <= 0.2) & (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) <= 0.2) & (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) <= 0.2), ]))
+
+# 0.1 (4846 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) <= 0.1) & (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) <= 0.1) & (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) <= 0.1), ]))
+
+
 prob_day_1  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
 length(prob_day_1)
 write.table(prob_day_1, file="~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_1_K7.txt")
@@ -233,6 +248,13 @@ write.table(prob_day_7, file="~/Desktop/Endoderm_TC/ashlar-trial/data/prob_clust
 
 set.seed(66)
 cormotif_tran <- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 5:10, max.iter=500)
+
+plotIC(cormotif_tran)
+plotMotif(cormotif_tran)
+
+set.seed(66)
+cormotif_tran <- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
                         compid = compid_tran, K = 8, max.iter=500)
 
 cormotif_tran$bestmotif$loglike
@@ -241,6 +263,34 @@ rownames(gene_prob_tran) <- rownames( cpm_cyclicloess_40)
 plotIC(cormotif_tran)
 plotMotif(cormotif_tran)
 dim(gene_prob_tran)
+
+# Test degree of conservation for days 0-3: posterior probability difference between the humans and the chimps within a motif 
+
+# 0.3 (7795 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) <= 0.3) & (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) <= 0.3) & (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) <= 0.3), ]))
+
+# 0.2 (6740 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) <= 0.2) & (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) <= 0.2) & (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) <= 0.2), ]))
+
+# 0.1 (4877 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) <= 0.1) & (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) <= 0.1) & (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) <= 0.1), ]))
+
+# Test degree of conservation for days 0-2: posterior probability difference between the humans and the chimps within a motif 
+
+# 0.3 (9634 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) <= 0.3) & (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) <= 0.3) , ]))
+
+# 0.2 (9076 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) <= 0.2) & (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) <= 0.2) , ]))
+
+# 0.1 (7899 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) <= 0.1) & (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) <= 0.1) , ]))
 
 
 # Pull the genes from seed #66 when K = 8. 
@@ -285,10 +335,41 @@ length(prob_day_8)
 #339
 write.table(prob_day_8, file="~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_8_K8.txt")
 
+prob_day_1  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
+length(prob_day_1)
+#3789
+
+prob_day_2  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
+length(prob_day_2)
+#1017
+
+prob_day_3  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.5),])
+length(prob_day_3)
+#219
+
+prob_day_4  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.5),])
+length(prob_day_4)
+#187
+
+prob_day_5  <- rownames(gene_prob_tran[(gene_prob_tran[,1] < 0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
+length(prob_day_5)
+#620
+
+prob_day_6  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]<0.5),])
+length(prob_day_6)
+#1147
+
+prob_day_7  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]<0.5),])
+length(prob_day_7)
+#686
+
+prob_day_8  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
+length(prob_day_8)
+#339
 ```
 
 
-### Using the lowest likelihood seeds 
+### Using the lowest likelihood seeds (Exploration, not used in the paper)
 ```{r}
 
 # Lowest when K = 7
@@ -424,31 +505,43 @@ prob_day_1  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran
 length(prob_day_1)
 #3446
 
-prob_day_2  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
+prob_day_2  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
 length(prob_day_2)
-#188
-
-prob_day_3  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
-length(prob_day_3)
 #249
 
-prob_day_4  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.5),])
+prob_day_3  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.5),])
+length(prob_day_3)
+#601
+
+prob_day_4  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
 length(prob_day_4)
-#602
-
-prob_day_5  <- rownames(gene_prob_tran[(gene_prob_tran[,1] < 0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
-length(prob_day_5)
-#1897
-
-prob_day_6  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6] < 0.5),])
-length(prob_day_6)
 #449
 
+prob_day_5  <- rownames(gene_prob_tran[(gene_prob_tran[,1] < 0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
+length(prob_day_5)
+#26
+
+prob_day_6  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6] > 0.5),])
+length(prob_day_6)
+#1898
 
 
-prob_day_7  <- rownames(gene_prob_tran[(gene_prob_tran[,1] > 0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
+
+#prob_day_7  <- rownames(gene_prob_tran[(gene_prob_tran[,1] > 0.5 & gene_prob_tran[,1] < 0.8 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,2] < 0.8 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,3] <0.8 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,4] <0.8 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,5] < 0.8  & gene_prob_tran[,6]>0.5 & gene_prob_tran[,6]<0.8),])
+#length(prob_day_7)
+#2
+
+
+prob_day_7  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6] > 0.5),])
 length(prob_day_7)
-#2078
+#4
+
+#prob_day_8  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.8 & gene_prob_tran[,2] >0.8 & gene_prob_tran[,3] >0.8 & gene_prob_tran[,4] >0.8 & gene_prob_tran[,5] > 0.8 & gene_prob_tran[,6] > 0.8),])
+#length(prob_day_8)
+
+prob_day_8  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6] > 0.5),])
+length(prob_day_8)
+#2169
 
 
 ```
@@ -487,33 +580,35 @@ dim(gene_prob_tran)
 
 prob_day_1  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
 length(prob_day_1)
-#3571
+#3540
 
-prob_day_2  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]<0.5),])
+prob_day_2  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
 length(prob_day_2)
-#710
+#1033
 
-prob_day_4  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.5),])
+prob_day_3  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.5),])
+length(prob_day_3)
+#213
+
+prob_day_4  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.5),])
 length(prob_day_4)
-#239
+#205
 
-prob_day_5  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
+prob_day_5  <- rownames(gene_prob_tran[(gene_prob_tran[,1] < 0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
 length(prob_day_5)
-#983
+#536
 
-prob_day_6  <- rownames(gene_prob_tran[(gene_prob_tran[,1] > 0.5 & gene_prob_tran[,2] < 0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]<0.5),])
+prob_day_6  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]<0.5),])
 length(prob_day_6)
-#1043
+#1067
 
-prob_day_7  <- rownames(gene_prob_tran[(gene_prob_tran[,1] > 0.6 & gene_prob_tran[,2] > 0.6 & gene_prob_tran[,3] > 0.6 & gene_prob_tran[,4] > 0.6 & gene_prob_tran[,5] > 0.6 & gene_prob_tran[,6] > 0.6),])
+prob_day_7  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]<0.5),])
 length(prob_day_7)
-#281
+#700
 
-prob_day_3  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6] > 0.5),])
-length(prob_day_3) - length(prob_day_7)
-#113
-
-
+prob_day_8  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
+length(prob_day_8)
+#334
 
 
 ```

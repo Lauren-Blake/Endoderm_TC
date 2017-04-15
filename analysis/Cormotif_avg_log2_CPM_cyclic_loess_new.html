@@ -182,7 +182,7 @@ $(document).ready(function () {
 <li><a href="#load-data">Load data</a></li>
 <li><a href="#cormotif-analysis-de-probabilities-for-consecutive-days">Cormotif analysis (DE probabilities for consecutive days)</a><ul>
 <li><a href="#testing-out-different-ks">Testing out different Ks</a></li>
-<li><a href="#using-the-lowest-likelihood-seeds">Using the lowest likelihood seeds</a></li>
+<li><a href="#using-the-lowest-likelihood-seeds-exploration-not-used-in-the-paper">Using the lowest likelihood seeds (Exploration, not used in the paper)</a></li>
 </ul></li>
 <li><a href="#cormotif-analysis--supplement">Cormotif analysis- supplement</a><ul>
 <li><a href="#de-probabilities-all-relative-to-day-0-rather-than-the-previous-day">DE probabilities all relative to day 0 rather than the previous day</a></li>
@@ -616,7 +616,7 @@ rownames(gene_prob_tran) &lt;- rownames( cpm_cyclicloess_40)
 prob_day_1  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_1)</code></pre>
 <pre><code>[1] 3786</code></pre>
-<pre class="r"><code>#3789
+<pre class="r"><code>#3786
 
 prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt; 0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6 ]&gt;0.5),])
 length(prob_day_2)</code></pre>
@@ -680,6 +680,20 @@ plotIC(cormotif_tran)</code></pre>
 <p><img src="figure/Cormotif_avg_log2_CPM_cyclic_loess_new.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>dim(gene_prob_tran)</code></pre>
 <pre><code>[1] 10304     6</code></pre>
+<pre class="r"><code># Test degree of conservation- posterior probability difference between the humans and the chimps within a motif 
+
+# 0.3 (7734 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) &lt;= 0.3) &amp; (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) &lt;= 0.3) &amp; (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) &lt;= 0.3), ]))</code></pre>
+<pre><code>[1] 7734</code></pre>
+<pre class="r"><code># 0.2 (6663 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) &lt;= 0.2) &amp; (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) &lt;= 0.2) &amp; (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) &lt;= 0.2), ]))</code></pre>
+<pre><code>[1] 6663</code></pre>
+<pre class="r"><code># 0.1 (4846 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) &lt;= 0.1) &amp; (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) &lt;= 0.1) &amp; (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) &lt;= 0.1), ]))</code></pre>
+<pre><code>[1] 4846</code></pre>
 <pre class="r"><code>prob_day_1  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_1)</code></pre>
 <pre><code>[1] 3795</code></pre>
@@ -732,6 +746,57 @@ length(prob_day_7)</code></pre>
 
 set.seed(66)
 cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
+                        compid = compid_tran, K = 5:10, max.iter=500)</code></pre>
+<pre><code>[1] &quot;We have run the first 50 iterations for K=5&quot;
+[1] &quot;We have run the first 100 iterations for K=5&quot;
+[1] &quot;We have run the first 150 iterations for K=5&quot;
+[1] &quot;We have run the first 200 iterations for K=5&quot;
+[1] &quot;We have run the first 50 iterations for K=6&quot;
+[1] &quot;We have run the first 100 iterations for K=6&quot;
+[1] &quot;We have run the first 150 iterations for K=6&quot;
+[1] &quot;We have run the first 200 iterations for K=6&quot;
+[1] &quot;We have run the first 50 iterations for K=7&quot;
+[1] &quot;We have run the first 100 iterations for K=7&quot;
+[1] &quot;We have run the first 150 iterations for K=7&quot;
+[1] &quot;We have run the first 200 iterations for K=7&quot;
+[1] &quot;We have run the first 250 iterations for K=7&quot;
+[1] &quot;We have run the first 300 iterations for K=7&quot;
+[1] &quot;We have run the first 350 iterations for K=7&quot;
+[1] &quot;We have run the first 400 iterations for K=7&quot;
+[1] &quot;We have run the first 450 iterations for K=7&quot;
+[1] &quot;We have run the first 50 iterations for K=8&quot;
+[1] &quot;We have run the first 100 iterations for K=8&quot;
+[1] &quot;We have run the first 150 iterations for K=8&quot;
+[1] &quot;We have run the first 200 iterations for K=8&quot;
+[1] &quot;We have run the first 250 iterations for K=8&quot;
+[1] &quot;We have run the first 300 iterations for K=8&quot;
+[1] &quot;We have run the first 350 iterations for K=8&quot;
+[1] &quot;We have run the first 400 iterations for K=8&quot;
+[1] &quot;We have run the first 450 iterations for K=8&quot;
+[1] &quot;We have run the first 500 iterations for K=8&quot;
+[1] &quot;We have run the first 50 iterations for K=9&quot;
+[1] &quot;We have run the first 100 iterations for K=9&quot;
+[1] &quot;We have run the first 150 iterations for K=9&quot;
+[1] &quot;We have run the first 200 iterations for K=9&quot;
+[1] &quot;We have run the first 250 iterations for K=9&quot;
+[1] &quot;We have run the first 300 iterations for K=9&quot;
+[1] &quot;We have run the first 350 iterations for K=9&quot;
+[1] &quot;We have run the first 50 iterations for K=10&quot;
+[1] &quot;We have run the first 100 iterations for K=10&quot;
+[1] &quot;We have run the first 150 iterations for K=10&quot;
+[1] &quot;We have run the first 200 iterations for K=10&quot;
+[1] &quot;We have run the first 250 iterations for K=10&quot;
+[1] &quot;We have run the first 300 iterations for K=10&quot;
+[1] &quot;We have run the first 350 iterations for K=10&quot;
+[1] &quot;We have run the first 400 iterations for K=10&quot;
+[1] &quot;We have run the first 450 iterations for K=10&quot;
+[1] &quot;We have run the first 500 iterations for K=10&quot;</code></pre>
+<pre class="r"><code>plotIC(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM_cyclic_loess_new.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>plotMotif(cormotif_tran)</code></pre>
+<p><img src="figure/Cormotif_avg_log2_CPM_cyclic_loess_new.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>set.seed(66)
+cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid,
                         compid = compid_tran, K = 8, max.iter=500)</code></pre>
 <pre><code>[1] &quot;We have run the first 50 iterations for K=8&quot;
 [1] &quot;We have run the first 100 iterations for K=8&quot;
@@ -744,63 +809,131 @@ cormotif_tran &lt;- cormotiffit(exprs = mean_tech_reps_matrix, groupid = groupid
 <pre class="r"><code>gene_prob_tran &lt;- cormotif_tran$bestmotif$p.post
 rownames(gene_prob_tran) &lt;- rownames( cpm_cyclicloess_40)
 plotIC(cormotif_tran)</code></pre>
-<p><img src="figure/Cormotif_avg_log2_CPM_cyclic_loess_new.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Cormotif_avg_log2_CPM_cyclic_loess_new.Rmd/unnamed-chunk-5-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>plotMotif(cormotif_tran)</code></pre>
-<p><img src="figure/Cormotif_avg_log2_CPM_cyclic_loess_new.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Cormotif_avg_log2_CPM_cyclic_loess_new.Rmd/unnamed-chunk-5-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>dim(gene_prob_tran)</code></pre>
 <pre><code>[1] 10304     6</code></pre>
+<pre class="r"><code># Test degree of conservation for days 0-3: posterior probability difference between the humans and the chimps within a motif 
+
+# 0.3 (7795 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) &lt;= 0.3) &amp; (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) &lt;= 0.3) &amp; (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) &lt;= 0.3), ]))</code></pre>
+<pre><code>[1] 7795</code></pre>
+<pre class="r"><code># 0.2 (6740 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) &lt;= 0.2) &amp; (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) &lt;= 0.2) &amp; (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) &lt;= 0.2), ]))</code></pre>
+<pre><code>[1] 6740</code></pre>
+<pre class="r"><code># 0.1 (4877 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) &lt;= 0.1) &amp; (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) &lt;= 0.1) &amp; (abs(gene_prob_tran[,3] - gene_prob_tran[,6]) &lt;= 0.1), ]))</code></pre>
+<pre><code>[1] 4877</code></pre>
+<pre class="r"><code># Test degree of conservation for days 0-2: posterior probability difference between the humans and the chimps within a motif 
+
+# 0.3 (9634 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) &lt;= 0.3) &amp; (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) &lt;= 0.3) , ]))</code></pre>
+<pre><code>[1] 9634</code></pre>
+<pre class="r"><code># 0.2 (9076 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) &lt;= 0.2) &amp; (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) &lt;= 0.2) , ]))</code></pre>
+<pre><code>[1] 9076</code></pre>
+<pre class="r"><code># 0.1 (7899 genes)
+
+length(rownames(gene_prob_tran[(abs(gene_prob_tran[,1] - gene_prob_tran[,4]) &lt;= 0.1) &amp; (abs(gene_prob_tran[,2] - gene_prob_tran[,5]) &lt;= 0.1) , ]))</code></pre>
+<pre><code>[1] 7899</code></pre>
 <pre class="r"><code># Pull the genes from seed #66 when K = 8. 
 
 prob_day_1  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_1)</code></pre>
 <pre><code>[1] 3789</code></pre>
-<pre class="r"><code>#3810
+<pre class="r"><code>#3789
 write.table(prob_day_1, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_1_K8.txt&quot;)
 
 prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_2)</code></pre>
 <pre><code>[1] 1017</code></pre>
-<pre class="r"><code>#1130
+<pre class="r"><code>#1017
 write.table(prob_day_2, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_2_K8.txt&quot;)
 
 prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
 length(prob_day_3)</code></pre>
 <pre><code>[1] 219</code></pre>
-<pre class="r"><code>#217
+<pre class="r"><code>#219
 write.table(prob_day_3, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_3_K8.txt&quot;)
 
 prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
 length(prob_day_4)</code></pre>
 <pre><code>[1] 187</code></pre>
-<pre class="r"><code>#164
+<pre class="r"><code>#187
 write.table(prob_day_4, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_4_K8.txt&quot;)
 
 prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt; 0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
 length(prob_day_5)</code></pre>
 <pre><code>[1] 620</code></pre>
-<pre class="r"><code>#673
+<pre class="r"><code>#620
 write.table(prob_day_5, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_5_K8.txt&quot;)
 
 prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_6)</code></pre>
 <pre><code>[1] 1147</code></pre>
-<pre class="r"><code>#1030
+<pre class="r"><code>#1147
 write.table(prob_day_6, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_6_K8.txt&quot;)
 
 prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_7)</code></pre>
 <pre><code>[1] 686</code></pre>
-<pre class="r"><code>#700
+<pre class="r"><code>#686
 write.table(prob_day_7, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_7_K8.txt&quot;)
 
 prob_day_8  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
 length(prob_day_8)</code></pre>
 <pre><code>[1] 339</code></pre>
-<pre class="r"><code>#334
-write.table(prob_day_8, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_8_K8.txt&quot;)</code></pre>
+<pre class="r"><code>#339
+write.table(prob_day_8, file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/prob_cluster_8_K8.txt&quot;)
+
+prob_day_1  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_1)</code></pre>
+<pre><code>[1] 3789</code></pre>
+<pre class="r"><code>#3789
+
+prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_2)</code></pre>
+<pre><code>[1] 1017</code></pre>
+<pre class="r"><code>#1017
+
+prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_3)</code></pre>
+<pre><code>[1] 219</code></pre>
+<pre class="r"><code>#219
+
+prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_4)</code></pre>
+<pre><code>[1] 187</code></pre>
+<pre class="r"><code>#187
+
+prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt; 0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_5)</code></pre>
+<pre><code>[1] 620</code></pre>
+<pre class="r"><code>#620
+
+prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_6)</code></pre>
+<pre><code>[1] 1147</code></pre>
+<pre class="r"><code>#1147
+
+prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_7)</code></pre>
+<pre><code>[1] 686</code></pre>
+<pre class="r"><code>#686
+
+prob_day_8  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_8)</code></pre>
+<pre><code>[1] 339</code></pre>
+<pre class="r"><code>#339</code></pre>
 </div>
-<div id="using-the-lowest-likelihood-seeds" class="section level3">
-<h3>Using the lowest likelihood seeds</h3>
+<div id="using-the-lowest-likelihood-seeds-exploration-not-used-in-the-paper" class="section level3">
+<h3>Using the lowest likelihood seeds (Exploration, not used in the paper)</h3>
 <pre class="r"><code># Lowest when K = 7
 
 set.seed(54)
@@ -959,37 +1092,50 @@ length(prob_day_1)</code></pre>
 <pre><code>[1] 3446</code></pre>
 <pre class="r"><code>#3446
 
-prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_2)</code></pre>
-<pre><code>[1] 188</code></pre>
-<pre class="r"><code>#188
-
-prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
-length(prob_day_3)</code></pre>
 <pre><code>[1] 249</code></pre>
 <pre class="r"><code>#249
 
-prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
-length(prob_day_4)</code></pre>
+prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_3)</code></pre>
 <pre><code>[1] 601</code></pre>
-<pre class="r"><code>#602
+<pre class="r"><code>#601
 
-prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt; 0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
-length(prob_day_5)</code></pre>
-<pre><code>[1] 1898</code></pre>
-<pre class="r"><code>#1897
-
-prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6] &lt; 0.5),])
-length(prob_day_6)</code></pre>
+prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_4)</code></pre>
 <pre><code>[1] 449</code></pre>
 <pre class="r"><code>#449
 
+prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt; 0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_5)</code></pre>
+<pre><code>[1] 26</code></pre>
+<pre class="r"><code>#26
+
+prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6] &gt; 0.5),])
+length(prob_day_6)</code></pre>
+<pre><code>[1] 1898</code></pre>
+<pre class="r"><code>#1898
 
 
-prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt; 0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+
+#prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt; 0.5 &amp; gene_prob_tran[,1] &lt; 0.8 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,2] &lt; 0.8 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.8 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.8 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,5] &lt; 0.8  &amp; gene_prob_tran[,6]&gt;0.5 &amp; gene_prob_tran[,6]&lt;0.8),])
+#length(prob_day_7)
+#2
+
+
+prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6] &gt; 0.5),])
 length(prob_day_7)</code></pre>
+<pre><code>[1] 2</code></pre>
+<pre class="r"><code>#4
+
+#prob_day_8  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.8 &amp; gene_prob_tran[,2] &gt;0.8 &amp; gene_prob_tran[,3] &gt;0.8 &amp; gene_prob_tran[,4] &gt;0.8 &amp; gene_prob_tran[,5] &gt; 0.8 &amp; gene_prob_tran[,6] &gt; 0.8),])
+#length(prob_day_8)
+
+prob_day_8  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6] &gt; 0.5),])
+length(prob_day_8)</code></pre>
 <pre><code>[1] 2078</code></pre>
-<pre class="r"><code>#2078</code></pre>
+<pre class="r"><code>#2169</code></pre>
 </div>
 <div id="de-probabilities-all-relative-to-the-previous-day-but-using-the-data-that-was-combined-pre-normalization" class="section level3">
 <h3>DE probabilities all relative to the previous day but using the data that was combined pre-normalization</h3>
@@ -1032,37 +1178,42 @@ plotIC(cormotif_tran)</code></pre>
 prob_day_1  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_1)</code></pre>
 <pre><code>[1] 3540</code></pre>
-<pre class="r"><code>#3571
+<pre class="r"><code>#3540
 
-prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+prob_day_2  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_2)</code></pre>
-<pre><code>[1] 700</code></pre>
-<pre class="r"><code>#710
-
-prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
-length(prob_day_4)</code></pre>
-<pre><code>[1] 213</code></pre>
-<pre class="r"><code>#239
-
-prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
-length(prob_day_5)</code></pre>
-<pre><code>[1] 727</code></pre>
-<pre class="r"><code>#983
-
-prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt; 0.5 &amp; gene_prob_tran[,2] &lt; 0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
-length(prob_day_6)</code></pre>
 <pre><code>[1] 1033</code></pre>
-<pre class="r"><code>#1043
+<pre class="r"><code>#1033
 
-prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt; 0.6 &amp; gene_prob_tran[,2] &gt; 0.6 &amp; gene_prob_tran[,3] &gt; 0.6 &amp; gene_prob_tran[,4] &gt; 0.6 &amp; gene_prob_tran[,5] &gt; 0.6 &amp; gene_prob_tran[,6] &gt; 0.6),])
+prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_3)</code></pre>
+<pre><code>[1] 213</code></pre>
+<pre class="r"><code>#213
+
+prob_day_4  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &lt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &lt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_4)</code></pre>
+<pre><code>[1] 205</code></pre>
+<pre class="r"><code>#205
+
+prob_day_5  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt; 0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_5)</code></pre>
+<pre><code>[1] 536</code></pre>
+<pre class="r"><code>#536
+
+prob_day_6  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &lt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &lt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
+length(prob_day_6)</code></pre>
+<pre><code>[1] 1067</code></pre>
+<pre class="r"><code>#1067
+
+prob_day_7  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &lt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&lt;0.5),])
 length(prob_day_7)</code></pre>
-<pre><code>[1] 231</code></pre>
-<pre class="r"><code>#281
+<pre><code>[1] 700</code></pre>
+<pre class="r"><code>#700
 
-prob_day_3  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6] &gt; 0.5),])
-length(prob_day_3) - length(prob_day_7)</code></pre>
-<pre><code>[1] 103</code></pre>
-<pre class="r"><code>#113</code></pre>
+prob_day_8  &lt;- rownames(gene_prob_tran[(gene_prob_tran[,1] &gt;0.5 &amp; gene_prob_tran[,2] &gt;0.5 &amp; gene_prob_tran[,3] &gt;0.5 &amp; gene_prob_tran[,4] &gt;0.5 &amp; gene_prob_tran[,5] &gt; 0.5 &amp; gene_prob_tran[,6]&gt;0.5),])
+length(prob_day_8)</code></pre>
+<pre><code>[1] 334</code></pre>
+<pre class="r"><code>#334</code></pre>
 </div>
 <div id="identifying-genes-with-interspecies-differences-by-day-not-used-in-the-paper" class="section level3">
 <h3>Identifying genes with interspecies differences by day (not used in the paper)</h3>

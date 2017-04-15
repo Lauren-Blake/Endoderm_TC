@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2017-03-14" />
+
+<title>GO_Cormotif_cyclic_loess</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">GO_Cormotif_cyclic_loess</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>March 14, 2017</em></h4>
+
+</div>
+
+
+<pre class="r"><code># Background
+
+Gene_ID_Conversion &lt;- read.csv(&quot;~/Downloads/Gene_ID_Conversion.csv&quot;, stringsAsFactors = FALSE)
+
+# All motifs
+
+ENSG_Motif_Number &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/ENSG_Motif_Number_TMM_cyclic_loess.csv&quot;, stringsAsFactors = FALSE)
+
+# Get Gene name for ENSG- all Motifs 
+
+list_match &lt;- match(ENSG_Motif_Number$Gene, Gene_ID_Conversion$ensg)
+
+get_gene &lt;- as.data.frame(Gene_ID_Conversion$gene[list_match])
+
+# Gene to Motif
+
+Gene_motif &lt;- cbind(ENSG_Motif_Number[,1], get_gene, ENSG_Motif_Number[,2])
+
+# Separate into motifs
+
+motif1 &lt;-  Gene_motif[1:3789,] 
+motif2 &lt;-  Gene_motif[3790:4806, ] 
+motif3 &lt;-  Gene_motif[4807:5025, ] 
+motif4 &lt;-  as.data.frame(Gene_motif[5026:5212, ]) 
+motif5 &lt;-  Gene_motif[5213:5832, ]
+motif6 &lt;-  Gene_motif[5833:6979, ] 
+motif7 &lt;-  as.data.frame(Gene_motif[6980:7665, ])
+motif8 &lt;-  Gene_motif[7666:8004, ] 
+
+dim(motif1)</code></pre>
+<pre><code>## [1] 3789    3</code></pre>
+<pre class="r"><code>dim(motif2)</code></pre>
+<pre><code>## [1] 1017    3</code></pre>
+<pre class="r"><code>dim(motif3)</code></pre>
+<pre><code>## [1] 219   3</code></pre>
+<pre class="r"><code>dim(motif4)</code></pre>
+<pre><code>## [1] 187   3</code></pre>
+<pre class="r"><code>dim(motif5)</code></pre>
+<pre><code>## [1] 620   3</code></pre>
+<pre class="r"><code>dim(motif6)</code></pre>
+<pre><code>## [1] 1147    3</code></pre>
+<pre class="r"><code>dim(motif7)</code></pre>
+<pre><code>## [1] 686   3</code></pre>
+<pre class="r"><code>dim(motif8)</code></pre>
+<pre><code>## [1] 339   3</code></pre>
+<pre class="r"><code>motif4 &lt;- data.frame(lapply(motif4, as.character), stringsAsFactors=FALSE)
+motif7 &lt;- data.frame(lapply(motif7, as.character), stringsAsFactors=FALSE)
+A &lt;- as.data.frame(motif4[ ,2])
+colnames(A) &lt;- c(&quot;Gene name&quot;)
+
+B &lt;- as.data.frame(motif7[,2])
+colnames(B) &lt;- c(&quot;Gene name&quot;)
+motif47 &lt;- rbind(A, B)
+
+write.table(motif47, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif47.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)
+
+# Let&#39;s compare to a similarly sized group but with the same DE pattern across species (motifs 3 + 5, 839 genes compared to 873 genes in motifs 4+7)
+
+motif3 &lt;- data.frame(lapply(motif3, as.character), stringsAsFactors=FALSE)
+motif5 &lt;- data.frame(lapply(motif5, as.character), stringsAsFactors=FALSE)
+A &lt;- as.data.frame(motif3[ ,2])
+colnames(A) &lt;- c(&quot;Gene name&quot;)
+
+B &lt;- as.data.frame(motif5[,2])
+colnames(B) &lt;- c(&quot;Gene name&quot;)
+motif35 &lt;- rbind(A, B)
+
+write.table(motif35, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif35.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)
+
+# Let&#39;s compare to one motif (rather than a combination of motifs; motif 2, 1017)
+
+motif2 &lt;- data.frame(lapply(motif2, as.character), stringsAsFactors=FALSE)
+motif2 &lt;- as.data.frame(motif2[ ,2])
+colnames(motif2) &lt;- c(&quot;Gene name&quot;)
+
+
+write.table(motif2, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif2_only.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)
+
+# Let&#39;s look at all the other motifs individually
+
+  # Motif 1
+motif1 &lt;- data.frame(lapply(motif1, as.character), stringsAsFactors=FALSE)
+A &lt;- as.data.frame(motif1[ ,2])
+colnames(A) &lt;- c(&quot;Gene name&quot;)
+
+write.table(A, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif1.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)</code></pre>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

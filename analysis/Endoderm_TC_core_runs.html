@@ -1112,7 +1112,7 @@ cors &lt;- cor(cpm_cyclicloess, method=&quot;spearman&quot;, use=&quot;pairwise.
 
 pal &lt;- c(rgb(239/255, 110/255, 99/255, 1), rgb(0/255, 180/255, 81/255, 1), rgb(0/255, 177/255, 219/255, 1), rgb(199/255, 124/255, 255/255,1))
 
-make_heatmap &lt;- heatmap.2( cors, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;, labCol= labels,labRow=&#39; &#39;, ColSideColors=pal[as.integer(as.factor(day))], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))</code></pre>
+make_heatmap &lt;- heatmap.2( cors, scale=&quot;none&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;, labCol= labels, labRow=&#39; &#39;, ColSideColors=pal[as.integer(as.factor(day))], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))</code></pre>
 <p><img src="figure/Endoderm_TC_core_runs.Rmd/unnamed-chunk-3-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>#gplots::heatmap.2(x=as.matrix(t(cpm_cyclicloess)),
 #                  , distfun = dist(x, method = &quot;euclidean&quot;), 
@@ -1280,7 +1280,7 @@ ggplot(data=pcs[humans,], aes(x=pc1, y=pc3, color=as.factor(day[humans]+1), shap
 #Performing this test of significance for variables that are categorical data (Using Pearson&#39;s chi-squared test)
 pval_chi &lt;- chisq.test(as.factor(differentiation_batch), as.factor(individual), simulate.p.value = TRUE)$p.value
 pval_chi  </code></pre>
-<pre><code>[1] 0.05747126</code></pre>
+<pre><code>[1] 0.04997501</code></pre>
 </div>
 <div id="differentiation-batch-without-28815-day-2" class="section level3">
 <h3>Differentiation batch without 28815 day 2</h3>
@@ -1375,7 +1375,7 @@ PC10      0.520694537     0.13655585</code></pre>
 #Performing this test of significance for variables that are categorical data (Using Pearson&#39;s chi-squared test)
 pval_chi &lt;- chisq.test(as.factor(differentiation_batch_62), as.factor(individual_62), simulate.p.value = TRUE)$p.value
 pval_chi  </code></pre>
-<pre><code>[1] 0.05747126</code></pre>
+<pre><code>[1] 0.05047476</code></pre>
 </div>
 </div>
 
