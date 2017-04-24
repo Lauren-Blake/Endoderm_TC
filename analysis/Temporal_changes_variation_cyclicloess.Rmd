@@ -825,8 +825,10 @@ length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="boo
 
 # Make a histogram of the p-value distribution
 
+scaleFUN <- function(x) sprintf("%.1f", x)
+
 p1 <- ggplot(chimp_var_pval_red01, aes(chimp_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + 
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.74")', parse=TRUE, x=0.8, y=(1.25), size = 6, colour = "#E77642")
              
@@ -835,7 +837,7 @@ p1 <- ggplot(chimp_var_pval_red01, aes(chimp_var_pval_red01[,1])) + geom_histogr
 p1
 
 p1s <- ggplot(chimp_var_pval_red01, aes(chimp_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.73")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#E77642")
              
 p1s
@@ -891,12 +893,12 @@ length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="boo
 
 # Make a histogram of the p-value distribution
 
-p2 <- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) + annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
+p2 <- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) + annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
              
 p2
 
 p2s <- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + ggtitle("Days 1 to 2")  + theme(plot.title = element_text(face = "bold")) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
              
 p2s
@@ -951,7 +953,7 @@ qvalue(p=chimp_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
 p3 <- ggplot(chimp_var_pval_red23, aes(chimp_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) + labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) + labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + 
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.94")', parse=TRUE, x=0.2, y=(1.25), size = 6, colour = "#E77642")
              
@@ -959,7 +961,7 @@ p3
 
 
 p3s <- ggplot(chimp_var_pval_red23, aes(chimp_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.90")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
              
 p3s
@@ -1021,7 +1023,7 @@ p3_13
 
 
 p3_13s <- ggplot(chimp_var_pval_red13, aes(chimp_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
              
 p3_13s
@@ -1074,15 +1076,15 @@ qvalue(p=human_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 
 length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
-p4 <- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+p4 <- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.23")', parse=TRUE, x=0.80, y=(2), size = 6, colour = "#00A4F4")
              
 p4
 
-p4s <- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + 
+p4s <- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.17")', parse=TRUE, x=0.80, y=(2), size = 6, colour = "#00A4F4")
              
 p4s
@@ -1136,14 +1138,14 @@ qvalue(p=human_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 
 length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
-p5 <- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+p5 <- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.20, y=(2), size = 6, colour = "#00A4F4")
              
 p5
 
-p5s <- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+p5s <- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + 
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.20, y=(2), size = 6, colour = "#00A4F4")
              
@@ -1198,14 +1200,14 @@ qvalue(p=human_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 
 length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
-p6 <- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+p6 <- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.95")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#00A4F4")
              
 p6
 
-p6s <- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + 
+p6s <- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() +  ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) +
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.87")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#00A4F4")
              
 p6s
@@ -1259,14 +1261,15 @@ qvalue(p=human_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 
 length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
-p6_13 <- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+
+p6_13 <- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +  scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.20, y=(2), size = 6, colour = "#00A4F4")
+  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.20, y=(2), size = 6, colour = "#00A4F4") 
              
 p6_13
 
-p6_13s <- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + 
+p6_13s <- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.20, y=(2), size = 6, colour = "#00A4F4")
              
 p6_13s
@@ -1345,7 +1348,7 @@ length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="boo
 
 p1_inc <- ggplot(chimp_var_pval_inc01, aes(chimp_var_pval_inc01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) + 
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.16, y=(1.25), size = 6, colour = "#E77642")
              
             
@@ -1353,7 +1356,7 @@ p1_inc <- ggplot(chimp_var_pval_inc01, aes(chimp_var_pval_inc01[,1])) + geom_his
 p1_inc
 
 p1s_inc <- ggplot(chimp_var_pval_inc01, aes(chimp_var_pval_inc01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.16, y=(1.25), size = 6, colour = "#E77642")
              
 p1s_inc
@@ -1411,13 +1414,13 @@ length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="boo
 
 p2_inc <- ggplot(chimp_var_pval_inc12, aes(chimp_var_pval_inc12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) +
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.57")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#E77642")
              
 p2_inc
 
 p2s_inc <- ggplot(chimp_var_pval_inc12, aes(chimp_var_pval_inc12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.52")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#E77642")
              
 p2s_inc
@@ -1473,14 +1476,14 @@ length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="boo
 
 p3_inc <- ggplot(chimp_var_pval_inc23, aes(chimp_var_pval_inc23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) + labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.46")', parse=TRUE, x=0.8, y=(1.25), size = 6, colour = "#E77642")
              
 p3_inc
 
 
 p3s_inc <- ggplot(chimp_var_pval_inc23, aes(chimp_var_pval_inc23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.37")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#E77642")
              
 p3s_inc
@@ -1535,14 +1538,14 @@ length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="boo
 
 p3_13_inc <- ggplot(chimp_var_pval_inc13, aes(chimp_var_pval_inc13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.55")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#E77642")
              
 p3_13_inc
 
 
 p3_13s_inc <- ggplot(chimp_var_pval_inc13, aes(chimp_var_pval_inc13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.51")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#E77642")
              
 p3_13s_inc
@@ -1597,13 +1600,13 @@ length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="boo
 
 p4_inc <- ggplot(human_var_pval_inc01, aes(human_var_pval_inc01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.16, y=(2), size = 6, colour = "#00A4F4")
              
 p4_inc
 
 p4s_inc <- ggplot(human_var_pval_inc01, aes(human_var_pval_inc01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.16, y=(2), size = 6, colour = "#00A4F4")
              
 p4s_inc
@@ -1659,13 +1662,13 @@ length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="boo
 
 p5_inc <- ggplot(human_var_pval_inc12, aes(human_var_pval_inc12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.27")', parse=TRUE, x=0.80, y=(2), size = 6, colour = "#00A4F4")
              
 p5_inc
 
 p5s_inc <- ggplot(human_var_pval_inc12, aes(human_var_pval_inc12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.21")', parse=TRUE, x=0.80, y=(2), size = 6, colour = "#00A4F4")
              
 p5s_inc
@@ -1720,14 +1723,14 @@ qvalue(p=human_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
 p6_inc <- ggplot(human_var_pval_inc23, aes(human_var_pval_inc23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.86")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#00A4F4")
              
 p6_inc
 
 p6s_inc <- ggplot(human_var_pval_inc23, aes(human_var_pval_inc23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + 
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.85")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#00A4F4")
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
+  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.85")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#00A4F4") 
              
 p6s_inc
 
@@ -1781,13 +1784,13 @@ qvalue(p=human_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
 p6_13_inc <- ggplot(human_var_pval_inc13, aes(human_var_pval_inc13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.24")', parse=TRUE, x=0.80, y=(2), size = 6, colour = "#00A4F4")
              
 p6_13_inc
 
 p6_13s_inc <- ggplot(human_var_pval_inc13, aes(human_var_pval_inc13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.20")', parse=TRUE, x=0.80, y=(2), size = 6, colour = "#00A4F4")
              
 p6_13s_inc
@@ -1996,8 +1999,8 @@ p1_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
-  geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.5, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.55")', parse=TRUE, x=0.5, y=(pi0est_chimps_given_humans+0.07), size = 6)
+  geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +  scale_y_continuous(labels=scaleFUN) +     
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.55")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p1_05
 
@@ -2051,7 +2054,7 @@ p2_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.5, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.25")', parse=TRUE, x=0.5, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
@@ -2104,7 +2107,7 @@ p3_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.9")', parse=TRUE, x=0.8, y=(pi0est_chimps-0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.8, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
@@ -2156,7 +2159,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 p4_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "black") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.2), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -2215,10 +2218,10 @@ pal <- c("#00A4F4", "#E77642", "white")
 p1_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.3), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.15), size = 6)
 
 p1_inc_05
 
@@ -2267,7 +2270,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 p2_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.52")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.34")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -2317,7 +2320,7 @@ all_pval <- rbind(chimps[,1:2], humans[,1:2])
 pal <- c("#00A4F4", "#E77642", "white") 
 
 p3_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
-  geom_density(show.legend = F, alpha = 1) +
+  geom_density(show.legend = F, alpha = 1) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
@@ -2370,7 +2373,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 
 p4_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
@@ -2419,7 +2422,7 @@ qqplot_inc_day23 <- find_qqplot_inc_humans(27,30,37,40,21,26,31,36,0.05)
 
 qqplot_inc_day02 <- find_qqplot_inc_humans(7,10,27,30,1,6,21,26,0.05)
 
-# Inc. in variance from day ` to day 3 humans
+# Inc. in variance from day 1 to day 3 humans
 
 qqplot_inc_day13 <- find_qqplot_inc_humans(17,20,37,40,11,16,31,36,0.05)
 
@@ -2565,7 +2568,7 @@ pal <- c("#00A4F4", "white")
 p5_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.17")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.16")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
@@ -2619,10 +2622,10 @@ pal <- c("#00A4F4", "white")
 p6_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p6_05
 
@@ -2672,10 +2675,10 @@ pal <- c("#00A4F4", "white")
 p7_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.87")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.81")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.25), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.87")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.81")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.3), size = 6)
 
 p7_05
 
@@ -2726,10 +2729,10 @@ pal <- c("#00A4F4", "white")
 p8_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.12), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps-0.12), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.30), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.12), size = 6)
 
 p8_05
 
@@ -2789,7 +2792,7 @@ pal <- c("#00A4F4", "white")
 p5_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +  scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
@@ -2843,7 +2846,7 @@ pal <- c("#00A4F4", "white")
 p6_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +  scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.21")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.09")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.27), size = 6)
@@ -2895,7 +2898,7 @@ pal <- c("#00A4F4", "white")
 
 p7_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +  scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
@@ -2949,10 +2952,10 @@ pal <- c("#00A4F4", "white")
 
 p8_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +  scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + labs(x = "Unadjusted p-values") + labs(y = "Density") +  geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.20")', parse=TRUE, x=0.25, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.18")', parse=TRUE, x=0.25, y=(pi0est_humans_given_chimps+0.16), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.20")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.18")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.16), size = 6)
 
 p8_inc_05
 
@@ -3239,10 +3242,10 @@ pal <- c("#00A4F4", "#E77642", "white")
 p1_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.5, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.48")', parse=TRUE, x=0.5, y=(pi0est_chimps_given_humans+0.07), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.48")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p1_01
 
@@ -3318,7 +3321,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 p3_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.9")', parse=TRUE, x=0.8, y=(pi0est_chimps-0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.8, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -3371,7 +3374,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 p4_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "black") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.2), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -3430,7 +3433,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 p1_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.80")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -3482,7 +3485,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 p2_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.52")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.45")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
@@ -3534,10 +3537,10 @@ pal <- c("#00A4F4", "#E77642", "white")
 p3_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.37")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.36")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.37")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.15), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.36")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_inc_01
 
@@ -3586,7 +3589,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 p4_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.51")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.08), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.24")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.08), size = 6)
@@ -3694,10 +3697,10 @@ pal <- c("#00A4F4", "white")
 p5_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.17")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.15")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.17")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.15")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_01
 
@@ -3748,10 +3751,10 @@ pal <- c("#00A4F4", "white")
 p6_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p6_01
 
@@ -3801,7 +3804,7 @@ pal <- c("#00A4F4", "white")
 p7_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.87")', parse=TRUE, x=0.6, y=(pi0est_humans+0.07), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.36")', parse=TRUE, x=0.6, y=(pi0est_humans_given_chimps+0.07), size = 6)
@@ -3855,10 +3858,10 @@ pal <- c("#00A4F4", "white")
 p8_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.12), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps-0.12), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p8_01
 
@@ -3918,11 +3921,11 @@ pal <- c("#00A4F4", "white")
 
 p5_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_inc_01
 
@@ -3972,7 +3975,7 @@ pal <- c("#00A4F4", "white")
 
 p6_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
@@ -4024,7 +4027,7 @@ all_pval <- rbind(humans[,1:2], chimps[,1:2])
 pal <- c("#00A4F4", "white") 
 
 p7_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
-  geom_density(show.legend = F, alpha = 1) +
+  geom_density(show.legend = F, alpha = 1) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
@@ -4079,10 +4082,10 @@ pal <- c("#00A4F4", "white")
 
 p8_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + labs(x = "Unadjusted p-values") + labs(y = "Density") +  geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.20")', parse=TRUE, x=0.25, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.13")', parse=TRUE, x=0.25, y=(pi0est_humans_given_chimps+0.16), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.20")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.35), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.13")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.2), size = 6)
 
 p8_inc_01
 
@@ -4192,10 +4195,10 @@ pal <- c("#00A4F4", "#E77642", "white")
 p1_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.5, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.52")', parse=TRUE, x=0.5, y=(pi0est_chimps_given_humans+0.07), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.52")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p1_10
 
@@ -4246,7 +4249,7 @@ all_pval <- rbind(chimps[,1:2], humans[,1:2])
 pal <- c("#00A4F4", "#E77642", "white") 
 
 p2_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
-  geom_density(show.legend = F, alpha = 1) +
+  geom_density(show.legend = F, alpha = 1) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
@@ -4354,10 +4357,10 @@ pal <- c("#00A4F4", "#E77642", "white")
 p4_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "black") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.2), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.17), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p4_10
 
@@ -4413,7 +4416,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 p1_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.92")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
@@ -4466,7 +4469,7 @@ p2_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.52")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.33")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
@@ -4518,9 +4521,9 @@ p3_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.37")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.35")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.37")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.13), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.35")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_inc_10
 
@@ -4568,7 +4571,7 @@ pal <- c("#00A4F4", "#E77642", "white")
 
 p4_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
@@ -4677,10 +4680,10 @@ pal <- c("#00A4F4", "white")
 p5_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.17")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.15")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.17")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.15")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_10
 
@@ -4731,10 +4734,10 @@ pal <- c("#00A4F4", "white")
 p6_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p6_10
 
@@ -4787,7 +4790,7 @@ p7_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
   theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.87")', parse=TRUE, x=0.7, y=(pi0est_humans+0.06), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.76")', parse=TRUE, x=0.7, y=(pi0est_humans_given_chimps-0.06), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.87")', parse=TRUE, x=0.7, y=(pi0est_humans+0.06), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.76")', parse=TRUE, x=0.7, y=(pi0est_humans_given_chimps+0.06), size = 6)
 
 p7_10
 
@@ -4838,10 +4841,10 @@ pal <- c("#00A4F4", "white")
 p8_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.12), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps-0.12), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p8_10
 
@@ -4902,9 +4905,9 @@ p5_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
+  geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_inc_10
 
@@ -4955,10 +4958,10 @@ pal <- c("#00A4F4", "white")
 p6_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  theme_bw() +  labs(title = "Day 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.21")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.10")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.25), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.21")', parse=TRUE, x=0.2, y=(pi0est_humans+0.28), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.10")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.25), size = 6)
 
 p6_inc_10
 
@@ -5009,9 +5012,9 @@ p7_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 2 to 3") + theme(plot.title = element_text(face = "bold")) + 
-  geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.85")', parse=TRUE, x=0.2, y=(pi0est_humans+0.05), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.07), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.85")', parse=TRUE, x=0.2, y=(pi0est_humans+0.07), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.07), size = 6)
 
 p7_inc_10
 
@@ -5061,7 +5064,7 @@ pal <- c("#00A4F4", "white")
 
 p8_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = "Day 1 to 3") + theme(plot.title = element_text(face = "bold")) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + labs(x = "Unadjusted p-values") + labs(y = "Density") +  geom_hline(yintercept = pi0est_humans, size = 2.5, color = "#00A4F4") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.20")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.16")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.17), size = 6)
@@ -5584,6 +5587,53 @@ legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd =
 
 ```
 
+### Note: code to make other figures
+
+```{r}
+# 6A) 
+multiplot(p1s,p3s,p2s,p3_13s, cols=2)
+
+# 6B)
+multiplot(p1s,p3s,p2s,p3_13s, cols=2)
+
+# 6C-F)
+
+multiplot(p1_05, p2_inc_05, p5_05,  p6_inc_05, cols=2)
+
+
+# SF 12A) 
+multiplot(p1,p2,p3,p3_13, cols=2)
+# SF12 B)
+multiplot(p4,p5,p6,p6_13, cols=2)
+
+# SF13 A)
+multiplot(p2_05, p3_05,p4_05,cols=2)
+# SF13 B)
+multiplot(p6_05, p7_05,p8_05,cols=2)
+# SF13 C)
+multiplot(p1_inc_05, p3_inc_05,p4_inc_05,cols=2)
+# SF13 D)
+multiplot(p5_inc_05, p7_inc_05,p8_inc_05,cols=2)
+
+
+# SF14 E)
+multiplot(p1_01, p3_01,p4_01,cols=2)
+# SF14 F)
+multiplot(p5_01, p6_01, p7_01,p8_01,cols=2)
+# SF14 G)
+multiplot(p1_inc_01, p2_inc_01, p3_inc_01,p4_inc_01,cols=2)
+# SF14 H)
+multiplot(p5_inc_01, p6_inc_01, p7_inc_01,p8_inc_01,cols=2)
+# SF14 I)
+multiplot(p1_10, p2_10, p3_10,p4_10,cols=2)
+# SF14 J)
+multiplot(p5_10, p6_10, p7_10,p8_10,cols=2)
+# SF14 K)
+multiplot(p1_inc_10, p2_inc_10, p3_inc_10,p4_inc_10,cols=2)
+# SF14 L)
+multiplot(p5_inc_10, p6_inc_10, p7_inc_10,p8_inc_10,cols=2)
+
+```
 
 
 

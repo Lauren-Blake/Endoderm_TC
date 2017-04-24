@@ -478,7 +478,7 @@ write.table(HvCday3, "~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day3_all_genes
 
 
 # Table 2
-write.table(HvCday0_adj_pval, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day0_all_genes.txt", sep="\t")
+write.table(HvCday0_adj_pval, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/HvC_day0_all_genes.txt", sep="\t")
 write.table(HvCday1_adj_pval, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day1_all_genes.txt", sep="\t")
 write.table(HvCday2_adj_pval, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day2_all_genes.txt", sep="\t")
 write.table(HvCday3_adj_pval, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day3_all_genes.txt", sep="\t")
@@ -673,9 +673,9 @@ dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val < 0.05), important_columns])
 
 # Make a table of the sections
 
-write.table(Sign_day1_inter, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day1_interact.txt", sep="\t")
-write.table(Sign_day2_inter, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day2_interact.txt", sep="\t")
-write.table(Sign_day3_inter, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day3_interact.txt", sep="\t")
+#write.table(Sign_day1_inter, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/H_day1_interact.txt", sep="\t")
+#write.table(Sign_day2_inter, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/H_day2_interact.txt", sep="\t")
+#write.table(Sign_day3_inter, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/H_day3_interact.txt", sep="\t")
 
 # Table 4
 
@@ -1990,7 +1990,7 @@ dev.off()
 
 ```
 
-### Final, looking at divergence at day 0 and day 1 (supplement)
+### Final, looking at divergence at day 0 and day 1 
 
 ```{r}
 species <- c("H", "H","H","H","H","H","H", "C", "C","C","C","C","C","C","C","H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C", "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C", "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C")

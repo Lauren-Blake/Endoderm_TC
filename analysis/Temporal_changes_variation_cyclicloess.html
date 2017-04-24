@@ -223,6 +223,7 @@ $(document).ready(function () {
 <li><a href="#estimates-of-pi0-and-pi1-for-increase-of-variation-in-humans-conditioned-on-significance-in-chimps-p-0.10">Estimates of pi0 and pi1 for increase of variation in humans conditioned on significance in chimps (p = 0.10)</a></li>
 <li><a href="#sharing-estimates-chimps-conditioned-on-humans-for-x-number-of-significant-genes-p-0.05-cutoff">Sharing estimates (chimps conditioned on humans) for x number of significant genes (p = 0.05 cutoff)</a></li>
 <li><a href="#sharing-estimates-humans-conditioned-on-chimps-for-x-number-of-significant-genes">Sharing estimates (humans conditioned on chimps) for x number of significant genes</a></li>
+<li><a href="#note-code-to-make-other-figures">Note: code to make other figures</a></li>
 <li><a href="#gene-names-showing-reduction-increase-in-variance-from-days-0-to-1-days-1-to-2">Gene names showing reduction (increase) in variance from days 0 to 1 (days 1 to 2)</a></li>
 </ul></li>
 </ul></li>
@@ -1177,8 +1178,10 @@ qvalue(p=chimp_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 169.9524</code></pre>
 <pre class="r"><code># Make a histogram of the p-value distribution
 
+scaleFUN &lt;- function(x) sprintf(&quot;%.1f&quot;, x)
+
 p1 &lt;- ggplot(chimp_var_pval_red01, aes(chimp_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + 
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.74&quot;)&#39;, parse=TRUE, x=0.8, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
@@ -1187,7 +1190,7 @@ p1 &lt;- ggplot(chimp_var_pval_red01, aes(chimp_var_pval_red01[,1])) + geom_hist
 p1</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p1s &lt;- ggplot(chimp_var_pval_red01, aes(chimp_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.73&quot;)&#39;, parse=TRUE, x=0.80, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p1s</code></pre>
@@ -1242,12 +1245,12 @@ qvalue(p=chimp_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code># Make a histogram of the p-value distribution
 
-p2 &lt;- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + ggtitle(&quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.20, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
+p2 &lt;- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) + geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + ggtitle(&quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.20, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p2</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p2s &lt;- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + ggtitle(&quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + ggtitle(&quot;Days 1 to 2&quot;)  + theme(plot.title = element_text(face = &quot;bold&quot;)) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.20, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p2s</code></pre>
@@ -1301,14 +1304,14 @@ qvalue(p=chimp_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre class="r"><code>length(which(chimp_var_pval &lt; 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method=&quot;bootstrap&quot;, fdr.level=NULL, robust=TRUE)$pi0)</code></pre>
 <pre><code>[1] 10.43478</code></pre>
 <pre class="r"><code>p3 &lt;- ggplot(chimp_var_pval_red23, aes(chimp_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + 
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.94&quot;)&#39;, parse=TRUE, x=0.2, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p3</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-10-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p3s &lt;- ggplot(chimp_var_pval_red23, aes(chimp_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.90&quot;)&#39;, parse=TRUE, x=0.20, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p3s</code></pre>
@@ -1369,7 +1372,7 @@ qvalue(p=chimp_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 p3_13</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-11-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p3_13s &lt;- ggplot(chimp_var_pval_red13, aes(chimp_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.20, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p3_13s</code></pre>
@@ -1421,15 +1424,15 @@ qvalue(p=human_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 0.825088</code></pre>
 <pre class="r"><code>length(which(human_var_pval &lt; 0.05))*(1-qvalue(p=human_var_pval, pi0.method=&quot;bootstrap&quot;, fdr.level=NULL, robust=TRUE)$pi0)</code></pre>
 <pre><code>[1] 1774.177</code></pre>
-<pre class="r"><code>p4 &lt;- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+<pre class="r"><code>p4 &lt;- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle(&quot;Days 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.23&quot;)&#39;, parse=TRUE, x=0.80, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p4</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-12-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>p4s &lt;- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + 
+<pre class="r"><code>p4s &lt;- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle(&quot;Days 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.17&quot;)&#39;, parse=TRUE, x=0.80, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p4s</code></pre>
@@ -1482,14 +1485,14 @@ qvalue(p=human_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>length(which(human_var_pval &lt; 0.05))*(1-qvalue(p=human_var_pval, pi0.method=&quot;bootstrap&quot;, fdr.level=NULL, robust=TRUE)$pi0)</code></pre>
 <pre><code>[1] 0</code></pre>
-<pre class="r"><code>p5 &lt;- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+<pre class="r"><code>p5 &lt;- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle(&quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.20, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p5</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-13-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>p5s &lt;- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+<pre class="r"><code>p5s &lt;- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle(&quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + 
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.20, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
@@ -1543,14 +1546,14 @@ qvalue(p=human_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 0.1335123</code></pre>
 <pre class="r"><code>length(which(human_var_pval &lt; 0.05))*(1-qvalue(p=human_var_pval, pi0.method=&quot;bootstrap&quot;, fdr.level=NULL, robust=TRUE)$pi0)</code></pre>
 <pre><code>[1] 21.71972</code></pre>
-<pre class="r"><code>p6 &lt;- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+<pre class="r"><code>p6 &lt;- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle(&quot;Days 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + 
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.95&quot;)&#39;, parse=TRUE, x=0.20, y=(1.25), size = 6, colour = &quot;#00A4F4&quot;)
              
 p6</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-14-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>p6s &lt;- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + 
+<pre class="r"><code>p6s &lt;- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() +  ggtitle(&quot;Days 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.87&quot;)&#39;, parse=TRUE, x=0.20, y=(1.25), size = 6, colour = &quot;#00A4F4&quot;)
              
 p6s</code></pre>
@@ -1603,14 +1606,14 @@ qvalue(p=human_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>length(which(human_var_pval &lt; 0.05))*(1-qvalue(p=human_var_pval, pi0.method=&quot;bootstrap&quot;, fdr.level=NULL, robust=TRUE)$pi0)</code></pre>
 <pre><code>[1] 0</code></pre>
-<pre class="r"><code>p6_13 &lt;- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+<pre class="r"><code>p6_13 &lt;- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle(&quot;Days 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + 
-  annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.20, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
+  annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.20, y=(2), size = 6, colour = &quot;#00A4F4&quot;) 
              
 p6_13</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-15-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>p6_13s &lt;- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;)  + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + 
+<pre class="r"><code>p6_13s &lt;- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle(&quot;Days 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;)  + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.20, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p6_13s</code></pre>
@@ -1689,7 +1692,7 @@ qvalue(p=chimp_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 
 p1_inc &lt;- ggplot(chimp_var_pval_inc01, aes(chimp_var_pval_inc01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) + 
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.16, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
             
@@ -1697,7 +1700,7 @@ p1_inc &lt;- ggplot(chimp_var_pval_inc01, aes(chimp_var_pval_inc01[,1])) + geom_
 p1_inc</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-18-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p1s_inc &lt;- ggplot(chimp_var_pval_inc01, aes(chimp_var_pval_inc01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.16, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p1s_inc</code></pre>
@@ -1754,13 +1757,13 @@ qvalue(p=chimp_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 
 p2_inc &lt;- ggplot(chimp_var_pval_inc12, aes(chimp_var_pval_inc12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + ggtitle(&quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + ggtitle(&quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.57&quot;)&#39;, parse=TRUE, x=0.80, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p2_inc</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-19-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p2s_inc &lt;- ggplot(chimp_var_pval_inc12, aes(chimp_var_pval_inc12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + ggtitle(&quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + ggtitle(&quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.52&quot;)&#39;, parse=TRUE, x=0.80, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p2s_inc</code></pre>
@@ -1815,13 +1818,13 @@ qvalue(p=chimp_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 244.073</code></pre>
 <pre class="r"><code>p3_inc &lt;- ggplot(chimp_var_pval_inc23, aes(chimp_var_pval_inc23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.46&quot;)&#39;, parse=TRUE, x=0.8, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p3_inc</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-20-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p3s_inc &lt;- ggplot(chimp_var_pval_inc23, aes(chimp_var_pval_inc23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.37&quot;)&#39;, parse=TRUE, x=0.80, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p3s_inc</code></pre>
@@ -1876,13 +1879,13 @@ qvalue(p=chimp_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 487.8779</code></pre>
 <pre class="r"><code>p3_13_inc &lt;- ggplot(chimp_var_pval_inc13, aes(chimp_var_pval_inc13[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.55&quot;)&#39;, parse=TRUE, x=0.80, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p3_13_inc</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-21-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p3_13s_inc &lt;- ggplot(chimp_var_pval_inc13, aes(chimp_var_pval_inc13[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + 
+  scale_x_continuous(limits = c(0,1)) + ggtitle(&quot;Days 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#E77642&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, chimp&quot;])==&quot;0.51&quot;)&#39;, parse=TRUE, x=0.80, y=(1.25), size = 6, colour = &quot;#E77642&quot;)
              
 p3_13s_inc</code></pre>
@@ -1936,13 +1939,13 @@ qvalue(p=human_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 0</code></pre>
 <pre class="r"><code>p4_inc &lt;- ggplot(human_var_pval_inc01, aes(human_var_pval_inc01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.16, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p4_inc</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-22-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p4s_inc &lt;- ggplot(human_var_pval_inc01, aes(human_var_pval_inc01[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.16, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p4s_inc</code></pre>
@@ -1997,13 +2000,13 @@ qvalue(p=human_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre><code>[1] 1439.584</code></pre>
 <pre class="r"><code>p5_inc &lt;- ggplot(human_var_pval_inc12, aes(human_var_pval_inc12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + 
+  geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.27&quot;)&#39;, parse=TRUE, x=0.80, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p5_inc</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-23-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p5s_inc &lt;- ggplot(human_var_pval_inc12, aes(human_var_pval_inc12[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.21&quot;)&#39;, parse=TRUE, x=0.80, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p5s_inc</code></pre>
@@ -2057,14 +2060,14 @@ qvalue(p=human_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre class="r"><code>length(which(human_var_pval &lt; 0.05))*(1-qvalue(p=human_var_pval, pi0.method=&quot;bootstrap&quot;, fdr.level=NULL, robust=TRUE)$pi0)</code></pre>
 <pre><code>[1] 53.05402</code></pre>
 <pre class="r"><code>p6_inc &lt;- ggplot(human_var_pval_inc23, aes(human_var_pval_inc23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.86&quot;)&#39;, parse=TRUE, x=0.80, y=(1.25), size = 6, colour = &quot;#00A4F4&quot;)
              
 p6_inc</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-24-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p6s_inc &lt;- ggplot(human_var_pval_inc23, aes(human_var_pval_inc23[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + 
-  annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.85&quot;)&#39;, parse=TRUE, x=0.80, y=(1.25), size = 6, colour = &quot;#00A4F4&quot;)
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
+  annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.85&quot;)&#39;, parse=TRUE, x=0.80, y=(1.25), size = 6, colour = &quot;#00A4F4&quot;) 
              
 p6s_inc</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-24-4.png" width="672" style="display: block; margin: auto;" /></p>
@@ -2117,13 +2120,13 @@ qvalue(p=human_var_pval,  pi0.method=&quot;smoother&quot;, fdr.level=NULL, robus
 <pre class="r"><code>length(which(human_var_pval &lt; 0.05))*(1-qvalue(p=human_var_pval, pi0.method=&quot;bootstrap&quot;, fdr.level=NULL, robust=TRUE)$pi0)</code></pre>
 <pre><code>[1] 1625.071</code></pre>
 <pre class="r"><code>p6_13_inc &lt;- ggplot(human_var_pval_inc13, aes(human_var_pval_inc13[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + geom_hline(yintercept = boot_pi0, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.24&quot;)&#39;, parse=TRUE, x=0.80, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p6_13_inc</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-25-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>p6_13s_inc &lt;- ggplot(human_var_pval_inc13, aes(human_var_pval_inc13[,1])) + geom_histogram(aes(y = ..density..), fill=&quot;white&quot;, colour=&quot;black&quot;, breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;)  + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;)  + geom_hline(yintercept = boot_pi0s, size=2.5, colour = &quot;#00A4F4&quot;) + scale_y_continuous(labels=scaleFUN) +
   annotate(&quot;text&quot;, label=&#39;bold(bolditalic(hat(pi)[0][&quot;, human&quot;])==&quot;0.20&quot;)&#39;, parse=TRUE, x=0.80, y=(2), size = 6, colour = &quot;#00A4F4&quot;)
              
 p6_13s_inc</code></pre>
@@ -2328,8 +2331,8 @@ p1_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
-  geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.73&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.55&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps_given_humans+0.07), size = 6)
+  geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +  scale_y_continuous(labels=scaleFUN) +     
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.73&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.55&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p1_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-29-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -2381,7 +2384,7 @@ p2_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.25&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
@@ -2434,7 +2437,7 @@ p3_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.9&quot;)&#39;, parse=TRUE, x=0.8, y=(pi0est_chimps-0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.8, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
@@ -2486,7 +2489,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p4_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;black&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.2), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -2543,10 +2546,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p1_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.3), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.15), size = 6)
 
 p1_inc_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -2595,7 +2598,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p2_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.52&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.34&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -2645,7 +2648,7 @@ all_pval &lt;- rbind(chimps[,1:2], humans[,1:2])
 pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;) 
 
 p3_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
-  geom_density(show.legend = F, alpha = 1) +
+  geom_density(show.legend = F, alpha = 1) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
@@ -2698,7 +2701,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 
 p4_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
@@ -2745,7 +2748,7 @@ qqplot_inc_day23 &lt;- find_qqplot_inc_humans(27,30,37,40,21,26,31,36,0.05)</cod
 
 qqplot_inc_day02 &lt;- find_qqplot_inc_humans(7,10,27,30,1,6,21,26,0.05)</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-31-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-31-18.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Inc. in variance from day ` to day 3 humans
+<pre class="r"><code># Inc. in variance from day 1 to day 3 humans
 
 qqplot_inc_day13 &lt;- find_qqplot_inc_humans(17,20,37,40,11,16,31,36,0.05)</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-31-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-31-20.png" width="672" style="display: block; margin: auto;" /></p>
@@ -2886,7 +2889,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p5_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.17&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.16&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
@@ -2939,10 +2942,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p6_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p6_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-32-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -2992,10 +2995,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p7_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.87&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.81&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.25), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.87&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.81&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.3), size = 6)
 
 p7_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-32-3.png" width="672" style="display: block; margin: auto;" /></p>
@@ -3045,10 +3048,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p8_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.12), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps-0.12), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.30), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.12), size = 6)
 
 p8_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-32-4.png" width="672" style="display: block; margin: auto;" /></p>
@@ -3106,7 +3109,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p5_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +  scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
@@ -3159,7 +3162,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p6_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +  scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.21&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.09&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.27), size = 6)
@@ -3211,7 +3214,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 
 p7_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +  scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
@@ -3264,10 +3267,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 
 p8_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +  scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +  geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.20&quot;)&#39;, parse=TRUE, x=0.25, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.18&quot;)&#39;, parse=TRUE, x=0.25, y=(pi0est_humans_given_chimps+0.16), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.20&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.18&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.16), size = 6)
 
 p8_inc_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-33-4.png" width="672" style="display: block; margin: auto;" /></p>
@@ -103555,10 +103558,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p1_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.73&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.48&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps_given_humans+0.07), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.73&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.48&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p1_01</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -103632,7 +103635,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p3_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.9&quot;)&#39;, parse=TRUE, x=0.8, y=(pi0est_chimps-0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.8, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -103685,7 +103688,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p4_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;black&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.2), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -103742,7 +103745,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p1_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.80&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
@@ -103794,7 +103797,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p2_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.52&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.45&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
@@ -103846,10 +103849,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p3_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.37&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.36&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.37&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.15), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.36&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_inc_01</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-38-3.png" width="672" style="display: block; margin: auto;" /></p>
@@ -103898,7 +103901,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p4_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.51&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.08), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.24&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.08), size = 6)
@@ -104000,10 +104003,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p5_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.17&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.15&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.17&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.15&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_01</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -104053,10 +104056,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p6_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p6_01</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-40-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -104106,7 +104109,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p7_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.87&quot;)&#39;, parse=TRUE, x=0.6, y=(pi0est_humans+0.07), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.36&quot;)&#39;, parse=TRUE, x=0.6, y=(pi0est_humans_given_chimps+0.07), size = 6)
@@ -104159,10 +104162,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p8_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.12), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps-0.12), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p8_01</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-40-4.png" width="672" style="display: block; margin: auto;" /></p>
@@ -104220,11 +104223,11 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 
 p5_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_inc_01</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-41-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -104273,7 +104276,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 
 p6_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
@@ -104325,7 +104328,7 @@ all_pval &lt;- rbind(humans[,1:2], chimps[,1:2])
 pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;) 
 
 p7_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
-  geom_density(show.legend = F, alpha = 1) +
+  geom_density(show.legend = F, alpha = 1) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
@@ -104379,10 +104382,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 
 p8_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +  geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.20&quot;)&#39;, parse=TRUE, x=0.25, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.13&quot;)&#39;, parse=TRUE, x=0.25, y=(pi0est_humans_given_chimps+0.16), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.20&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.35), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.13&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.2), size = 6)
 
 p8_inc_01</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-41-4.png" width="672" style="display: block; margin: auto;" /></p>
@@ -104487,10 +104490,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p1_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.73&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.52&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps_given_humans+0.07), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.73&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.52&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p1_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-43-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -104539,7 +104542,7 @@ all_pval &lt;- rbind(chimps[,1:2], humans[,1:2])
 pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;) 
 
 p2_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
-  geom_density(show.legend = F, alpha = 1) +
+  geom_density(show.legend = F, alpha = 1) + scale_y_continuous(labels=scaleFUN) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
@@ -104647,10 +104650,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p4_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;black&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.2), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.17), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p4_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-43-4.png" width="672" style="display: block; margin: auto;" /></p>
@@ -104704,7 +104707,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p1_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.92&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
@@ -104757,7 +104760,7 @@ p2_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.52&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.33&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
@@ -104809,9 +104812,9 @@ p3_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.37&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.35&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.37&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.13), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.35&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_inc_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-44-3.png" width="672" style="display: block; margin: auto;" /></p>
@@ -104859,7 +104862,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 
 p4_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
@@ -104962,10 +104965,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p5_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.17&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.15&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.17&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.15&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -105015,10 +105018,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p6_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p6_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -105071,7 +105074,7 @@ p7_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.87&quot;)&#39;, parse=TRUE, x=0.7, y=(pi0est_humans+0.06), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.76&quot;)&#39;, parse=TRUE, x=0.7, y=(pi0est_humans_given_chimps-0.06), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.87&quot;)&#39;, parse=TRUE, x=0.7, y=(pi0est_humans+0.06), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.76&quot;)&#39;, parse=TRUE, x=0.7, y=(pi0est_humans_given_chimps+0.06), size = 6)
 
 p7_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-3.png" width="672" style="display: block; margin: auto;" /></p>
@@ -105121,10 +105124,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p8_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.12), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps-0.12), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p8_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-4.png" width="672" style="display: block; margin: auto;" /></p>
@@ -105183,9 +105186,9 @@ p5_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
-  geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
+  geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_inc_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-47-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -105235,10 +105238,10 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 p6_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  theme_bw() +  labs(title = &quot;Day 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + 
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.21&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.10&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.25), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.21&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.28), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.10&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.25), size = 6)
 
 p6_inc_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-47-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -105289,9 +105292,9 @@ p7_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = &quot;Day 2 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + 
-  geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +
+  geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
-  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.85&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.05), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.07), size = 6)
+  annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.85&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.07), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.07), size = 6)
 
 p7_inc_10</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-47-3.png" width="672" style="display: block; margin: auto;" /></p>
@@ -105340,7 +105343,7 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;white&quot;)
 
 p8_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +
   geom_density(show.legend = F, alpha = 1) +
-  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) + scale_y_continuous(labels=scaleFUN) +
   theme_bw() +  labs(title = &quot;Day 1 to 3&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) + 
   geom_hline(yintercept = pi0est_humans_given_chimps, size = 2.5) + labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) +  geom_hline(yintercept = pi0est_humans, size = 2.5, color = &quot;#00A4F4&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.20&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.16&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.17), size = 6)
@@ -105848,6 +105851,61 @@ legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quo
 #par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
 #plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
 #legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#E69F00&quot;, &quot;#000000&quot;,  &quot;#009E73&quot;,&quot;#0072B2&quot; ), cex = 1)</code></pre>
+</div>
+<div id="note-code-to-make-other-figures" class="section level3">
+<h3>Note: code to make other figures</h3>
+<pre class="r"><code># 6A) 
+multiplot(p1s,p3s,p2s,p3_13s, cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># 6B)
+multiplot(p1s,p3s,p2s,p3_13s, cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># 6C-F)
+
+multiplot(p1_05, p2_inc_05, p5_05,  p6_inc_05, cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF 12A) 
+multiplot(p1,p2,p3,p3_13, cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF12 B)
+multiplot(p4,p5,p6,p6_13, cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF13 A)
+multiplot(p2_05, p3_05,p4_05,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF13 B)
+multiplot(p6_05, p7_05,p8_05,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF13 C)
+multiplot(p1_inc_05, p3_inc_05,p4_inc_05,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF13 D)
+multiplot(p5_inc_05, p7_inc_05,p8_inc_05,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF14 E)
+multiplot(p1_01, p3_01,p4_01,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-10.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF14 F)
+multiplot(p5_01, p6_01, p7_01,p8_01,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-11.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF14 G)
+multiplot(p1_inc_01, p2_inc_01, p3_inc_01,p4_inc_01,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-12.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF14 H)
+multiplot(p5_inc_01, p6_inc_01, p7_inc_01,p8_inc_01,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF14 I)
+multiplot(p1_10, p2_10, p3_10,p4_10,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-14.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF14 J)
+multiplot(p5_10, p6_10, p7_10,p8_10,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-15.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF14 K)
+multiplot(p1_inc_10, p2_inc_10, p3_inc_10,p4_inc_10,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-16.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># SF14 L)
+multiplot(p5_inc_10, p6_inc_10, p7_inc_10,p8_inc_10,cols=2)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-17.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="gene-names-showing-reduction-increase-in-variance-from-days-0-to-1-days-1-to-2" class="section level3">
 <h3>Gene names showing reduction (increase) in variance from days 0 to 1 (days 1 to 2)</h3>

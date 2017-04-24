@@ -554,30 +554,35 @@ ggplot(data=pcs, aes(x=pc1, y=pc2, color=day, shape=Species, size=2)) + geom_poi
 
 ```
 
+### Heatmaps of normalized data
+
 ```{r}
 
-# From https://github.com/jdblischak/tb-suscept/blob/master/analysis/lbb2012.Rmd
-library(ggdendro)
-library(gridGraphics)
-library("gplots")
+After_removal_sample_info <- read.csv("~/Desktop/Endoderm_TC/ashlar-trial/data/After_removal_sample_info.csv")
 
-d1 <- dist(t(cpm_cyclicloess))
-h1 <- hclust(d1)
-ggdendrogram(h1, rotate = FALSE)
+day <- After_removal_sample_info$Day
+day <- as.factor(day)
+Sample_ID <- After_removal_sample_info$Sample_ID
+labels <- paste(Sample_ID, day, sep=" ")
 
+# Using Spearman's correlation
 
-# Hierarchical clustering on normalized data
-#dev.off()
-cors <- cor(cpm_cyclicloess, method="spearman", use="pairwise.complete.obs")
+cors_sp <- cor(cpm_cyclicloess, method="spearman", use="pairwise.complete.obs")
 
 pal <- c(rgb(239/255, 110/255, 99/255, 1), rgb(0/255, 180/255, 81/255, 1), rgb(0/255, 177/255, 219/255, 1), rgb(199/255, 124/255, 255/255,1))
 
-make_heatmap <- heatmap.2( cors, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels, labRow=' ', ColSideColors=pal[as.integer(as.factor(day))], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+make_heatmap <- heatmap.2( cors_sp, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels, labRow= labels, ColSideColors=pal[as.integer(as.factor(day))], RowSideColors=pal[as.integer(as.factor(day))], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
 
-#gplots::heatmap.2(x=as.matrix(t(cpm_cyclicloess)),
-#                  , distfun = dist(x, method = "euclidean"), 
-#                  hclustfun = function(x) hclust(dist(x), method = "average"), tracecol=NA, #col=colors, denscol="white", ColSideColors=pal[as.integer(as.factor(Day))+9])
-     
+# Using Pearson's correlation
+
+cors_pe <- cor(cpm_cyclicloess, method="pearson", use="pairwise.complete.obs")
+
+pal <- c(rgb(239/255, 110/255, 99/255, 1), rgb(0/255, 180/255, 81/255, 1), rgb(0/255, 177/255, 219/255, 1), rgb(199/255, 124/255, 255/255,1))
+
+make_heatmap <- heatmap.2( cors_pe, scale="none", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol= labels, labRow= labels, ColSideColors=pal[as.integer(as.factor(day))], RowSideColors=pal[as.integer(as.factor(day))], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
+
+
+   
 ```
 
 
@@ -587,6 +592,8 @@ PC 1 is correlated with day, PC 2 with species, PC 3 is somewhat by species, PC 
 
 ```{r}
 # Load data about differentiation batch
+
+After_removal_sample_info <- read.csv("~/Desktop/Endoderm_TC/After_removal_sample_info.csv")
 
 differentiation_batch <- After_removal_sample_info$Reprogramming_batch
 
@@ -608,8 +615,6 @@ We want to make sure that differentiation batch nor individual is perfectly corr
 
 ### Differentiation batch
 ```{r}
-
-After_removal_sample_info <- read.csv("~/Desktop/Endoderm_TC/After_removal_sample_info.csv")
 
 Species <- After_removal_sample_info$Species
 species <- After_removal_sample_info$Species

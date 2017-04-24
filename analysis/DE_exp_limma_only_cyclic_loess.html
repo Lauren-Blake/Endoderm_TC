@@ -189,7 +189,7 @@ $(document).ready(function () {
 <li><a href="#final-no-global-at-fdr-5-batch2-supplement">Final, no global at FDR 5%, Batch2 (supplement)</a></li>
 <li><a href="#robustness-with-respect-to-the-purity-samples-supplement">Robustness with respect to the purity samples (supplement)</a></li>
 <li><a href="#final-global-correction-supplement">Final global correction (supplement)</a></li>
-<li><a href="#final-looking-at-divergence-at-day-0-and-day-1-supplement">Final, looking at divergence at day 0 and day 1 (supplement)</a></li>
+<li><a href="#final-looking-at-divergence-at-day-0-and-day-1">Final, looking at divergence at day 0 and day 1</a></li>
 <li><a href="#data-visualization-subset-of-samples-2-3-humans">Data visualization (subset of samples, 2-3 humans)</a></li>
 </ul></li>
 <li><a href="#de-genes-by-species-at-each-time-point-using-only-the-genes-that-remained-post-filtering-for-stem">DE genes by species at each time point using only the genes that remained post-filtering for STEM</a></li>
@@ -689,7 +689,7 @@ write.table(HvCday3, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day3_all_
 
 
 # Table 2
-write.table(HvCday0_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day0_all_genes.txt&quot;, sep=&quot;\t&quot;)
+write.table(HvCday0_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/HvC_day0_all_genes.txt&quot;, sep=&quot;\t&quot;)
 write.table(HvCday1_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day1_all_genes.txt&quot;, sep=&quot;\t&quot;)
 write.table(HvCday2_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day2_all_genes.txt&quot;, sep=&quot;\t&quot;)
 write.table(HvCday3_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day3_all_genes.txt&quot;, sep=&quot;\t&quot;)
@@ -892,9 +892,9 @@ dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; 0.05), important_column
 
 # Make a table of the sections
 
-write.table(Sign_day1_inter, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day1_interact.txt&quot;, sep=&quot;\t&quot;)
-write.table(Sign_day2_inter, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day2_interact.txt&quot;, sep=&quot;\t&quot;)
-write.table(Sign_day3_inter, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day3_interact.txt&quot;, sep=&quot;\t&quot;)
+#write.table(Sign_day1_inter, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/H_day1_interact.txt&quot;, sep=&quot;\t&quot;)
+#write.table(Sign_day2_inter, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/H_day2_interact.txt&quot;, sep=&quot;\t&quot;)
+#write.table(Sign_day3_inter, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/H_day3_interact.txt&quot;, sep=&quot;\t&quot;)
 
 # Table 4
 
@@ -2282,8 +2282,8 @@ dev.off()</code></pre>
 <pre><code>quartz_off_screen 
                 2 </code></pre>
 </div>
-<div id="final-looking-at-divergence-at-day-0-and-day-1-supplement" class="section level3">
-<h3>Final, looking at divergence at day 0 and day 1 (supplement)</h3>
+<div id="final-looking-at-divergence-at-day-0-and-day-1" class="section level3">
+<h3>Final, looking at divergence at day 0 and day 1</h3>
 <pre class="r"><code>species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
 
 day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;, &quot;3&quot;)

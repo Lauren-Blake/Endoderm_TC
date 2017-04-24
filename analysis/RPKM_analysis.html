@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2017-04-16" />
+
+<title>RPKM_analysis</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">RPKM_analysis</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>April 16, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#method-1-find-rpkm-values-by-using-gene-count-data-and-the-rpkm-function.">Method 1: Find RPKM values by using gene count data and the “rpkm” function.</a></li>
+<li><a href="#compare-the-rpkm-calculation-from-method-1-to-the-cyclic-loess-normalized-values">Compare the RPKM calculation from method 1 to the cyclic loess normalized values</a></li>
+<li><a href="#number-of-de-genes-with-rpkm-method-1">Number of DE genes with RPKM method #1</a></li>
+<li><a href="#method-2-find-rpkm-values-by-adjusting-the-normalized-cpm-counts-by-gene-lengths">Method 2: Find RPKM values by adjusting the normalized CPM counts by gene lengths</a></li>
+<li><a href="#compare-the-rpkm-calculation-from-method-2-to-the-cyclic-loess-normalized-values">Compare the RPKM calculation from method 2 to the cyclic loess normalized values</a></li>
+<li><a href="#compare-the-rpkm-values-calculated-by-each-of-the-methods">Compare the RPKM values calculated by each of the methods</a></li>
+<li><a href="#pca-method-2">PCA (method 2)</a></li>
+<li><a href="#number-of-de-genes-rpkm-method-2">Number of DE genes RPKM Method 2</a></li>
+</ul>
+</div>
+
+<p>We will perform analysis on normalized RPKM values.</p>
+<pre class="r"><code># Load libraries
+
+library(&quot;gplots&quot;)</code></pre>
+<pre><code>## Warning: package &#39;gplots&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gplots&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:stats&#39;:
+## 
+##     lowess</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;colorfulVennPlot&quot;)</code></pre>
+<pre><code>## Loading required package: grid</code></pre>
+<pre class="r"><code>library(&quot;VennDiagram&quot;)</code></pre>
+<pre><code>## Warning: package &#39;VennDiagram&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Loading required package: futile.logger</code></pre>
+<pre><code>## Warning: package &#39;futile.logger&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
+<pre><code>## Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Loading required package: limma</code></pre>
+<pre><code>## Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+
+# Load colors
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Get counts data
+
+counts_genes_in_cutoff &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/gene_counts_cutoff_norm_data.txt&quot;, header=TRUE)
+
+# Get cyclic loess normalized data
+
+cpm_cyclicloess &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess.txt&quot;)
+# Get individual
+
+After_removal_sample_info &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/After_removal_sample_info.csv&quot;)
+
+# Make labels with species and day
+
+individual &lt;- After_removal_sample_info$Individual</code></pre>
+<div id="method-1-find-rpkm-values-by-using-gene-count-data-and-the-rpkm-function." class="section level2">
+<h2>Method 1: Find RPKM values by using gene count data and the “rpkm” function.</h2>
+<pre class="r"><code># Get orth exon lengths
+
+ortho_exon_lengths &lt;- read.delim(&quot;~/Dropbox/Endoderm TC/ortho_exon_lengths.txt&quot;)
+
+totalNumReads &lt;- as.data.frame(t(colSums(counts_genes_in_cutoff, na.rm = FALSE, dims = 1) ))
+
+# Calculate per species RPKM
+
+humans &lt;- c(1:7, 16:23, 32:39, 48:55)
+chimps &lt;- c(8:15, 24:31, 40:47, 56:63)
+
+# Make RPKM into a row
+
+RPKM_humans &lt;- rpkm(counts_genes_in_cutoff, gene.length=ortho_exon_lengths$hutotal/1000, normalized.lib.sizes=TRUE, log=TRUE) 
+
+RPKM_chimps &lt;- rpkm(counts_genes_in_cutoff, gene.length=ortho_exon_lengths$chtotal/1000, normalized.lib.sizes=TRUE, log=TRUE) 
+
+# Take human samples from the human RPKM and chimp samples from the chimp RPKM data frames
+
+RPKM_all &lt;- cbind(RPKM_humans[,1:7], RPKM_chimps[,8:15], RPKM_humans[,16:23], RPKM_chimps[,24:31], RPKM_humans[,32:39], RPKM_chimps[,40:47], RPKM_humans[,48:55], RPKM_chimps[,56:63])</code></pre>
+</div>
+<div id="compare-the-rpkm-calculation-from-method-1-to-the-cyclic-loess-normalized-values" class="section level2">
+<h2>Compare the RPKM calculation from method 1 to the cyclic loess normalized values</h2>
+<pre class="r"><code># Calculate the Pearson&#39;s correlation for each sample
+
+Cor_values = matrix(data = NA, nrow = 63, ncol = 1, dimnames = list(c(&quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;,  &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;,  &quot;human 2&quot;, &quot;human 2&quot;,  &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;), c(&quot;Pearson&#39;s correlation&quot;)))
+
+for (i in 1:63){
+  Cor_values[i,1] &lt;- cor(RPKM_all[,i], cpm_cyclicloess[,i])
+}
+
+summary(Cor_values)</code></pre>
+<pre><code> Pearson&#39;s correlation
+ Min.   :0.7725       
+ 1st Qu.:0.7948       
+ Median :0.8040       
+ Mean   :0.8047       
+ 3rd Qu.:0.8121       
+ Max.   :0.8392       </code></pre>
+</div>
+<div id="number-of-de-genes-with-rpkm-method-1" class="section level2">
+<h2>Number of DE genes with RPKM method #1</h2>
+<pre class="r"><code>species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;, &quot;3&quot;)
+
+labels &lt;- paste(species, day, sep=&quot; &quot;)
+
+# Take the TMM of the genes that meet the criteria
+
+dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
+
+
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;speciesH&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation = corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/RPKM_analysis.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cpm.voom.corfit$E &lt;- as.data.frame(RPKM_all)
+
+# Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+nrow(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 4471</code></pre>
+<pre class="r"><code>HvCday0 &lt;- HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), 1]             
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+nrow(HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 4389</code></pre>
+<pre class="r"><code>HvCday1 &lt;- HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), 1]
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+nrow(HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 4657</code></pre>
+<pre class="r"><code>HvCday2 &lt;- HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), 1]
+
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+nrow(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 5005</code></pre>
+<pre class="r"><code>HvCday3 &lt;- HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), 1]
+
+# 4471
+# 4389
+# 4657
+# 5005
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Human Day 0 to Day 1
+H_day01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day01[which(H_day01$adj.P.Val &lt; 0.05),])</code></pre>
+<pre><code>[1] 3243    7</code></pre>
+<pre class="r"><code>H_day01 &lt;- H_day01[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+H_day12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+H_day12 &lt;- H_day12[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+H_day23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+H_day23 &lt;- H_day23[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 0 to Day 1
+C_day01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+C_day01 &lt;- C_day01[, important_columns]    
+
+# Find the genes that are DE at Chimp Day 1 to Day 2
+C_day12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+C_day12 &lt;- C_day12[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 2 to Day 3
+C_day23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+C_day23 &lt;- C_day23[, important_columns]  
+
+
+
+# Check dimensions
+dim(H_day01)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(H_day12)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(H_day23)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(C_day01)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(C_day12)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(C_day23)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- HvCday0
+mylist[[&quot;DE Day 1&quot;]] &lt;- HvCday1 
+mylist[[&quot;DE Day 2&quot;]] &lt;- HvCday2
+mylist[[&quot;DE Day 3&quot;]] &lt;- HvCday3
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, RPKM, 63 samples)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF4w_Four_comparisons_RPKM_norm_lib.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+<div id="method-2-find-rpkm-values-by-adjusting-the-normalized-cpm-counts-by-gene-lengths" class="section level2">
+<h2>Method 2: Find RPKM values by adjusting the normalized CPM counts by gene lengths</h2>
+<pre class="r"><code>species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;, &quot;3&quot;)
+
+labels &lt;- paste(species, day, sep=&quot; &quot;)
+
+# Take the TMM of the genes that meet the criteria
+
+dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
+
+
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;speciesH&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation = corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/RPKM_analysis.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Make a matrix with the gene lengths
+
+human_gene_lengths &lt;- ortho_exon_lengths[,3]/1000
+chimp_gene_lengths &lt;- ortho_exon_lengths[,5]/1000
+
+gene_length_all &lt;- cbind(human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, human_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths, chimp_gene_lengths)
+
+# Adjust the 
+cpm.voom.corfit$E &lt;- cpm.voom.corfit$E - log2(gene_length_all)</code></pre>
+</div>
+<div id="compare-the-rpkm-calculation-from-method-2-to-the-cyclic-loess-normalized-values" class="section level2">
+<h2>Compare the RPKM calculation from method 2 to the cyclic loess normalized values</h2>
+<pre class="r"><code># Calculate the Pearson&#39;s correlation for each sample
+
+Cor_values = matrix(data = NA, nrow = 63, ncol = 1, dimnames = list(c(&quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;,  &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;,  &quot;human 2&quot;, &quot;human 2&quot;,  &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;), c(&quot;Pearson&#39;s correlation&quot;)))
+
+for (i in 1:63){
+  Cor_values[i,1] &lt;- cor(cpm.voom.corfit$E[,i], cpm_cyclicloess[,i])
+}
+
+summary(Cor_values)</code></pre>
+<pre><code> Pearson&#39;s correlation
+ Min.   :0.7924       
+ 1st Qu.:0.8025       
+ Median :0.8101       
+ Mean   :0.8097       
+ 3rd Qu.:0.8162       
+ Max.   :0.8389       </code></pre>
+</div>
+<div id="compare-the-rpkm-values-calculated-by-each-of-the-methods" class="section level2">
+<h2>Compare the RPKM values calculated by each of the methods</h2>
+<pre class="r"><code>Cor_values = matrix(data = NA, nrow = 63, ncol = 1, dimnames = list(c(&quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;,  &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;,  &quot;human 2&quot;, &quot;human 2&quot;,  &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;), c(&quot;Pearson&#39;s correlation&quot;)))
+
+for (i in 1:63){
+  Cor_values[i,1] &lt;- cor(cpm.voom.corfit$E[,i], RPKM_all[,i])
+}
+
+summary(Cor_values)</code></pre>
+<pre><code> Pearson&#39;s correlation
+ Min.   :0.9979       
+ 1st Qu.:0.9996       
+ Median :0.9998       
+ Mean   :0.9996       
+ 3rd Qu.:0.9999       
+ Max.   :1.0000       </code></pre>
+</div>
+<div id="pca-method-2" class="section level2">
+<h2>PCA (method 2)</h2>
+<pre class="r"><code>After_removal_sample_info &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/After_removal_sample_info.csv&quot;)
+
+Species &lt;- After_removal_sample_info$Species
+species &lt;- After_removal_sample_info$Species
+
+pca_genes &lt;- prcomp(t(cpm.voom.corfit$E), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=day, shape=Species, size=2)) + geom_point(aes(colour = as.factor(day))) +  scale_colour_manual(name=&quot;Day&quot;,  
+                      values = c(&quot;0&quot;=rgb(239/255, 110/255, 99/255, 1), &quot;1&quot;= rgb(0/255, 180/255, 81/255, 1), &quot;2&quot;=rgb(0/255, 177/255, 219/255, 1),
+                                 &quot;3&quot;=rgb(199/255, 124/255, 255/255,1))) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100),&quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100),&quot;% of variance)&quot;)) + scale_size(guide = &#39;none&#39;)  + theme_bw()  + ggtitle(&quot;PCs 1 and 2 from normalized RPKM (63 samples)&quot;)</code></pre>
+<p><img src="figure/RPKM_analysis.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="number-of-de-genes-rpkm-method-2" class="section level2">
+<h2>Number of DE genes RPKM Method 2</h2>
+<pre class="r"><code># Run lmFit and eBayes in limma
+
+fit &lt;- lmFit(cpm.voom.corfit , design, block=individual, correlation=corfit.correlation)
+
+
+# In the contrast matrix, we have the species DE at each day
+
+cm2 &lt;- makeContrasts(HvCday0 = Human, HvCday1 = Human + Human.day1, HvCday2 = Human + Human.day2, HvCday3 = Human + Human.day3, Hday01 = day1 + Human.day1, Hday12 = day2 + Human.day2 - day1 - Human.day1, Hday23 = day3 + Human.day3 - day2 - Human.day2, Cday01 = day1, Cday12 = day2 - day1, Cday23 = day3 - day2, Sig_inter_day1 = Human.day1, Sig_inter_day2 = Human.day2 - Human.day1, Sig_inter_day3 = Human.day3 - Human.day2, levels = design)
+
+# Fit the new model
+diff_species &lt;- contrasts.fit(fit, cm2)
+fit2 &lt;- eBayes(diff_species)
+
+top3 &lt;- list(HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Hday12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Hday23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;),  Cday01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;), Cday23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;))
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Day 0
+HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+nrow(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 4482</code></pre>
+<pre class="r"><code>HvCday0 &lt;- HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), 1]             
+
+# Find the genes that are DE at Day 1
+HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+nrow(HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 4415</code></pre>
+<pre class="r"><code>HvCday1 &lt;- HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), 1]
+
+# Find the genes that are DE at Day 2
+HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+nrow(HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 4709</code></pre>
+<pre class="r"><code>HvCday2 &lt;- HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), 1]
+
+
+# Find the genes that are DE at Day 3
+HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+nrow(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])</code></pre>
+<pre><code>[1] 5070</code></pre>
+<pre class="r"><code>HvCday3 &lt;- HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), 1]
+
+# 4482
+# 4415
+# 4709
+# 5070
+
+important_columns &lt;- c(1,2,6)
+
+# Find the genes that are DE at Human Day 0 to Day 1
+H_day01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+dim(H_day01[which(H_day01$adj.P.Val &lt; 0.05),])</code></pre>
+<pre><code>[1] 3231    7</code></pre>
+<pre class="r"><code>H_day01 &lt;- H_day01[, important_columns]    
+
+# Find the genes that are DE at Human Day 1 to Day 2
+H_day12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+H_day12 &lt;- H_day12[, important_columns]  
+
+# Find the genes that are DE at Human Day 2 to Day 3
+H_day23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+H_day23 &lt;- H_day23[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 0 to Day 1
+C_day01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+C_day01 &lt;- C_day01[, important_columns]    
+
+# Find the genes that are DE at Chimp Day 1 to Day 2
+C_day12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+C_day12 &lt;- C_day12[, important_columns]  
+
+# Find the genes that are DE at Chimp Day 2 to Day 3
+C_day23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
+C_day23 &lt;- C_day23[, important_columns]  
+
+
+
+# Check dimensions
+dim(H_day01)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(H_day12)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(H_day23)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(C_day01)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(C_day12)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>dim(C_day23)</code></pre>
+<pre><code>[1] 10304     3</code></pre>
+<pre class="r"><code>mylist &lt;- list()
+mylist[[&quot;DE Day 0&quot;]] &lt;- HvCday0
+mylist[[&quot;DE Day 1&quot;]] &lt;- HvCday1 
+mylist[[&quot;DE Day 2&quot;]] &lt;- HvCday2
+mylist[[&quot;DE Day 3&quot;]] &lt;- HvCday3
+
+# Make as pdf 
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, RPKM, 63 samples)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF4ww_Four_comparisons_RPKM_adj_CPM.pdf&quot;)
+  grid.draw(Four_comp)
+dev.off()</code></pre>
+<pre><code>quartz_off_screen 
+                2 </code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

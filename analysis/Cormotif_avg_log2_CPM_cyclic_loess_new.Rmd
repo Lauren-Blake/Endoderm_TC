@@ -517,7 +517,7 @@ prob_day_4  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran
 length(prob_day_4)
 #449
 
-prob_day_5  <- rownames(gene_prob_tran[(gene_prob_tran[,1] < 0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
+prob_day_5  <- rownames(gene_prob_tran[(gene_prob_tran[,1] < 0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
 length(prob_day_5)
 #26
 
@@ -534,7 +534,7 @@ length(prob_day_6)
 
 prob_day_7  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6] > 0.5),])
 length(prob_day_7)
-#4
+#2
 
 #prob_day_8  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.8 & gene_prob_tran[,2] >0.8 & gene_prob_tran[,3] >0.8 & gene_prob_tran[,4] >0.8 & gene_prob_tran[,5] > 0.8 & gene_prob_tran[,6] > 0.8),])
 #length(prob_day_8)
@@ -590,9 +590,9 @@ prob_day_3  <- rownames(gene_prob_tran[(gene_prob_tran[,1] <0.5 & gene_prob_tran
 length(prob_day_3)
 #213
 
-prob_day_4  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] <0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.5),])
+prob_day_4  <- rownames(gene_prob_tran[(gene_prob_tran[,1] >0.5 & gene_prob_tran[,2] <0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] >0.5 & gene_prob_tran[,5] < 0.5 & gene_prob_tran[,6]>0.5),])
 length(prob_day_4)
-#205
+#100
 
 prob_day_5  <- rownames(gene_prob_tran[(gene_prob_tran[,1] < 0.5 & gene_prob_tran[,2] >0.5 & gene_prob_tran[,3] >0.5 & gene_prob_tran[,4] <0.5 & gene_prob_tran[,5] > 0.5 & gene_prob_tran[,6]>0.5),])
 length(prob_day_5)
