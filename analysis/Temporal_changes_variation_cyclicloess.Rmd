@@ -23,8 +23,6 @@ library("RColorBrewer")
 pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
 
 
-# Load cpm data
-#cpm_in_cutoff <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt")
 
 # Load cyclic loess normalized data
 
@@ -183,23 +181,55 @@ m <- m + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_b
 m <- m + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3"))
 m
 
+# Take log2 of each data frame
+
+log_chimps_day0_var <- log2(chimps_day0_var)
+log_chimps_day1_var <- log2(chimps_day1_var)
+log_chimps_day2_var <- log2(chimps_day2_var)
+log_chimps_day3_var <- log2(chimps_day3_var)
+log_humans_day0_var <- log(humans_day0_var)
+log_humans_day1_var <- log2(humans_day1_var)
+log_humans_day2_var <- log2(humans_day2_var)
+log_humans_day3_var <- log2(humans_day3_var)
+
 
 # Boxplot of variances gives general trend
-HC_var <- rbind(as.data.frame(chimps_day0_var), as.data.frame(chimps_day1_var), as.data.frame(chimps_day2_var), as.data.frame(chimps_day3_var), as.data.frame(humans_day0_var), as.data.frame(humans_day1_var), as.data.frame(humans_day2_var), as.data.frame(humans_day3_var))
+HC_var <- rbind(as.data.frame(log_chimps_day0_var), as.data.frame(log_chimps_day1_var), as.data.frame(log_chimps_day2_var), as.data.frame(log_chimps_day3_var), as.data.frame(log_humans_day0_var), as.data.frame(log_humans_day1_var), as.data.frame(log_humans_day2_var), as.data.frame(log_humans_day3_var))
+
+
+# Make a boxplot of log2(variance of gene expression levels)
 
 HC_var_labels <- cbind(HC_var, labels, labels10)
 
+dim(HC_var_labels)
+
+
+bjp<-
+theme(
+  
+  plot.title = element_text(size = 16, face = "bold"),
+  axis.text.y =  element_text(size = 14,face = "bold",color = "black"),
+  axis.text.x =  element_text(size = 14,face = "bold",color = "black"),
+  axis.title.y = element_text(size = 14,face = "bold"),
+  axis.title.x = element_text(size = 14,face = "bold"),
+  legend.text = element_text(size = 14,face = "bold"),
+  legend.title = element_text(size = 14,face = "bold"),
+  strip.text.x = element_text(size = 14,face = "bold"),
+  strip.text.y = element_text(size = 14,face = "bold"),
+  strip.background = element_rect(colour = "black", size = 2))
+
 p <- ggplot(HC_var_labels, aes(x = factor(labels), y = HC_var))
-p <- p + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + scale_y_continuous(trans = "log2") + ggtitle("Variance for each gene by species and day") + xlab("Species-Day Pair") + ylab("Variance for each gene") 
+p <- p + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + xlab("Species-Day Pair") + ylab("log2 variance of expression for each gene") 
 p <- p + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3"))
-p
+p + bjp
+
 
 
 ```
 
 # Evaluating global changes in variation 
 
-## No global reduction in means between day 0 and day 1
+## No global reduction in means between day 0 and day 1 in both species
 
 Check to see if differences between means (of all gene expression values) within humans and chimps
 between days
@@ -262,64 +292,43 @@ t.test(humans_day2_mean, humans_day3_mean) # 0.628
 Conclusion: For both species, there is at least 1 mean that is different; however, when testing between the humans and chimps day 0 and 1, there is not enough statistical evidence to suggest a difference in the means of the variances. 
 
 
-## No global reduction in variance between day 0 and 1 in both species
+## The effect size for the global reduction in variance between day 0 and 1 in chimpanzees is small but larger in humans.
 
 Check to see if differences variances of all of the genes between humans and chimps
 
 ```{r}
+# Untransformed variances have a range of 0 to infinity. Therefore, we will log transform the variance values so that there is a range of negative infinity to positive infinity. Then we can use a t-test. 
+
 
 ########## Within chimps ##########
 
-# Test at least one of the means is different
-group <- rbind(labels1, labels2, labels3, labels4)
+t.test(log2((unlist(chimps_day0_var))), log2((unlist(chimps_day1_var))), alternative = c("greater"))
 
-var_day_species <- rbind(chimps_day0_var,chimps_day1_var, chimps_day2_var, chimps_day3_var)
+2^(5.036558 - 4.751923)
 
-aov_groups <- cbind(var_day_species, group)
+# t = 10.235, df = 20439, p-value < 2.2e-16
 
-dim(aov_groups)
+# Is Day 1 to 2 or 2 to 3 greater?
 
-aov_bet <- oneway.test(aov_groups$Variance ~ aov_groups$group)
-aov_bet
-
-# F = 21.317, num df = 3, denom df = 22880, p-value = 8.774e-14
-
-# Test groups individually
-
-# Day 0 and Day 1
-t.test(chimps_day0_var, chimps_day1_var) # 0.5571
-t.test(chimps_day0_var, chimps_day1_var, alternative = "greater") # 0.2785
 # Day 1 and Day 2
-t.test(chimps_day1_var, chimps_day2_var) # 0.01267
+t.test(log2((unlist(chimps_day1_var))), log2((unlist(chimps_day2_var))), alternative = c("greater")) # p-value = 1
+
 # Day 2 and Day 3
-t.test(chimps_day2_var, chimps_day3_var) # 5.711e-07
-
-
+t.test(log2((unlist(chimps_day2_var))), log2((unlist(chimps_day3_var))), alternative = c("greater")) # p-value = 1
 
 ########## Within humans ##########
 
-# Test at least one of the means is different
-group <- rbind(labels5, labels6, labels7, labels8)
-
-var_day_species <- rbind(humans_day0_var,humans_day1_var, humans_day2_var, humans_day3_var)
-
-aov_groups <- cbind(var_day_species, group)
-
-dim(aov_groups)
-
-aov_bet <- oneway.test(aov_groups$Variance ~ aov_groups$group)
-aov_bet
-
-# F = 85.015, num df = 3, denom df = 22648, p-value < 2.2e-16
-
-# Test groups individually
 
 # Day 0 and Day 1
-t.test(humans_day0_var, humans_day1_var) # < 2.2e-16
+t.test(log2((unlist(humans_day0_var))), log2((unlist(humans_day1_var))), alternative = c("greater"))
+
+2^(4.867707-3.636568)
+
 # Day 1 and Day 2
-t.test(humans_day1_var, humans_day2_var) # < 2.2e-16
+t.test(log2((unlist(humans_day1_var))), log2((unlist(humans_day2_var))), alternative = c("greater")) # p-value = 1
+
 # Day 2 and Day 3
-t.test(humans_day2_var, humans_day3_var) # 5.229e-08
+t.test(log2((unlist(humans_day2_var))), log2((unlist(humans_day3_var))), alternative = c("greater")) # p-value = 0.9986
 
 ```
 

@@ -185,8 +185,8 @@ $(document).ready(function () {
 <li><a href="#examine-the-means-and-the-variances-for-each-day-species-pairs">Examine the means and the variances for each day-species pairs</a></li>
 </ul></li>
 <li><a href="#evaluating-global-changes-in-variation">Evaluating global changes in variation</a><ul>
-<li><a href="#no-global-reduction-in-means-between-day-0-and-day-1">No global reduction in means between day 0 and day 1</a></li>
-<li><a href="#no-global-reduction-in-variance-between-day-0-and-1-in-both-species">No global reduction in variance between day 0 and 1 in both species</a></li>
+<li><a href="#no-global-reduction-in-means-between-day-0-and-day-1-in-both-species">No global reduction in means between day 0 and day 1 in both species</a></li>
+<li><a href="#the-effect-size-for-the-global-reduction-in-variance-between-day-0-and-1-in-chimpanzees-is-small-but-larger-in-humans.">The effect size for the global reduction in variance between day 0 and 1 in chimpanzees is small but larger in humans.</a></li>
 </ul></li>
 <li><a href="#characterizing-variance-trends-between-days-tested-at-the-gene-level-using-f-tests">Characterizing variance trends between days tested at the gene level using F tests</a><ul>
 <li><a href="#general-functions-for-reductionincrease-in-variance">General functions for reduction/increase in variance</a></li>
@@ -249,8 +249,6 @@ library(&quot;ggplot2&quot;)</code></pre>
 pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
 
 
-# Load cpm data
-#cpm_in_cutoff &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_norm_data.txt&quot;)
 
 # Load cyclic loess normalized data
 
@@ -423,8 +421,8 @@ p</code></pre>
 </div>
 <div id="evaluating-global-changes-in-variation" class="section level1">
 <h1>Evaluating global changes in variation</h1>
-<div id="no-global-reduction-in-means-between-day-0-and-day-1" class="section level2">
-<h2>No global reduction in means between day 0 and day 1</h2>
+<div id="no-global-reduction-in-means-between-day-0-and-day-1-in-both-species" class="section level2">
+<h2>No global reduction in means between day 0 and day 1 in both species</h2>
 <p>Check to see if differences between means (of all gene expression values) within humans and chimps between days</p>
 <pre class="r"><code>########## Within chimps ##########
 
@@ -550,143 +548,102 @@ mean of x mean of y
  5.299347  5.312107 </code></pre>
 <p>Conclusion: For both species, there is at least 1 mean that is different; however, when testing between the humans and chimps day 0 and 1, there is not enough statistical evidence to suggest a difference in the means of the variances.</p>
 </div>
-<div id="no-global-reduction-in-variance-between-day-0-and-1-in-both-species" class="section level2">
-<h2>No global reduction in variance between day 0 and 1 in both species</h2>
+<div id="the-effect-size-for-the-global-reduction-in-variance-between-day-0-and-1-in-chimpanzees-is-small-but-larger-in-humans." class="section level2">
+<h2>The effect size for the global reduction in variance between day 0 and 1 in chimpanzees is small but larger in humans.</h2>
 <p>Check to see if differences variances of all of the genes between humans and chimps</p>
-<pre class="r"><code>########## Within chimps ##########
+<pre class="r"><code># Untransformed variances have a range of 0 to infinity. Therefore, we will log transform the variance values so that there is a range of negative infinity to positive infinity. Then we can use a t-test. 
 
-# Test at least one of the means is different
-group &lt;- rbind(labels1, labels2, labels3, labels4)
 
-var_day_species &lt;- rbind(chimps_day0_var,chimps_day1_var, chimps_day2_var, chimps_day3_var)
+########## Within chimps ##########
 
-aov_groups &lt;- cbind(var_day_species, group)
-
-dim(aov_groups)</code></pre>
-<pre><code>[1] 41216     2</code></pre>
-<pre class="r"><code>aov_bet &lt;- oneway.test(aov_groups$Variance ~ aov_groups$group)
-aov_bet</code></pre>
-<pre><code>
-    One-way analysis of means (not assuming equal variances)
-
-data:  aov_groups$Variance and aov_groups$group
-F = 21.317, num df = 3, denom df = 22880, p-value = 8.774e-14</code></pre>
-<pre class="r"><code># F = 21.317, num df = 3, denom df = 22880, p-value = 8.774e-14
-
-# Test groups individually
-
-# Day 0 and Day 1
-t.test(chimps_day0_var, chimps_day1_var) # 0.5571</code></pre>
+t.test(log2((unlist(chimps_day0_var))), log2((unlist(chimps_day1_var))), alternative = c(&quot;greater&quot;))</code></pre>
 <pre><code>
     Welch Two Sample t-test
 
-data:  chimps_day0_var and chimps_day1_var
-t = 0.58723, df = 20595, p-value = 0.5571
-alternative hypothesis: true difference in means is not equal to 0
-95 percent confidence interval:
- -0.008808688  0.016344390
-sample estimates:
-mean of x mean of y 
-0.1009513 0.0971835 </code></pre>
-<pre class="r"><code>t.test(chimps_day0_var, chimps_day1_var, alternative = &quot;greater&quot;) # 0.2785</code></pre>
-<pre><code>
-    Welch Two Sample t-test
-
-data:  chimps_day0_var and chimps_day1_var
-t = 0.58723, df = 20595, p-value = 0.2785
+data:  log2((unlist(chimps_day0_var))) and log2((unlist(chimps_day1_var)))
+t = 10.235, df = 20439, p-value &lt; 2.2e-16
 alternative hypothesis: true difference in means is greater than 0
 95 percent confidence interval:
- -0.006786568          Inf
+ 0.2388908       Inf
 sample estimates:
 mean of x mean of y 
-0.1009513 0.0971835 </code></pre>
-<pre class="r"><code># Day 1 and Day 2
-t.test(chimps_day1_var, chimps_day2_var) # 0.01267</code></pre>
+-4.751923 -5.036558 </code></pre>
+<pre class="r"><code>2^(5.036558 - 4.751923)</code></pre>
+<pre><code>[1] 1.218102</code></pre>
+<pre class="r"><code># t = 10.235, df = 20439, p-value &lt; 2.2e-16
+
+# Is Day 1 to 2 or 2 to 3 greater?
+
+# Day 1 and Day 2
+t.test(log2((unlist(chimps_day1_var))), log2((unlist(chimps_day2_var))), alternative = c(&quot;greater&quot;)) # p-value = 1</code></pre>
 <pre><code>
     Welch Two Sample t-test
 
-data:  chimps_day1_var and chimps_day2_var
-t = -2.4932, df = 20532, p-value = 0.01267
-alternative hypothesis: true difference in means is not equal to 0
+data:  log2((unlist(chimps_day1_var))) and log2((unlist(chimps_day2_var)))
+t = -15.864, df = 20550, p-value = 1
+alternative hypothesis: true difference in means is greater than 0
 95 percent confidence interval:
- -0.028076338 -0.003361312
+ -0.4955952        Inf
 sample estimates:
 mean of x mean of y 
-0.0971835 0.1129023 </code></pre>
+-5.036558 -4.587522 </code></pre>
 <pre class="r"><code># Day 2 and Day 3
-t.test(chimps_day2_var, chimps_day3_var) # 5.711e-07</code></pre>
+t.test(log2((unlist(chimps_day2_var))), log2((unlist(chimps_day3_var))), alternative = c(&quot;greater&quot;)) # p-value = 1</code></pre>
 <pre><code>
     Welch Two Sample t-test
 
-data:  chimps_day2_var and chimps_day3_var
-t = -5.0024, df = 20365, p-value = 5.711e-07
-alternative hypothesis: true difference in means is not equal to 0
+data:  log2((unlist(chimps_day2_var))) and log2((unlist(chimps_day3_var)))
+t = -12.813, df = 20595, p-value = 1
+alternative hypothesis: true difference in means is greater than 0
 95 percent confidence interval:
- -0.04507808 -0.01969712
+ -0.4030692        Inf
 sample estimates:
 mean of x mean of y 
-0.1129023 0.1452899 </code></pre>
+-4.587522 -4.230311 </code></pre>
 <pre class="r"><code>########## Within humans ##########
 
-# Test at least one of the means is different
-group &lt;- rbind(labels5, labels6, labels7, labels8)
-
-var_day_species &lt;- rbind(humans_day0_var,humans_day1_var, humans_day2_var, humans_day3_var)
-
-aov_groups &lt;- cbind(var_day_species, group)
-
-dim(aov_groups)</code></pre>
-<pre><code>[1] 41216     2</code></pre>
-<pre class="r"><code>aov_bet &lt;- oneway.test(aov_groups$Variance ~ aov_groups$group)
-aov_bet</code></pre>
-<pre><code>
-    One-way analysis of means (not assuming equal variances)
-
-data:  aov_groups$Variance and aov_groups$group
-F = 88.964, num df = 3, denom df = 22685, p-value &lt; 2.2e-16</code></pre>
-<pre class="r"><code># F = 85.015, num df = 3, denom df = 22648, p-value &lt; 2.2e-16
-
-# Test groups individually
 
 # Day 0 and Day 1
-t.test(humans_day0_var, humans_day1_var) # &lt; 2.2e-16</code></pre>
+t.test(log2((unlist(humans_day0_var))), log2((unlist(humans_day1_var))), alternative = c(&quot;greater&quot;))</code></pre>
 <pre><code>
     Welch Two Sample t-test
 
-data:  humans_day0_var and humans_day1_var
-t = 14.239, df = 19402, p-value &lt; 2.2e-16
-alternative hypothesis: true difference in means is not equal to 0
+data:  log2((unlist(humans_day0_var))) and log2((unlist(humans_day1_var)))
+t = 49.053, df = 20465, p-value &lt; 2.2e-16
+alternative hypothesis: true difference in means is greater than 0
 95 percent confidence interval:
- 0.07493299 0.09885596
+ 1.189854      Inf
 sample estimates:
 mean of x mean of y 
-0.1805225 0.0936280 </code></pre>
+-3.636568 -4.867707 </code></pre>
+<pre class="r"><code>2^(4.867707-3.636568)</code></pre>
+<pre><code>[1] 2.347523</code></pre>
 <pre class="r"><code># Day 1 and Day 2
-t.test(humans_day1_var, humans_day2_var) # &lt; 2.2e-16</code></pre>
+t.test(log2((unlist(humans_day1_var))), log2((unlist(humans_day2_var))), alternative = c(&quot;greater&quot;)) # p-value = 1</code></pre>
 <pre><code>
     Welch Two Sample t-test
 
-data:  humans_day1_var and humans_day2_var
-t = -9.2609, df = 20422, p-value &lt; 2.2e-16
-alternative hypothesis: true difference in means is not equal to 0
+data:  log2((unlist(humans_day1_var))) and log2((unlist(humans_day2_var)))
+t = -45.735, df = 19997, p-value = 1
+alternative hypothesis: true difference in means is greater than 0
 95 percent confidence interval:
- -0.05671088 -0.03689844
+ -1.141847       Inf
 sample estimates:
 mean of x mean of y 
-0.0936280 0.1404327 </code></pre>
+-4.867707 -3.765502 </code></pre>
 <pre class="r"><code># Day 2 and Day 3
-t.test(humans_day2_var, humans_day3_var) # 5.229e-08</code></pre>
+t.test(log2((unlist(humans_day2_var))), log2((unlist(humans_day3_var))), alternative = c(&quot;greater&quot;)) # p-value = 0.9986</code></pre>
 <pre><code>
     Welch Two Sample t-test
 
-data:  humans_day2_var and humans_day3_var
-t = -5.1783, df = 18935, p-value = 2.262e-07
-alternative hypothesis: true difference in means is not equal to 0
+data:  log2((unlist(humans_day2_var))) and log2((unlist(humans_day3_var)))
+t = -2.9879, df = 20393, p-value = 0.9986
+alternative hypothesis: true difference in means is greater than 0
 95 percent confidence interval:
- -0.04094014 -0.01845718
+ -0.107056       Inf
 sample estimates:
 mean of x mean of y 
-0.1404327 0.1701313 </code></pre>
+-3.765502 -3.696457 </code></pre>
 <p>Conclusion: For both species, there is at least 1 mean (of the variances) that is different; however, when testing between the chimps day 0 and 1, there is not enough statistical evidence to suggest a difference in the means of the variances in the chimpanzees. Even if you make the argument that biologically we expect a reduction in variance between day 0 an day 1 (due to cannalization, for example) and therefore try a one-sided t-test, the p-value is still not statistically significant.</p>
 </div>
 </div>
