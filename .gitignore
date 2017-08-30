@@ -2,3 +2,10 @@
 *pdf
 analysis/rda
 analysis/Limma_second_analysis(3H).Rmd
+.DS_Store
+.Rhistory
+.Rapp.history
+.RData
+*~
+#*
+*log
