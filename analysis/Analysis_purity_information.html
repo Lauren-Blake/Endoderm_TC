@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+
+<title>Explore_temporal_changes_in_variation_including_purity_information</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Explore_temporal_changes_in_variation_including_purity_information</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>January 9, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#check-data">Check data</a></li>
+<li><a href="#estimate-the-effect-of-purity-for-humans">Estimate the effect of purity for humans</a></li>
+<li><a href="#make-figure-with-purity">Make figure with purity</a></li>
+<li><a href="#perform-the-regression-analysis--humans">Perform the regression analysis- humans</a></li>
+<li><a href="#estimate-the-effect-of-purity-for-chimps">Estimate the effect of purity for chimps</a></li>
+<li><a href="#combine-residual-data-from-humans-and-chimps">Combine residual data from humans and chimps</a></li>
+<li><a href="#examine-the-means-and-the-variances-for-each-day-species-pairs">Examine the means and the variances for each day-species pairs</a><ul>
+<li><a href="#calculating-the-average-of-the-beta-values-from-variances-betas-for-whichwe-have-purity-and-those-we-do-not">Calculating the average of the beta values from variances (betas for whichwe have purity and those we do not)</a></li>
+<li><a href="#scale-and-then-take-the-average">Scale and then take the average</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>The goal of this script is to assess the extent of regulatory variation in our cell types incorporating information about purity.</p>
+<div id="check-data" class="section level2">
+<h2>Check data</h2>
+<pre class="r"><code># Load libraries
+
+library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;qvalue&quot;)</code></pre>
+<pre><code>## Warning: package &#39;qvalue&#39; was built under R version 3.2.3</code></pre>
+<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
+<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+
+# Load colors
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Load functions
+
+
+bjpm&lt;-
+theme(
+  panel.border = element_rect(colour = &quot;black&quot;, fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = &quot;bold&quot;),
+  axis.text.y =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 14,face = &quot;bold&quot;),
+  axis.title.x=element_blank(),
+  legend.text = element_text(size = 14,face = &quot;bold&quot;),
+  legend.title = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.x = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.y = element_text(size = 14,face = &quot;bold&quot;),
+  strip.background = element_rect(colour = &quot;black&quot;, size = 2))
+
+bjp&lt;-
+theme(
+  axis.text.y =  element_text(size = 9,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 10,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 9,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.x = element_text(size = 10,face = &quot;bold&quot;,color = &quot;black&quot;), 
+  plot.title = element_text(size = 13, face = &quot;bold&quot;))</code></pre>
+</div>
+<div id="estimate-the-effect-of-purity-for-humans" class="section level2">
+<h2>Estimate the effect of purity for humans</h2>
+<pre class="r"><code># Import sample and purity information
+
+Endo_TC_Data_Share_Sorting &lt;- read.csv(&quot;../data/Endo_TC_Data_Share_Sorting.csv&quot;, header = TRUE)
+Endo_TC_Data_Share_Sorting &lt;- Endo_TC_Data_Share_Sorting[1:63,1:43]
+
+# Get only samples with purity
+
+samples_with_purity &lt;- Endo_TC_Data_Share_Sorting[!is.na(Endo_TC_Data_Share_Sorting[&quot;Purity&quot;]),]
+dim(samples_with_purity)</code></pre>
+<pre><code>[1] 30 43</code></pre>
+<pre class="r"><code># Sort into humans with purity
+
+humans_with_purity &lt;- samples_with_purity[which(samples_with_purity$Species == &quot;human&quot;),]
+dim(humans_with_purity)</code></pre>
+<pre><code>[1] 14 43</code></pre>
+<pre class="r"><code># Make the dataset simplier
+collect_info &lt;- c(1,3,5,6,10,13,17)
+humans_with_purity &lt;- humans_with_purity[,collect_info]
+
+# Correlation between day and purity in humans
+
+cor(humans_with_purity$Day, humans_with_purity$Purity)</code></pre>
+<pre><code>[1] -0.859689</code></pre>
+<pre class="r"><code>summary(lm(humans_with_purity$Purity ~ as.factor(humans_with_purity$Day)))</code></pre>
+<pre><code>
+Call:
+lm(formula = humans_with_purity$Purity ~ as.factor(humans_with_purity$Day))
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.214750 -0.023981  0.009071  0.049131  0.228250 
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                         0.84733    0.07370  11.496 4.37e-07
+as.factor(humans_with_purity$Day)1 -0.09481    0.09750  -0.972 0.353797
+as.factor(humans_with_purity$Day)2 -0.27358    0.09750  -2.806 0.018604
+as.factor(humans_with_purity$Day)3 -0.58500    0.10423  -5.612 0.000224
+                                      
+(Intercept)                        ***
+as.factor(humans_with_purity$Day)1    
+as.factor(humans_with_purity$Day)2 *  
+as.factor(humans_with_purity$Day)3 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.1277 on 10 degrees of freedom
+Multiple R-squared:  0.7912,    Adjusted R-squared:  0.7285 
+F-statistic: 12.63 on 3 and 10 DF,  p-value: 0.0009767</code></pre>
+<pre class="r"><code>summary(lm(humans_with_purity$Purity ~ humans_with_purity$Day))</code></pre>
+<pre><code>
+Call:
+lm(formula = humans_with_purity$Purity ~ humans_with_purity$Day)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.250362 -0.047831  0.004032  0.059685  0.281732 
+
+Coefficients:
+                       Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)             0.90608    0.06063   14.95 4.05e-09 ***
+humans_with_purity$Day -0.19291    0.03309   -5.83 8.09e-05 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.1303 on 12 degrees of freedom
+Multiple R-squared:  0.7391,    Adjusted R-squared:  0.7173 
+F-statistic: 33.99 on 1 and 12 DF,  p-value: 8.086e-05</code></pre>
+<pre class="r"><code># Start with cpm
+
+cpm_cyclicloess &lt;- read.delim(&quot;../data/cpm_cyclicloess.txt&quot;)
+
+# Filter cpm for only the human samples that you have a purity value for
+
+human_purity_samples &lt;- as.matrix(humans_with_purity$Lauren_Sorting)[1:14,]
+
+cpm_human_purity_samples &lt;- cpm_cyclicloess[,human_purity_samples]
+
+# Sort into chimps with purity
+
+chimps_with_purity &lt;- samples_with_purity[which(samples_with_purity$Species == &quot;chimp&quot;),]
+dim(chimps_with_purity)</code></pre>
+<pre><code>[1] 16 43</code></pre>
+<pre class="r"><code># Correlation between day and purity in chimps
+
+cor(chimps_with_purity$Day, chimps_with_purity$Purity)</code></pre>
+<pre><code>[1] -0.03369019</code></pre>
+<pre class="r"><code>summary(lm(chimps_with_purity$Purity ~ chimps_with_purity$Day))</code></pre>
+<pre><code>
+Call:
+lm(formula = chimps_with_purity$Purity ~ chimps_with_purity$Day)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.20100 -0.05309  0.03044  0.06351  0.14526 
+
+Coefficients:
+                        Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)             0.810740   0.042607  19.028 2.11e-11 ***
+chimps_with_purity$Day -0.002873   0.022774  -0.126    0.901    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.1018 on 14 degrees of freedom
+Multiple R-squared:  0.001135,  Adjusted R-squared:  -0.07021 
+F-statistic: 0.01591 on 1 and 14 DF,  p-value: 0.9014</code></pre>
+<pre class="r"><code>summary(lm(chimps_with_purity$Purity ~ as.factor(chimps_with_purity$Day)))</code></pre>
+<pre><code>
+Call:
+lm(formula = chimps_with_purity$Purity ~ as.factor(chimps_with_purity$Day))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.20750 -0.03878  0.01300  0.04234  0.08650 
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                         0.87700    0.04128  21.246 6.88e-11
+as.factor(chimps_with_purity$Day)1 -0.17177    0.05838  -2.943   0.0123
+as.factor(chimps_with_purity$Day)2 -0.06550    0.05838  -1.122   0.2838
+as.factor(chimps_with_purity$Day)3 -0.04500    0.05838  -0.771   0.4557
+                                      
+(Intercept)                        ***
+as.factor(chimps_with_purity$Day)1 *  
+as.factor(chimps_with_purity$Day)2    
+as.factor(chimps_with_purity$Day)3    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.08256 on 12 degrees of freedom
+Multiple R-squared:  0.4375,    Adjusted R-squared:  0.2969 
+F-statistic: 3.111 on 3 and 12 DF,  p-value: 0.06671</code></pre>
+<pre class="r"><code># Make the dataset simplier
+collect_info &lt;- c(1,3,5,6,10,13,17)
+chimps_with_purity &lt;- chimps_with_purity[,collect_info]
+
+# Filter cpm for only the chimp samples that you have a purity value for
+
+chimp_purity_samples &lt;- as.matrix(chimps_with_purity$Lauren_Sorting)
+
+cpm_chimp_purity_samples &lt;- cpm_cyclicloess[, chimp_purity_samples]</code></pre>
+</div>
+<div id="make-figure-with-purity" class="section level2">
+<h2>Make figure with purity</h2>
+<pre class="r"><code>collect_info &lt;- c(1,3,4,5,6,10,13,17)
+samples_with_purity_abbr &lt;- samples_with_purity[,collect_info]
+
+samples_with_purity_abbr$Day[samples_with_purity_abbr$Day == &quot;0&quot;] &lt;- &quot;Day 0&quot;
+samples_with_purity_abbr$Day[samples_with_purity_abbr$Day == &quot;1&quot;] &lt;- &quot;Day 1&quot;
+samples_with_purity_abbr$Day[samples_with_purity_abbr$Day == &quot;2&quot;] &lt;- &quot;Day 2&quot;
+samples_with_purity_abbr$Day[samples_with_purity_abbr$Day == &quot;3&quot;] &lt;- &quot;Day 3&quot;
+
+ggplot(data = samples_with_purity_abbr, aes(y = Purity, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_dotplot(binaxis=&#39;y&#39;, stackdir=&#39;center&#39;, dotsize = 0.75) + labs(x = &quot;Species&quot;, y = &quot;Purity&quot;) + theme_bw() + bjp</code></pre>
+<pre><code>`stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># How does the coefficient for day change if purity isn&#39;t in the model
+
+# Compare fits over all genes
+#library(&quot;lme4&quot;)
+#human_anova_results &lt;- array(0, dim = c(10304, 1)) 
+
+#for (i in 1:10304){
+#  fit1 &lt;- glm(t(cpm_human_purity_samples[i,]) ~ as.factor(humans_with_purity$TC_day) + humans_with_purity$High_Conf_Purity + humans_with_purity$RIN + (1|humans_with_purity$Cell_Line))
+#  fit2 &lt;- glm(t(cpm_human_purity_samples[i,]) ~ as.factor(humans_with_purity$TC_day) + humans_with_purity$RIN + (1|humans_with_purity$Cell_Line))
+#  human_anova_results[i,1] &lt;- anova(fit1, fit2, test = &quot;F&quot;)[2,6]
+#}
+
+#hist(human_anova_results[,1], main = &quot;P values comparing models of normalized expression w/ and w/o purity (n = 10,304 genes)&quot;, xlab = &quot;P value&quot;)
+#length(human_anova_results[which(human_anova_results &lt; 0.1), ])</code></pre>
+</div>
+<div id="perform-the-regression-analysis--humans" class="section level2">
+<h2>Perform the regression analysis- humans</h2>
+<pre class="r"><code>cpm_human_purity_samples &lt;- as.matrix(cpm_human_purity_samples)
+
+# Make an array to hold the residuals
+resid_human_purity &lt;- array(0, dim = c(10304, 14)) 
+
+# Regress out purity on a gene-by-gene basis
+i = 1
+for (i in 1:10304){
+  resid_human_purity[i,] &lt;- lm(cpm_human_purity_samples[i,] ~ humans_with_purity$Purity)$resid
+}
+
+colnames(resid_human_purity) &lt;- colnames(cpm_human_purity_samples)
+
+# Get the PCA of the residuals
+
+# Humans only
+
+day &lt;- c(0,0,0,1,1,1,1,2,2,2,2,3,3,3)
+
+# Make PCA plots with the factors colored by day
+
+pca_genes &lt;- prcomp(t(resid_human_purity), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape= as.factor(humans_with_purity$Sample_ID))) + geom_point(size = 5) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + theme_minimal() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) + scale_color_discrete(name  =&quot;Day&quot;, labels = c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) + scale_shape_discrete(name  =&quot;Cell line&quot;)  + labs(title = &quot;Human PCs 1 and 2 after regressing out purity (n = 14)&quot;) + bjp</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Relationship between day/sample ID and residuals
+
+summary(lm(pc1 ~ as.factor(humans_with_purity$Sample_ID))) # Adjusted R-squared:  0.3987</code></pre>
+<pre><code>
+Call:
+lm(formula = pc1 ~ as.factor(humans_with_purity$Sample_ID))
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-78.940 -20.752   1.489  23.980  64.488 
+
+Coefficients:
+                                           Estimate Std. Error t value
+(Intercept)                                   56.43      25.07   2.251
+as.factor(humans_with_purity$Sample_ID)H4    -48.08      35.46  -1.356
+as.factor(humans_with_purity$Sample_ID)H5B   -50.24      33.17  -1.515
+as.factor(humans_with_purity$Sample_ID)H6   -111.19      33.17  -3.353
+                                           Pr(&gt;|t|)   
+(Intercept)                                 0.04812 * 
+as.factor(humans_with_purity$Sample_ID)H4   0.20487   
+as.factor(humans_with_purity$Sample_ID)H5B  0.16073   
+as.factor(humans_with_purity$Sample_ID)H6   0.00733 **
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 43.42 on 10 degrees of freedom
+Multiple R-squared:  0.5374,    Adjusted R-squared:  0.3987 
+F-statistic: 3.873 on 3 and 10 DF,  p-value: 0.04488</code></pre>
+<pre class="r"><code>summary(lm(pc1 ~ as.factor(humans_with_purity$Day))) # Adjusted R-squared:  0.1286</code></pre>
+<pre><code>
+Call:
+lm(formula = pc1 ~ as.factor(humans_with_purity$Day))
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-93.284 -14.626   6.493  15.366  71.163 
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)                          -37.19      30.18  -1.232   0.2460  
+as.factor(humans_with_purity$Day)1    13.60      39.92   0.341   0.7405  
+as.factor(humans_with_purity$Day)2    76.99      39.92   1.928   0.0826 .
+as.factor(humans_with_purity$Day)3    52.78      42.68   1.237   0.2444  
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 52.27 on 10 degrees of freedom
+Multiple R-squared:  0.3297,    Adjusted R-squared:  0.1286 
+F-statistic:  1.64 on 3 and 10 DF,  p-value: 0.242</code></pre>
+</div>
+<div id="estimate-the-effect-of-purity-for-chimps" class="section level2">
+<h2>Estimate the effect of purity for chimps</h2>
+<pre class="r"><code># Sort into chimps with purity
+
+
+chimps_with_purity &lt;- samples_with_purity[which(samples_with_purity$Species == &quot;chimp&quot;),]
+dim(chimps_with_purity)</code></pre>
+<pre><code>[1] 16 43</code></pre>
+<pre class="r"><code># Correlation between day and purity in chimps
+
+cor(chimps_with_purity$Day, chimps_with_purity$Purity)</code></pre>
+<pre><code>[1] -0.03369019</code></pre>
+<pre class="r"><code>summary(lm(chimps_with_purity$Purity ~ chimps_with_purity$Day))</code></pre>
+<pre><code>
+Call:
+lm(formula = chimps_with_purity$Purity ~ chimps_with_purity$Day)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.20100 -0.05309  0.03044  0.06351  0.14526 
+
+Coefficients:
+                        Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)             0.810740   0.042607  19.028 2.11e-11 ***
+chimps_with_purity$Day -0.002873   0.022774  -0.126    0.901    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.1018 on 14 degrees of freedom
+Multiple R-squared:  0.001135,  Adjusted R-squared:  -0.07021 
+F-statistic: 0.01591 on 1 and 14 DF,  p-value: 0.9014</code></pre>
+<pre class="r"><code>summary(lm(chimps_with_purity$Purity ~ as.factor(chimps_with_purity$Day)))</code></pre>
+<pre><code>
+Call:
+lm(formula = chimps_with_purity$Purity ~ as.factor(chimps_with_purity$Day))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.20750 -0.03878  0.01300  0.04234  0.08650 
+
+Coefficients:
+                                   Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                         0.87700    0.04128  21.246 6.88e-11
+as.factor(chimps_with_purity$Day)1 -0.17177    0.05838  -2.943   0.0123
+as.factor(chimps_with_purity$Day)2 -0.06550    0.05838  -1.122   0.2838
+as.factor(chimps_with_purity$Day)3 -0.04500    0.05838  -0.771   0.4557
+                                      
+(Intercept)                        ***
+as.factor(chimps_with_purity$Day)1 *  
+as.factor(chimps_with_purity$Day)2    
+as.factor(chimps_with_purity$Day)3    
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.08256 on 12 degrees of freedom
+Multiple R-squared:  0.4375,    Adjusted R-squared:  0.2969 
+F-statistic: 3.111 on 3 and 12 DF,  p-value: 0.06671</code></pre>
+<pre class="r"><code># Make the dataset simplier
+collect_info &lt;- c(1,3,5,6,10,13,17)
+chimps_with_purity &lt;- chimps_with_purity[,collect_info]
+
+# Filter cpm for only the chimp samples that you have a purity value for
+
+chimp_purity_samples &lt;- as.matrix(chimps_with_purity$Lauren_Sorting)
+
+cpm_chimp_purity_samples &lt;- cpm_cyclicloess[, chimp_purity_samples]
+
+
+# Make an array to hold the residuals
+
+resid_chimp_purity &lt;- array(0, dim = c(10304, 16)) 
+
+# Regress out purity on a gene-by-gene basis
+cpm_chimp_purity_samples &lt;- as.matrix(cpm_chimp_purity_samples)
+
+i = 1
+for (i in 1:10304){
+  resid_chimp_purity[i,] &lt;- lm(cpm_chimp_purity_samples[i,] ~ chimps_with_purity$Purity)$resid
+}
+
+colnames(resid_chimp_purity) &lt;- colnames(cpm_chimp_purity_samples)
+
+# Chimps only
+
+day &lt;- c(0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3)
+
+# Make PCA plots with the factors colored by day
+
+pca_genes &lt;- prcomp(t(resid_chimp_purity), scale = T, retx = TRUE, center = TRUE)
+
+matrixpca &lt;- pca_genes$x
+pc1 &lt;- matrixpca[,1]
+pc2 &lt;- matrixpca[,2]
+pc3 &lt;- matrixpca[,3]
+pc4 &lt;- matrixpca[,4]
+pc5 &lt;- matrixpca[,5]
+
+pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
+
+summary &lt;- summary(pca_genes)
+
+#dev.off()
+
+ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day+1), shape = as.factor(chimps_with_purity$Sample_ID))) + geom_point(size = 5) + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;)) + theme_minimal() + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=3)) + scale_color_discrete(name  =&quot;Day&quot;, labels = c(&quot;0&quot;, &quot;1&quot;, &quot;2&quot;, &quot;3&quot;)) + scale_shape_discrete(name  =&quot;Cell line&quot;)  + labs(title = &quot;Chimp PCs 1 and 2 after regressing out purity (n = 16)&quot;) + bjp</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="combine-residual-data-from-humans-and-chimps" class="section level2">
+<h2>Combine residual data from humans and chimps</h2>
+<pre class="r"><code># All together
+# Create a new data frame with all of the combined technical replicates
+reps &lt;- cbind(resid_human_purity[,1:3], resid_chimp_purity[,1:4], resid_human_purity[,4:7], resid_chimp_purity[,5:8], resid_human_purity[,8:11],resid_chimp_purity[,9:12], resid_human_purity[,12:14], resid_chimp_purity[, 13:16])
+
+# Find the technical factors for the biological replicates (no technical replicates)
+
+day &lt;- c(0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3)
+species &lt;- c(&quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;H&quot;, &quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;, &quot;C&quot;)</code></pre>
+</div>
+<div id="examine-the-means-and-the-variances-for-each-day-species-pairs" class="section level2">
+<h2>Examine the means and the variances for each day-species pairs</h2>
+<pre class="r"><code># Calculate the variance for each species-time pair
+
+humans_day0_var &lt;- as.data.frame(apply(as.data.frame(reps[,1:3]),1, var))
+colnames(humans_day0_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day0_var &lt;- as.data.frame(apply(as.data.frame(reps[,4:7]),1, var))
+colnames(chimps_day0_var) &lt;- c(&quot;Variance&quot;) 
+humans_day1_var &lt;- as.data.frame(apply(as.data.frame(reps[,8:11]),1, var))
+colnames(humans_day1_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day1_var &lt;- as.data.frame(apply(as.data.frame(reps[,12:15]),1, var))
+colnames(chimps_day1_var) &lt;- c(&quot;Variance&quot;)
+humans_day2_var &lt;- as.data.frame(apply(as.data.frame(reps[,16:19]),1, var))
+colnames(humans_day2_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day2_var &lt;- as.data.frame(apply(as.data.frame(reps[,20:23]),1, var))
+colnames(chimps_day2_var) &lt;- c(&quot;Variance&quot;)
+humans_day3_var &lt;- as.data.frame(apply(as.data.frame(reps[,24:26]),1, var))
+colnames(humans_day3_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day3_var &lt;- as.data.frame(apply(as.data.frame(reps[,27:30]),1, var))
+colnames(chimps_day3_var) &lt;- c(&quot;Variance&quot;)
+
+# Calculate the mean for each species-time pair
+humans_day0_mean &lt;-  as.data.frame(apply(as.data.frame(reps[,1:3]),1, mean))
+colnames(humans_day0_mean) &lt;- c(&quot;Mean&quot;)
+chimps_day0_mean &lt;- as.data.frame(apply(as.data.frame(reps[,4:7]),1, mean))
+colnames(chimps_day0_mean) &lt;- c(&quot;Mean&quot;)
+humans_day1_mean &lt;- as.data.frame(apply(as.data.frame(reps[,8:11]),1, mean))
+colnames(humans_day1_mean) &lt;- c(&quot;Mean&quot;)
+chimps_day1_mean &lt;- as.data.frame(apply(as.data.frame(reps[,12:15]),1, mean))
+colnames(chimps_day1_mean) &lt;- c(&quot;Mean&quot;)
+humans_day2_mean &lt;- as.data.frame(apply(as.data.frame(reps[,16:19]),1, mean))
+colnames(humans_day2_mean) &lt;- c(&quot;Mean&quot;)
+chimps_day2_mean &lt;- as.data.frame(apply(as.data.frame(reps[,20:23]),1, mean))
+colnames(chimps_day2_mean) &lt;- c(&quot;Mean&quot;)
+humans_day3_mean &lt;- as.data.frame(apply(as.data.frame(reps[,24:26]),1, mean))
+colnames(humans_day3_mean) &lt;- c(&quot;Mean&quot;)
+chimps_day3_mean &lt;- as.data.frame(apply(as.data.frame(reps[,27:30]),1, mean))
+colnames(chimps_day3_mean) &lt;- c(&quot;Mean&quot;)
+
+# Make arrays with all the means
+
+chimp_0 &lt;- array(&quot;Chimp Day 0&quot;, dim = c(10304, 1)) 
+chimp_1 &lt;- array(&quot;Chimp Day 1&quot;, dim = c(10304, 1)) 
+chimp_2 &lt;- array(&quot;Chimp Day 2&quot;, dim = c(10304, 1)) 
+chimp_3 &lt;- array(&quot;Chimp Day 3&quot;, dim = c(10304, 1)) 
+human_0 &lt;- array(&quot;Human Day 0&quot;, dim = c(10304, 1)) 
+human_1 &lt;- array(&quot;Human Day 1&quot;, dim = c(10304, 1)) 
+human_2 &lt;- array(&quot;Human Day 2&quot;, dim = c(10304, 1)) 
+human_3 &lt;- array(&quot;Human Day 3&quot;, dim = c(10304, 1)) 
+
+# Make day labels
+
+day_0 &lt;- array(&quot;Day 0&quot;, dim = c(10304, 1))
+day_1 &lt;- array(&quot;Day 1&quot;, dim = c(10304, 1))
+day_2 &lt;- array(&quot;Day 2&quot;, dim = c(10304, 1))
+day_3 &lt;- array(&quot;Day 3&quot;, dim = c(10304, 1))
+
+
+# Make species-day labels
+day_species_label &lt;- rbind(chimp_0, chimp_1, chimp_2, chimp_3, human_0, human_1, human_2, human_3)
+
+day_species_label &lt;- as.numeric(as.factor(day_species_label))
+
+# Make labels so same days from different species are the same color
+day_label &lt;- rbind(day_0, day_1, day_2, day_3)
+day_label  &lt;- as.numeric(as.factor(day_label))
+
+# Make species labels
+
+chimp_label &lt;- array(&quot;Chimpanzee&quot;, dim = c(41216, 1))
+human_label &lt;- array(&quot;Human&quot;, dim = c(41216, 1))
+species_only_label &lt;- rbind(chimp_label, human_label)
+
+#1 Overall trend across genes
+
+# Boxplot of means gives general trend
+
+# Combine means
+HC_mean &lt;- rbind(as.data.frame(chimps_day0_mean), as.data.frame(chimps_day1_mean), as.data.frame(chimps_day2_mean), as.data.frame(chimps_day3_mean), as.data.frame(humans_day0_mean), as.data.frame(humans_day1_mean), as.data.frame(humans_day2_mean), as.data.frame(humans_day3_mean))
+
+HC_mean_labels &lt;- cbind(HC_mean, day_species_label, day_label, species_only_label)
+
+m &lt;- ggplot(HC_mean_labels, aes(x = factor(day_species_label), y = HC_mean))
+m &lt;- m + geom_violin(aes(fill = factor(day_label)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(day_label)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() +  ggtitle(&quot;Mean of the residuals for each gene by species and day&quot;) + xlab(&quot;Species-Day Pair&quot;) + ylab(&quot;Mean of the residuals for each gene&quot;) 
+m &lt;- m + scale_x_discrete(labels=c(&quot;1&quot; = &quot;C Day 0&quot;, &quot;2&quot; = &quot;C Day 1&quot;, &quot;3&quot; = &quot;C Day 2&quot;, &quot;4&quot; = &quot;C Day 3&quot;, &quot;5&quot; = &quot;H Day 0&quot;, &quot;6&quot; = &quot;H Day 1&quot;, &quot;7&quot; = &quot;H Day 2&quot;, &quot;8&quot; = &quot;H Day 3&quot;)) + bjp
+m</code></pre>
+<pre><code>Don&#39;t know how to automatically pick scale for object of type data.frame. Defaulting to continuous.</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mean_close &lt;- ggplot(HC_mean_labels, aes(x = factor(day_species_label), y = HC_mean)) + geom_boxplot(aes(fill = as.factor(day_label))) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;Mean of residuals&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;))
+mean_close + bjpm + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = &quot;bold&quot; ))</code></pre>
+<pre><code>Don&#39;t know how to automatically pick scale for object of type data.frame. Defaulting to continuous.</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Take log2 of each data frame
+
+log_chimps_day0_var &lt;- log2(chimps_day0_var)
+log_chimps_day1_var &lt;- log2(chimps_day1_var)
+log_chimps_day2_var &lt;- log2(chimps_day2_var)
+log_chimps_day3_var &lt;- log2(chimps_day3_var)
+log_humans_day0_var &lt;- log2(humans_day0_var)
+log_humans_day1_var &lt;- log2(humans_day1_var)
+log_humans_day2_var &lt;- log2(humans_day2_var)
+log_humans_day3_var &lt;- log2(humans_day3_var)
+
+
+# Boxplot of variances gives general trend
+HC_var &lt;- rbind(as.data.frame(log_chimps_day0_var), as.data.frame(log_chimps_day1_var), as.data.frame(log_chimps_day2_var), as.data.frame(log_chimps_day3_var), as.data.frame(log_humans_day0_var), as.data.frame(log_humans_day1_var), as.data.frame(log_humans_day2_var), as.data.frame(log_humans_day3_var))
+
+HC_var_resid_check_cor &lt;- HC_var
+
+summary(log_humans_day0_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-19.341  
+ 1st Qu.: -6.337  
+ Median : -4.850  
+ Mean   : -4.917  
+ 3rd Qu.: -3.366  
+ Max.   :  4.389  </code></pre>
+<pre class="r"><code>summary(log_humans_day1_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-14.021  
+ 1st Qu.: -6.233  
+ Median : -4.877  
+ Mean   : -4.871  
+ 3rd Qu.: -3.536  
+ Max.   :  4.701  </code></pre>
+<pre class="r"><code>#HC_var &lt;- rbind(as.data.frame(chimps_day0_var), as.data.frame(chimps_day1_var), as.data.frame(chimps_day2_var), as.data.frame(chimps_day3_var), as.data.frame(humans_day0_var), as.data.frame(humans_day1_var), as.data.frame(humans_day2_var), as.data.frame(humans_day3_var))
+
+#summary(humans_day0_var)
+#summary(humans_day1_var)
+
+
+HC_var_labels &lt;- cbind(HC_var, day_species_label, day_label, species_only_label)
+colnames(HC_var_labels) &lt;- c(&quot;Variance&quot;, &quot;SpeciesDay&quot;, &quot;Day&quot;, &quot;Species&quot;)
+
+p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;Variance in residuals for each gene&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + bjpm + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = &quot;bold&quot; ))
+p</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-8-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;Variance in residuals for each gene&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + scale_y_continuous(limits = c(0, 0.75)) + bjpm + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = &quot;bold&quot; ))
+p</code></pre>
+<pre><code>Warning: Removed 80855 rows containing non-finite values (stat_boxplot).</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-8-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Make a boxplot of log2(variance of gene expression levels)
+
+HC_var_labels &lt;- cbind(HC_var, day_species_label, day_label, species_only_label)
+
+dim(HC_var_labels)</code></pre>
+<pre><code>[1] 82432     4</code></pre>
+<pre class="r"><code>p &lt;- ggplot(HC_var_labels, aes(x = factor(day_species_label), y = HC_var))
+p &lt;- p + geom_violin(aes(fill = factor(day_label)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(day_label)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + xlab(&quot;Species-Day Pair&quot;) + ylab(&quot;log2 variance of gene expression&quot;) +  ggtitle(&quot;Log2 variance for each gene by species and day&quot;)
+p &lt;- p + scale_x_discrete(labels=c(&quot;1&quot; = &quot;C Day 0&quot;, &quot;2&quot; = &quot;C Day 1&quot;, &quot;3&quot; = &quot;C Day 2&quot;, &quot;4&quot; = &quot;C Day 3&quot;, &quot;5&quot; = &quot;H Day 0&quot;, &quot;6&quot; = &quot;H Day 1&quot;, &quot;7&quot; = &quot;H Day 2&quot;, &quot;8&quot; = &quot;H Day 3&quot;))
+p + bjp</code></pre>
+<pre><code>Don&#39;t know how to automatically pick scale for object of type data.frame. Defaulting to continuous.</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-8-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Make boxplots that are not violin plots
+colnames(HC_var_labels) &lt;- c(&quot;Variance&quot;, &quot;SpeciesDay&quot;, &quot;Day&quot;, &quot;Species&quot;)
+
+p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;log&#39;[2]*&#39; variance in residuals for each gene&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + ggtitle(&quot;Log2 variance in residuals (n=30)&quot;)
+p + bjpm + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = &quot;bold&quot; ))</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-8-6.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="calculating-the-average-of-the-beta-values-from-variances-betas-for-whichwe-have-purity-and-those-we-do-not" class="section level3">
+<h3>Calculating the average of the beta values from variances (betas for whichwe have purity and those we do not)</h3>
+<pre class="r"><code># Get the samples that we don&#39;t have purity for
+Endo_TC_Data_Share_Sorting &lt;- read.csv(&quot;../data/Endo_TC_Data_Share_Sorting.csv&quot;, header = TRUE)
+Endo_TC_Data_Share_Sorting &lt;- Endo_TC_Data_Share_Sorting[1:63,1:43]
+
+
+samples_without_purity &lt;- Endo_TC_Data_Share_Sorting[is.na(Endo_TC_Data_Share_Sorting[&quot;Purity&quot;]),]
+dim(samples_without_purity)</code></pre>
+<pre><code>[1] 33 43</code></pre>
+<pre class="r"><code>samples_without_purity &lt;- samples_without_purity[,collect_info]
+
+#col_without_purity &lt;- as.matrix(samples_without_purity$Lauren_Sorting)
+
+#cpm_batch1 &lt;- cpm_cyclicloess[,col_without_purity]
+
+# Create a new data frame with all of the combined technical replicates
+cpm_batch1 &lt;- cbind(cpm_cyclicloess[,1], cpm_cyclicloess[,2], cpm_cyclicloess[,3], cpm_cyclicloess[,5], cpm_cyclicloess[,8], cpm_cyclicloess[,10], cpm_cyclicloess[,12], cpm_cyclicloess[,14], cpm_cyclicloess[,16], cpm_cyclicloess[,18], cpm_cyclicloess[,19], cpm_cyclicloess[,21], cpm_cyclicloess[,24], cpm_cyclicloess[,26], cpm_cyclicloess[,28], cpm_cyclicloess[,30], cpm_cyclicloess[,32], cpm_cyclicloess[,34], cpm_cyclicloess[,35], cpm_cyclicloess[,37], cpm_cyclicloess[,40], cpm_cyclicloess[,42], cpm_cyclicloess[,44], cpm_cyclicloess[,46], cpm_cyclicloess[,48], cpm_cyclicloess[,50], cpm_cyclicloess[,51], cpm_cyclicloess[,53], cpm_cyclicloess[,56], cpm_cyclicloess[,58], cpm_cyclicloess[,60], cpm_cyclicloess[,62])
+
+
+# Calculate the variance for each species-time pair
+
+b1_humans_day0_var &lt;- as.data.frame(apply(as.data.frame(cpm_batch1[,1:4]),1, var))
+colnames(b1_humans_day0_var) &lt;- c(&quot;Variance&quot;) 
+b1_chimps_day0_var &lt;- as.data.frame(apply(as.data.frame(cpm_batch1[,5:8]),1, var))
+colnames(b1_chimps_day0_var) &lt;- c(&quot;Variance&quot;) 
+b1_humans_day1_var &lt;- as.data.frame(apply(as.data.frame(cpm_batch1[,9:12]),1, var))
+colnames(b1_humans_day1_var) &lt;- c(&quot;Variance&quot;) 
+b1_chimps_day1_var &lt;- as.data.frame(apply(as.data.frame(cpm_batch1[,13:16]),1, var))
+colnames(b1_chimps_day1_var) &lt;- c(&quot;Variance&quot;)
+b1_humans_day2_var &lt;- as.data.frame(apply(as.data.frame(cpm_batch1[,17:20]),1, var))
+colnames(b1_humans_day2_var) &lt;- c(&quot;Variance&quot;) 
+b1_chimps_day2_var &lt;- as.data.frame(apply(as.data.frame(cpm_batch1[,21:24]),1, var))
+colnames(b1_chimps_day2_var) &lt;- c(&quot;Variance&quot;)
+b1_humans_day3_var &lt;- as.data.frame(apply(as.data.frame(cpm_batch1[,25:28]),1, var))
+colnames(b1_humans_day3_var) &lt;- c(&quot;Variance&quot;) 
+b1_chimps_day3_var &lt;- as.data.frame(apply(as.data.frame(cpm_batch1[,29:32]),1, var))
+colnames(b1_chimps_day3_var) &lt;- c(&quot;Variance&quot;)
+
+# Make arrays with all the means
+
+chimp_0 &lt;- array(&quot;Chimp Day 0&quot;, dim = c(10304, 1)) 
+chimp_1 &lt;- array(&quot;Chimp Day 1&quot;, dim = c(10304, 1)) 
+chimp_2 &lt;- array(&quot;Chimp Day 2&quot;, dim = c(10304, 1)) 
+chimp_3 &lt;- array(&quot;Chimp Day 3&quot;, dim = c(10304, 1)) 
+human_0 &lt;- array(&quot;Human Day 0&quot;, dim = c(10304, 1)) 
+human_1 &lt;- array(&quot;Human Day 1&quot;, dim = c(10304, 1)) 
+human_2 &lt;- array(&quot;Human Day 2&quot;, dim = c(10304, 1)) 
+human_3 &lt;- array(&quot;Human Day 3&quot;, dim = c(10304, 1)) 
+
+# Make day labels
+
+day_0 &lt;- array(&quot;Day 0&quot;, dim = c(10304, 1))
+day_1 &lt;- array(&quot;Day 1&quot;, dim = c(10304, 1))
+day_2 &lt;- array(&quot;Day 2&quot;, dim = c(10304, 1))
+day_3 &lt;- array(&quot;Day 3&quot;, dim = c(10304, 1))
+
+
+# Make species-day labels
+day_species_label &lt;- rbind(chimp_0, chimp_1, chimp_2, chimp_3, human_0, human_1, human_2, human_3)
+
+day_species_label &lt;- as.numeric(as.factor(day_species_label))
+
+# Make labels so same days from different species are the same color
+day_label &lt;- rbind(day_0, day_1, day_2, day_3)
+day_label  &lt;- as.numeric(as.factor(day_label))
+
+# Make species labels
+
+chimp_label &lt;- array(&quot;Chimpanzee&quot;, dim = c(41216, 1))
+human_label &lt;- array(&quot;Human&quot;, dim = c(41216, 1))
+species_only_label &lt;- rbind(chimp_label, human_label)
+
+b1_log_chimps_day0_var &lt;- log2(b1_chimps_day0_var)
+mean(b1_log_chimps_day0_var[,1])</code></pre>
+<pre><code>[1] -4.210481</code></pre>
+<pre class="r"><code>var(b1_log_chimps_day0_var[,1])</code></pre>
+<pre><code>[1] 3.751716</code></pre>
+<pre class="r"><code>b1_log_chimps_day1_var &lt;- log2(b1_chimps_day1_var)
+mean(b1_log_chimps_day1_var[,1])</code></pre>
+<pre><code>[1] -4.481838</code></pre>
+<pre class="r"><code>var(b1_log_chimps_day1_var[,1])</code></pre>
+<pre><code>[1] 3.787556</code></pre>
+<pre class="r"><code>b1_log_chimps_day2_var &lt;- log2(b1_chimps_day2_var)
+b1_log_chimps_day3_var &lt;- log2(b1_chimps_day3_var)
+b1_log_humans_day0_var &lt;- log2(b1_humans_day0_var)
+b1_log_humans_day1_var &lt;- log2(b1_humans_day1_var)
+b1_log_humans_day2_var &lt;- log2(b1_humans_day2_var)
+b1_log_humans_day3_var &lt;- log2(b1_humans_day3_var)
+
+
+# Boxplot of variances gives general trend
+b1_HC_var &lt;- rbind(as.data.frame(b1_log_chimps_day0_var), as.data.frame(b1_log_chimps_day1_var), as.data.frame(b1_log_chimps_day2_var), as.data.frame(b1_log_chimps_day3_var), as.data.frame(b1_log_humans_day0_var), as.data.frame(b1_log_humans_day1_var), as.data.frame(b1_log_humans_day2_var), as.data.frame(b1_log_humans_day3_var))
+
+HC_var_resid_check_cor &lt;- b1_HC_var
+
+summary(b1_log_humans_day0_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-14.167  
+ 1st Qu.: -5.096  
+ Median : -3.756  
+ Mean   : -3.866  
+ 3rd Qu.: -2.577  
+ Max.   :  4.738  </code></pre>
+<pre class="r"><code>summary(b1_log_humans_day1_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-17.735  
+ 1st Qu.: -6.698  
+ Median : -5.421  
+ Mean   : -5.433  
+ 3rd Qu.: -4.170  
+ Max.   :  4.881  </code></pre>
+<pre class="r"><code>#HC_var &lt;- rbind(as.data.frame(chimps_day0_var), as.data.frame(chimps_day1_var), as.data.frame(chimps_day2_var), as.data.frame(chimps_day3_var), as.data.frame(humans_day0_var), as.data.frame(humans_day1_var), as.data.frame(humans_day2_var), as.data.frame(humans_day3_var))
+
+#summary(humans_day0_var)
+#summary(humans_day1_var)
+
+
+HC_var_labels &lt;- cbind(b1_HC_var, day_species_label, day_label, species_only_label)
+colnames(HC_var_labels) &lt;- c(&quot;Variance&quot;, &quot;SpeciesDay&quot;, &quot;Day&quot;, &quot;Species&quot;)
+
+colnames(HC_var_labels) &lt;- c(&quot;Variance&quot;, &quot;SpeciesDay&quot;, &quot;Day&quot;, &quot;Species&quot;)
+
+p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;log&#39;[2]*&#39; variance of normalized gene expression (for each gene)&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + ggtitle(&quot;Log2 variance in batch 1, (n=32)&quot;)
+p + bjpm + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = &quot;bold&quot; ))</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Get the residuals for the humans and the chimps 
+
+# Get only samples with purity
+
+samples_with_purity &lt;- Endo_TC_Data_Share_Sorting[!is.na(Endo_TC_Data_Share_Sorting[&quot;Purity&quot;]),]
+dim(samples_with_purity)</code></pre>
+<pre><code>[1] 30 43</code></pre>
+<pre class="r"><code>humans_with_purity &lt;- samples_with_purity[which(samples_with_purity$Species == &quot;human&quot;),]
+dim(humans_with_purity)</code></pre>
+<pre><code>[1] 14 43</code></pre>
+<pre class="r"><code># Make the dataset simplier
+collect_info &lt;- c(1,3,5,6,10,13,17)
+humans_with_purity &lt;- humans_with_purity[,collect_info]
+
+# Filter cpm for only the human samples that you have a purity value for
+
+human_purity_samples &lt;- as.matrix(humans_with_purity$Lauren_Sorting)[1:14,]
+
+cpm_human_purity_samples &lt;- cpm_cyclicloess[,human_purity_samples]
+
+# Make an array to hold the residuals
+resid_human_purity &lt;- array(0, dim = c(10304, 14)) 
+
+# Regress out purity on a gene-by-gene basis
+cpm_human_purity_samples &lt;- as.matrix(cpm_human_purity_samples)
+
+i = 1
+for (i in 1:10304){
+  resid_human_purity[i,] &lt;- lm(cpm_human_purity_samples[i,] ~ humans_with_purity$Purity)$resid
+}
+
+colnames(resid_human_purity) &lt;- colnames(cpm_human_purity_samples)
+
+
+
+
+# Sort into chimps with purity
+
+chimps_with_purity &lt;- samples_with_purity[which(samples_with_purity$Species == &quot;chimp&quot;),]
+dim(chimps_with_purity)</code></pre>
+<pre><code>[1] 16 43</code></pre>
+<pre class="r"><code># Filter cpm for only the human samples that you have a purity value for
+
+chimp_purity_samples &lt;- as.matrix(chimps_with_purity$Lauren_Sorting)[1:16,]
+
+cpm_chimp_purity_samples &lt;- cpm_cyclicloess[,chimp_purity_samples]
+
+
+# Make an array to hold the residuals
+resid_chimp_purity &lt;- array(0, dim = c(10304, 16)) 
+
+# Regress out purity on a gene-by-gene basis
+cpm_chimp_purity_samples &lt;- as.matrix(cpm_chimp_purity_samples)
+
+i = 1
+for (i in 1:10304){
+  resid_chimp_purity[i,] &lt;- lm(cpm_chimp_purity_samples[i,] ~ chimps_with_purity$Purity)$resid
+}
+
+colnames(resid_chimp_purity) &lt;- colnames(cpm_chimp_purity_samples)
+
+
+
+
+
+humans_day0_var &lt;- as.data.frame(apply(as.data.frame(resid_human_purity[,1:3]),1, var))
+colnames(humans_day0_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day0_var &lt;- as.data.frame(apply(as.data.frame(resid_chimp_purity[,1:4]),1, var))
+colnames(chimps_day0_var) &lt;- c(&quot;Variance&quot;) 
+humans_day1_var &lt;- as.data.frame(apply(as.data.frame(resid_human_purity[,4:7]),1, var))
+colnames(humans_day1_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day1_var &lt;- as.data.frame(apply(as.data.frame(resid_chimp_purity[,5:8]),1, var))
+colnames(chimps_day1_var) &lt;- c(&quot;Variance&quot;)
+humans_day2_var &lt;- as.data.frame(apply(as.data.frame(resid_human_purity[,8:11]),1, var))
+colnames(humans_day2_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day2_var &lt;- as.data.frame(apply(as.data.frame(resid_chimp_purity[,9:12]),1, var))
+colnames(chimps_day2_var) &lt;- c(&quot;Variance&quot;)
+humans_day3_var &lt;- as.data.frame(apply(as.data.frame(resid_human_purity[,12:14]),1, var))
+colnames(humans_day3_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day3_var &lt;- as.data.frame(apply(as.data.frame(resid_chimp_purity[,13:16]),1, var))
+colnames(chimps_day3_var) &lt;- c(&quot;Variance&quot;)
+
+
+# Make arrays with all the means
+
+chimp_0 &lt;- array(&quot;Chimp Day 0&quot;, dim = c(10304, 1)) 
+chimp_1 &lt;- array(&quot;Chimp Day 1&quot;, dim = c(10304, 1)) 
+chimp_2 &lt;- array(&quot;Chimp Day 2&quot;, dim = c(10304, 1)) 
+chimp_3 &lt;- array(&quot;Chimp Day 3&quot;, dim = c(10304, 1)) 
+human_0 &lt;- array(&quot;Human Day 0&quot;, dim = c(10304, 1)) 
+human_1 &lt;- array(&quot;Human Day 1&quot;, dim = c(10304, 1)) 
+human_2 &lt;- array(&quot;Human Day 2&quot;, dim = c(10304, 1)) 
+human_3 &lt;- array(&quot;Human Day 3&quot;, dim = c(10304, 1)) 
+
+# Make day labels
+
+day_0 &lt;- array(&quot;Day 0&quot;, dim = c(10304, 1))
+day_1 &lt;- array(&quot;Day 1&quot;, dim = c(10304, 1))
+day_2 &lt;- array(&quot;Day 2&quot;, dim = c(10304, 1))
+day_3 &lt;- array(&quot;Day 3&quot;, dim = c(10304, 1))
+
+
+# Make species-day labels
+day_species_label &lt;- rbind(chimp_0, chimp_1, chimp_2, chimp_3, human_0, human_1, human_2, human_3)
+
+day_species_label &lt;- as.numeric(as.factor(day_species_label))
+
+# Make labels so same days from different species are the same color
+day_label &lt;- rbind(day_0, day_1, day_2, day_3)
+day_label  &lt;- as.numeric(as.factor(day_label))
+
+# Make species labels
+
+chimp_label &lt;- array(&quot;Chimpanzee&quot;, dim = c(41216, 1))
+human_label &lt;- array(&quot;Human&quot;, dim = c(41216, 1))
+species_only_label &lt;- rbind(chimp_label, human_label)
+
+
+
+# Take log2 of each data frame
+
+log_chimps_day0_var &lt;- log2(chimps_day0_var)
+log_chimps_day1_var &lt;- log2(chimps_day1_var)
+log_chimps_day2_var &lt;- log2(chimps_day2_var)
+log_chimps_day3_var &lt;- log2(chimps_day3_var)
+log_humans_day0_var &lt;- log2(humans_day0_var)
+log_humans_day1_var &lt;- log2(humans_day1_var)
+log_humans_day2_var &lt;- log2(humans_day2_var)
+log_humans_day3_var &lt;- log2(humans_day3_var)
+
+mean(log_chimps_day0_var[,1])</code></pre>
+<pre><code>[1] -3.409307</code></pre>
+<pre class="r"><code>var(log_chimps_day0_var[,1])</code></pre>
+<pre><code>[1] 3.40122</code></pre>
+<pre class="r"><code>mean(log_chimps_day1_var[,1])</code></pre>
+<pre><code>[1] -3.551896</code></pre>
+<pre class="r"><code>var(log_chimps_day1_var[,1])</code></pre>
+<pre><code>[1] 4.388677</code></pre>
+<pre class="r"><code># Boxplot of variances gives general trend
+HC_var &lt;- rbind(as.data.frame(log_chimps_day0_var), as.data.frame(log_chimps_day1_var), as.data.frame(log_chimps_day2_var), as.data.frame(log_chimps_day3_var), as.data.frame(log_humans_day0_var), as.data.frame(log_humans_day1_var), as.data.frame(log_humans_day2_var), as.data.frame(log_humans_day3_var))
+
+HC_var_resid_check_cor &lt;- HC_var
+
+summary(log_humans_day0_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-19.341  
+ 1st Qu.: -6.337  
+ Median : -4.850  
+ Mean   : -4.917  
+ 3rd Qu.: -3.366  
+ Max.   :  4.389  </code></pre>
+<pre class="r"><code>summary(log_humans_day1_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-14.021  
+ 1st Qu.: -6.233  
+ Median : -4.877  
+ Mean   : -4.871  
+ 3rd Qu.: -3.536  
+ Max.   :  4.701  </code></pre>
+<pre class="r"><code># Make boxplots that are not violin plots
+HC_var_labels &lt;- cbind(HC_var, day_species_label, day_label, species_only_label)
+colnames(HC_var_labels) &lt;- c(&quot;Variance&quot;, &quot;SpeciesDay&quot;, &quot;Day&quot;, &quot;Species&quot;)
+
+p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;log&#39;[2]*&#39; variance in residuals for each gene&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + ggtitle(&quot;Log2 variance in residuals for batch 2 (n=30)&quot;)
+p + bjpm + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = &quot;bold&quot; ))</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-9-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Take the averages of the variances in the batches
+
+  # For chimps
+b1_b2_var_day0 &lt;- as.data.frame(cbind(b1_log_chimps_day0_var, log_chimps_day0_var))
+b1_b2_var_day1 &lt;- as.data.frame(cbind(b1_log_chimps_day1_var, log_chimps_day1_var))
+b1_b2_var_day2 &lt;- as.data.frame(cbind(b1_log_chimps_day2_var, log_chimps_day2_var))
+b1_b2_var_day3 &lt;- as.data.frame(cbind(b1_log_chimps_day3_var, log_chimps_day3_var))
+
+chimps_avg_var_day0 &lt;- as.data.frame(apply(b1_b2_var_day0, 1, mean))
+colnames(chimps_avg_var_day0) &lt;- c(&quot;Avg var&quot;)
+
+chimps_avg_var_day1 &lt;- as.data.frame(apply(b1_b2_var_day1, 1, mean))
+colnames(chimps_avg_var_day1) &lt;- c(&quot;Avg var&quot;)
+
+chimps_avg_var_day2 &lt;- as.data.frame(apply(b1_b2_var_day2, 1, mean))
+colnames(chimps_avg_var_day2) &lt;- c(&quot;Avg var&quot;)
+
+chimps_avg_var_day3 &lt;- as.data.frame(apply(b1_b2_var_day3, 1, mean))
+colnames(chimps_avg_var_day3) &lt;- c(&quot;Avg var&quot;)
+
+
+# For humans
+humans_b1_b2_var_day0 &lt;- as.data.frame(cbind(b1_log_humans_day0_var, log_humans_day0_var))
+humans_b1_b2_var_day1 &lt;- as.data.frame(cbind(b1_log_humans_day1_var, log_humans_day1_var))
+humans_b1_b2_var_day2 &lt;- as.data.frame(cbind(b1_log_humans_day2_var, log_humans_day2_var))
+humans_b1_b2_var_day3 &lt;- as.data.frame(cbind(b1_log_humans_day3_var, log_humans_day3_var))
+
+humans_avg_var_day0 &lt;- as.data.frame(apply(humans_b1_b2_var_day0, 1, mean))
+colnames(humans_avg_var_day0) &lt;- c(&quot;Avg var&quot;)
+
+humans_avg_var_day1 &lt;- as.data.frame(apply(humans_b1_b2_var_day1, 1, mean))
+colnames(humans_avg_var_day1) &lt;- c(&quot;Avg var&quot;)
+
+humans_avg_var_day2 &lt;- as.data.frame(apply(humans_b1_b2_var_day2, 1, mean))
+colnames(humans_avg_var_day2) &lt;- c(&quot;Avg var&quot;)
+
+humans_avg_var_day3 &lt;- as.data.frame(apply(humans_b1_b2_var_day3, 1, mean))
+colnames(humans_avg_var_day3) &lt;- c(&quot;Avg var&quot;)
+
+
+# Boxplot of variances gives general trend
+HC_var &lt;- rbind(as.data.frame(chimps_avg_var_day0), as.data.frame(chimps_avg_var_day1), as.data.frame(chimps_avg_var_day2), as.data.frame(chimps_avg_var_day3), as.data.frame(humans_avg_var_day0), as.data.frame(humans_avg_var_day1), as.data.frame(humans_avg_var_day2), as.data.frame(humans_avg_var_day3))
+
+HC_var_resid_check_cor &lt;- HC_var
+
+summary(log_humans_day0_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-19.341  
+ 1st Qu.: -6.337  
+ Median : -4.850  
+ Mean   : -4.917  
+ 3rd Qu.: -3.366  
+ Max.   :  4.389  </code></pre>
+<pre class="r"><code>summary(log_humans_day1_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-14.021  
+ 1st Qu.: -6.233  
+ Median : -4.877  
+ Mean   : -4.871  
+ 3rd Qu.: -3.536  
+ Max.   :  4.701  </code></pre>
+<pre class="r"><code># Make boxplots that are not violin plots
+HC_var_labels &lt;- cbind(HC_var, day_species_label, day_label, species_only_label)
+colnames(HC_var_labels) &lt;- c(&quot;Variance&quot;, &quot;SpeciesDay&quot;, &quot;Day&quot;, &quot;Species&quot;)
+
+p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;log&#39;[2]*&#39; variance in residuals for each gene&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + ggtitle(&quot;Average Log2 variance (n = 32 in batch 1, n = 30 in batch 2)&quot;)
+p + bjpm + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = &quot;bold&quot; ))</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-9-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="scale-and-then-take-the-average" class="section level3">
+<h3>Scale and then take the average</h3>
+<pre class="r"><code># Now scale then take the average
+
+colnum &lt;- 1
+
+# Batch 1 chimps
+b1_log_chimps &lt;- cbind(b1_log_chimps_day0_var, b1_log_chimps_day1_var, b1_log_chimps_day2_var, b1_log_chimps_day3_var) 
+median_b1_log_chimps &lt;- median(b1_log_chimps_day0_var[,1])
+b1_log_chimps_scaled &lt;- b1_log_chimps - median_b1_log_chimps + 1
+
+
+# Batch 1 humans
+b1_log_humans &lt;- cbind(b1_log_humans_day0_var, b1_log_humans_day1_var, b1_log_humans_day2_var, b1_log_humans_day3_var) 
+median_b1_log_humans &lt;- median(b1_log_humans_day0_var[,1])
+b1_log_humans_scaled &lt;- b1_log_humans - median_b1_log_humans + 1
+#b1_log_humans_scaled &lt;- b1_log_humans - median_b1_log_chimps + 1
+
+# Batch 2 chimps
+b2_log_chimps &lt;- cbind(log_chimps_day0_var, log_chimps_day1_var, log_chimps_day2_var, log_chimps_day3_var) 
+
+median_b2_log_chimps &lt;- median(log_chimps_day0_var[,1])
+b2_log_chimps_scaled &lt;- b2_log_chimps - median_b2_log_chimps + 1
+
+
+# Batch 2 humans
+b2_log_humans &lt;- cbind(log_humans_day0_var, log_humans_day1_var, log_humans_day2_var, log_humans_day3_var) 
+
+median_b2_log_humans &lt;- median(log_humans_day0_var[,1])
+b2_log_humans_scaled &lt;- b2_log_humans - median_b2_log_humans + 1
+#b2_log_humans_scaled &lt;- b2_log_humans - median_b2_log_chimps + 1
+
+# Combine batches by species and day
+
+b1_b2_var_day0 &lt;- as.data.frame(cbind(b1_log_chimps_scaled[,1], b2_log_chimps_scaled[,1]))
+b1_b2_var_day1 &lt;- as.data.frame(cbind(b1_log_chimps_scaled[,2], b2_log_chimps_scaled[,2]))
+b1_b2_var_day2 &lt;- as.data.frame(cbind(b1_log_chimps_scaled[,3], b2_log_chimps_scaled[,3]))
+b1_b2_var_day3 &lt;- as.data.frame(cbind(b1_log_chimps_scaled[,4], b2_log_chimps_scaled[,4]))
+
+
+humans_b1_b2_var_day0 &lt;- as.data.frame(cbind(b1_log_humans_scaled[,1], b2_log_humans_scaled[,1]))
+humans_b1_b2_var_day1 &lt;- as.data.frame(cbind(b1_log_humans_scaled[,2], b2_log_humans_scaled[,2]))
+humans_b1_b2_var_day2 &lt;- as.data.frame(cbind(b1_log_humans_scaled[,3], b2_log_humans_scaled[,3]))
+humans_b1_b2_var_day3 &lt;- as.data.frame(cbind(b1_log_humans_scaled[,4], b2_log_humans_scaled[,4]))
+
+
+# Take the average of the scaled values from the 2 batches
+
+chimps_avg_var_day0 &lt;- as.data.frame(apply(b1_b2_var_day0, 1, mean))
+colnames(chimps_avg_var_day0) &lt;- c(&quot;Avg var&quot;)
+
+chimps_avg_var_day1 &lt;- as.data.frame(apply(b1_b2_var_day1, 1, mean))
+colnames(chimps_avg_var_day1) &lt;- c(&quot;Avg var&quot;)
+
+chimps_avg_var_day2 &lt;- as.data.frame(apply(b1_b2_var_day2, 1, mean))
+colnames(chimps_avg_var_day2) &lt;- c(&quot;Avg var&quot;)
+
+chimps_avg_var_day3 &lt;- as.data.frame(apply(b1_b2_var_day3, 1, mean))
+colnames(chimps_avg_var_day3) &lt;- c(&quot;Avg var&quot;)
+
+humans_avg_var_day0 &lt;- as.data.frame(apply(humans_b1_b2_var_day0, 1, mean))
+colnames(humans_avg_var_day0) &lt;- c(&quot;Avg var&quot;)
+
+humans_avg_var_day1 &lt;- as.data.frame(apply(humans_b1_b2_var_day1, 1, mean))
+colnames(humans_avg_var_day1) &lt;- c(&quot;Avg var&quot;)
+
+humans_avg_var_day2 &lt;- as.data.frame(apply(humans_b1_b2_var_day2, 1, mean))
+colnames(humans_avg_var_day2) &lt;- c(&quot;Avg var&quot;)
+
+humans_avg_var_day3 &lt;- as.data.frame(apply(humans_b1_b2_var_day3, 1, mean))
+colnames(humans_avg_var_day3) &lt;- c(&quot;Avg var&quot;)
+
+
+# Boxplot of variances gives general trend
+HC_var &lt;- rbind(as.data.frame(chimps_avg_var_day0), as.data.frame(chimps_avg_var_day1), as.data.frame(chimps_avg_var_day2), as.data.frame(chimps_avg_var_day3), as.data.frame(humans_avg_var_day0), as.data.frame(humans_avg_var_day1), as.data.frame(humans_avg_var_day2), as.data.frame(humans_avg_var_day3))
+
+HC_var_resid_check_cor &lt;- HC_var
+
+summary(log_humans_day0_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-19.341  
+ 1st Qu.: -6.337  
+ Median : -4.850  
+ Mean   : -4.917  
+ 3rd Qu.: -3.366  
+ Max.   :  4.389  </code></pre>
+<pre class="r"><code>summary(log_humans_day1_var)</code></pre>
+<pre><code>    Variance      
+ Min.   :-14.021  
+ 1st Qu.: -6.233  
+ Median : -4.877  
+ Mean   : -4.871  
+ 3rd Qu.: -3.536  
+ Max.   :  4.701  </code></pre>
+<pre class="r"><code># Make boxplots that are not violin plots
+HC_var_labels &lt;- cbind(HC_var, day_species_label, day_label, species_only_label)
+colnames(HC_var_labels) &lt;- c(&quot;Variance&quot;, &quot;SpeciesDay&quot;, &quot;Day&quot;, &quot;Species&quot;)
+
+p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;log&#39;[2]*&#39; variance for each gene&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + ggtitle(&quot;Average shifted log2 variance (n = 32 in batch 1, n = 30 in batch 2)&quot;)
+
+#p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;log&#39;[2]*&#39; variance for each gene&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + ggtitle(&quot;Average shifted log2 variance (rel. to chimps day 0; n = 32 in batch 1, n = 30 in batch 2)&quot;)
+p + bjpm + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = &quot;bold&quot; ))</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># For supplement
+
+p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;Scaled and averaged log&#39;[2]*&#39; variance for each gene&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + theme_bw()
+
+#p &lt;- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab(&quot;Species&quot;) + ylab(expression(bold(&#39;log&#39;[2]*&#39; variance for each gene&#39;))) + scale_fill_discrete(name= &quot;Day&quot;, labels=c(&quot;Day 0&quot;,&quot;Day 1&quot;,&quot;Day 2&quot;, &quot;Day 3&quot;)) + ggtitle(&quot;Average shifted log2 variance (rel. to chimps day 0; n = 32 in batch 1, n = 30 in batch 2)&quot;)
+p + bjpm + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = &quot;bold&quot; ))</code></pre>
+<p><img src="figure/Analysis_purity_information.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -167,6 +167,12 @@ labels <- as.numeric(as.factor(labels9))
 labels10 <- rbind(labels1, labels2, labels3, labels4, labels1, labels2, labels3, labels4)
 labels10 <- as.numeric(as.factor(labels10))
 
+# Make species labels
+
+labels11 <- array("Chimpanzee", dim = c(41216, 1))
+labels12 <- array("Human", dim = c(41216, 1))
+labels13 <- rbind(labels11, labels12)
+
 #1 Overall trend across genes
 
 # Boxplot of means gives general trend
@@ -177,8 +183,8 @@ HC_mean <- rbind(as.data.frame(chimps_day0_mean), as.data.frame(chimps_day1_mean
 HC_mean_labels <- cbind(HC_mean, labels, labels10)
 
 m <- ggplot(HC_mean_labels, aes(x = factor(labels), y = HC_mean))
-m <- m + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + scale_y_continuous(trans = "log2") + ggtitle("Mean for each gene by species and day") + xlab("Species-Day Pair") + ylab("Mean for each gene") 
-m <- m + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3"))
+m <- m + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() +  ggtitle("Mean for each gene by species and day") + xlab("Species-Day Pair") + ylab("Mean for each gene") 
+m <- m + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3")) + bjp
 m
 
 # Take log2 of each data frame
@@ -204,27 +210,40 @@ HC_var_labels <- cbind(HC_var, labels, labels10)
 dim(HC_var_labels)
 
 
-bjp<-
+bjpm<-
 theme(
-  
+  panel.border = element_rect(colour = "black", fill = NA, size = 2),
   plot.title = element_text(size = 16, face = "bold"),
   axis.text.y =  element_text(size = 14,face = "bold",color = "black"),
   axis.text.x =  element_text(size = 14,face = "bold",color = "black"),
   axis.title.y = element_text(size = 14,face = "bold"),
-  axis.title.x = element_text(size = 14,face = "bold"),
+  axis.title.x=element_blank(),
   legend.text = element_text(size = 14,face = "bold"),
   legend.title = element_text(size = 14,face = "bold"),
   strip.text.x = element_text(size = 14,face = "bold"),
   strip.text.y = element_text(size = 14,face = "bold"),
   strip.background = element_rect(colour = "black", size = 2))
 
+bjp<-
+theme(
+  axis.text.y =  element_text(size = 9,face = "bold",color = "black"),
+  axis.title.y = element_text(size = 10,face = "bold",color = "black"),
+  axis.text.x =  element_text(size = 9,face = "bold",color = "black"),
+  axis.title.x = element_text(size = 10,face = "bold",color = "black"), 
+  plot.title = element_text(size = 13, face = "bold"))
+
+
 p <- ggplot(HC_var_labels, aes(x = factor(labels), y = HC_var))
-p <- p + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + xlab("Species-Day Pair") + ylab("log2 variance of expression for each gene") 
+p <- p + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + xlab("Species-Day Pair") + ylab("log2 variance of gene expression") +  ggtitle("Log2 variance for each gene by species and day")
 p <- p + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3"))
 p + bjp
 
+# Make boxplots that are not violin plots
+HC_var_labels <- cbind(HC_var, labels, labels10, labels13)
+colnames(HC_var_labels) <- c("Variance", "SpeciesDay", "Day", "Species")
 
-
+p <- ggplot(HC_var_labels, aes(x = factor(Species), y = Variance)) + geom_boxplot(aes(fill = as.factor(Day)),width=0.4) + xlab("Species") + ylab(expression(bold('log'[2]*' variance in gene expression'))) + scale_fill_discrete(name= "Day", labels=c("Day 0","Day 1","Day 2", "Day 3"))
+p + bjp + theme(legend.text=element_text(size=7), legend.title=element_text(size=7, face = "bold" ))
 ```
 
 # Evaluating global changes in variation 
@@ -797,6 +816,7 @@ for(i in 1:10304){
  }
 
 chimp_var_pval_red01 <- as.data.frame(chimp_var_pval)
+length(which(chimp_var_pval < 0.05))
 
 # Make a histogram of the unadjusted p-values
 hist(chimp_var_pval)
@@ -839,7 +859,7 @@ scaleFUN <- function(x) sprintf("%.1f", x)
 p1 <- ggplot(chimp_var_pval_red01, aes(chimp_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
   geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + 
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.74")', parse=TRUE, x=0.8, y=(1.25), size = 6, colour = "#E77642")
+  annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.74")', parse=TRUE, x=0.8, y=(1.25), size = 9, colour = "#E77642")
              
             
 
@@ -847,11 +867,12 @@ p1
 
 p1s <- ggplot(chimp_var_pval_red01, aes(chimp_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
   scale_x_continuous(limits = c(0,1)) + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.73")', parse=TRUE, x=0.80, y=(1.25), size = 6, colour = "#E77642")
+  annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.73")', parse=TRUE, x=0.80, y=(1.25), size = 9, colour = "#E77642") +bjp
              
 p1s
 
 ```
+
 
 #### Testing chimps reduction in variance from days 1 to 2
 
@@ -865,9 +886,11 @@ for(i in 1:10304){
  }
 
 chimp_var_pval_red12 <- as.data.frame(chimp_var_pval)
+length(which(chimp_var_pval < 0.05))
 
 # Make a histogram of the unadjusted p-values
 hist(chimp_var_pval)
+
 
 # Go from unadjusted to B.H. adjusted p-values
 fdr_adj <- p.adjust(chimp_var_pval, method = c("fdr") )
@@ -901,14 +924,15 @@ qvalue(p=chimp_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
 # Make a histogram of the p-value distribution
+# Since there is no apparent enrichment of small p-values, we won't apply Storey's pi0 
 
-p2 <- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) + annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
+p2 <- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold"))
              
 p2
 
 p2s <- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + ggtitle("Days 1 to 2")  + theme(plot.title = element_text(face = "bold")) + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold"))  +bjp + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold"))
              
 p2s
 
@@ -921,11 +945,12 @@ chimp_var_pval <- array(NA, dim = c(10304, 1))
 for(i in 1:10304){
      x <- t(mean_tech_reps[i,27:30])
      y <- t(mean_tech_reps[i,37:40])
-      htest <- var.test(x, y, alternative = c("greater"))
+      htest <- var.test(x, y, alternative = c("less"))
      chimp_var_pval[i,1] <- htest$p.value
  }
 
 chimp_var_pval_red23 <- as.data.frame(chimp_var_pval)
+length(which(chimp_var_pval < 0.05))
 
 # Make a histogram of the unadjusted p-values
 hist(chimp_var_pval, breaks = 500, main = c("Chimpanzees days 2 to 3"))
@@ -962,16 +987,14 @@ qvalue(p=chimp_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
 p3 <- ggplot(chimp_var_pval_red23, aes(chimp_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) + labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + 
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.94")', parse=TRUE, x=0.2, y=(1.25), size = 6, colour = "#E77642")
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme_bw() + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold"))
              
 p3
 
 
 p3s <- ggplot(chimp_var_pval_red23, aes(chimp_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="0.90")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme_bw() +  labs(x = "Unadjusted p-values") + labs(y = "Density")   + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold")) + bjp
              
 p3s
 ```
@@ -1024,16 +1047,14 @@ qvalue(p=chimp_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 length(which(chimp_var_pval < 0.05))*(1-qvalue(p=chimp_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
 p3_13 <- ggplot(chimp_var_pval_red13, aes(chimp_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#E77642") + 
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
-             
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 1 to 3") + theme_bw() + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + ggtitle("Days 1 to 2")  + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold"))        
 p3_13
 
 
 p3_13s <- ggplot(chimp_var_pval_red13, aes(chimp_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + 
-  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#E77642") + scale_y_continuous(labels=scaleFUN) +
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", chimp"])=="1")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#E77642")
+  scale_x_continuous(limits = c(0,1)) + ggtitle("Days 1 to 3") + theme_bw() + 
+  labs(x = "Unadjusted p-values") + labs(y = "Density") + ggtitle("Days 1 to 3")  + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold")) + bjp
              
 p3_13s
 ```
@@ -1053,6 +1074,7 @@ human_var_pval_red01 <- as.data.frame(human_var_pval)
 
 # Make a histogram of the unadjusted p-values
 hist(human_var_pval, main = c("Humans days 0 to 1"))
+length(which(human_var_pval < 0.05))
 
 # Go from unadjusted to B.H. adjusted p-values
 fdr_adj <- p.adjust(human_var_pval, method = c("fdr") )
@@ -1094,7 +1116,7 @@ p4
 
 p4s <- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 0 to 1") + theme(plot.title = element_text(face = "bold")) +
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.17")', parse=TRUE, x=0.80, y=(2), size = 6, colour = "#00A4F4")
+  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.17")', parse=TRUE, x=0.80, y=(2), size = 6, colour = "#00A4F4") + bjp
              
 p4s
 ```
@@ -1115,6 +1137,7 @@ human_var_pval_red12 <- as.data.frame(human_var_pval)
 
 # Make a histogram of the unadjusted p-values
 hist(human_var_pval, main = c("Humans days 1 to 2"))
+length(which(human_var_pval < 0.05))
 
 # Go from unadjusted to B.H. adjusted p-values
 fdr_adj <- p.adjust(human_var_pval, method = c("fdr") )
@@ -1147,16 +1170,13 @@ qvalue(p=human_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 
 length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
-p5 <- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) +
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
-  geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.20, y=(2), size = 6, colour = "#00A4F4")
+p5 <- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 2") + theme_bw() + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold"))
              
 p5
 
-p5s <- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 2") + theme(plot.title = element_text(face = "bold")) + scale_y_continuous(labels=scaleFUN) +
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + 
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.20, y=(2), size = 6, colour = "#00A4F4")
+p5s <- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 2") + theme_bw() + 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold")) + bjp
              
 p5s
 ```
@@ -1177,6 +1197,7 @@ human_var_pval_red23 <- as.data.frame(human_var_pval)
 
 # Make a histogram of the unadjusted p-values
 hist(human_var_pval, main = c("Humans days 0 to 1"))
+length(which(human_var_pval < 0.05))
 
 # Go from unadjusted to B.H. adjusted p-values
 fdr_adj <- p.adjust(human_var_pval, method = c("fdr") )
@@ -1210,14 +1231,13 @@ qvalue(p=human_var_pval,  pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi
 length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="bootstrap", fdr.level=NULL, robust=TRUE)$pi0)
 
 p6 <- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) + scale_y_continuous(labels=scaleFUN) +
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.95")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#00A4F4")
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") 
              
 p6
 
 p6s <- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() +  ggtitle("Days 2 to 3") + theme(plot.title = element_text(face = "bold")) +
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.87")', parse=TRUE, x=0.20, y=(1.25), size = 6, colour = "#00A4F4")
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +  scale_y_continuous(labels=scaleFUN) + bjp
+
              
 p6s
 
@@ -1272,14 +1292,13 @@ length(which(human_var_pval < 0.05))*(1-qvalue(p=human_var_pval, pi0.method="boo
 
 
 p6_13 <- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +  scale_y_continuous(labels=scaleFUN) +
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + geom_hline(yintercept = boot_pi0, size=2.5, colour = "#00A4F4") + 
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.20, y=(2), size = 6, colour = "#00A4F4") 
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  
              
 p6_13
 
 p6_13s <- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_histogram(aes(y = ..density..), fill="white", colour="black", breaks=seq(0, 1, by = 0.02)) + theme_bw() + ggtitle("Days 1 to 3") + theme(plot.title = element_text(face = "bold")) +
-  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + geom_hline(yintercept = boot_pi0s, size=2.5, colour = "#00A4F4") + scale_y_continuous(labels=scaleFUN) +
-  annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="1")', parse=TRUE, x=0.20, y=(2), size = 6, colour = "#00A4F4")
+  scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + scale_y_continuous(labels=scaleFUN)  + bjp
+
              
 p6_13s
 ```
@@ -1300,6 +1319,12 @@ multiplot(p1s,p4s,p2s,p5s,p3s,p6s,p3_13s, p6_13s, cols=4)
 
 # Chimps on the left, humans on the right
 #multiplot(p1s,p2s,p3s,p3_13s,p4s,p5s,p6s, p6_13s, cols=2)
+
+# Chimps across
+multiplot(p1s,p2s,p3s,p3_13s, cols=4)
+
+# Humans across
+multiplot(p4s,p5s,p6s,p6_13s, cols=4)
 ```
 
 ## Number of significant genes and Storey's pi_0 values for an increase in variation between days (main paper) 
@@ -1877,7 +1902,7 @@ plot(qqplot_red_day01[[4]],qqplot_red_day01[[5]], pch = 16, xlim = c(0,6), ylim 
 abline(0,1, col = "black")
 
 # Add to the plot
-points(qqplot_red_day01[[6]],qqplot_red_day01[[7]], pch = 16, col = pal[3])
+points(qqplot_red_day01[[6]],qqplot_red_day01[[7]], pch = 16, col = "red")
 
 # Reduction of variance to day 1 to 2
 plot(qqplot_red_day12[[4]],qqplot_red_day12[[5]], pch = 16, xlim = c(0,6), ylim = c(0,6), col = pal[2], xlab = "-log10(p) Expected", ylab = "-log10(p) Obeserved", main = "Day 1 to 2")
@@ -1990,7 +2015,7 @@ pi1est_chimps_given_humans
 # Let's overlap the two histograms
 
 labels_c <- array("Chimpanzee", dim = c(10304,1))
-labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_red_day01[[3]][2]),1))
+labels_h <- array("Chimpanzee|Sig. in Humans", dim = c(as.data.frame(qqplot_red_day01[[3]][2]),1))
 
 chimps <- cbind(labels_c, chimp_p_values_gen)
 colnames(chimps) <- c("Species", "pval")
@@ -2005,15 +2030,83 @@ pal <- c("#00A4F4", "#E77642", "white")
 
 p1_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
+  scale_x_continuous(limits = c(-0.2,1.2), breaks = seq(0,1,0.25)) +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +  scale_y_continuous(labels=scaleFUN) +     
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.4, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.53")', parse=TRUE, x=0.4, y=(pi0est_chimps_given_humans+0.07), size = 6)
+
+p1_05
+
+pal <- c( "#E77642", "gray") 
+
+ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) + geom_histogram(binwidth = 0.07)
+
+ggplot(chimps[,1:2], aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) + geom_histogram(aes(y=..density..), binwidth = 0.07) + geom_density() 
+  
+ ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) + geom_density() +   scale_x_continuous(limits = c(-0.2,1.2), breaks = seq(0,1,0.25))
+ 
+ 
+ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +  geom_histogram(alpha = 1, aes(y = ..density..), position = 'identity', bins = 15, show.legend = FALSE) + theme_bw() + facet_wrap(~Species) + labs(x = "Unadjusted p-values") + labs(y = "Density") + bjp +
+  geom_hline(data=data.frame(Species = "Chimpanzee"), aes(yintercept = 0.27,  show.legend = NA)) + geom_hline(data=data.frame(Species = "Chimpanzee|Sig. in Humans"), aes(yintercept = 0.47, show.legend = NA))
+  
+
+ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[1:2]) +  geom_histogram(alpha = 0.6, aes(y = ..density..), position = 'identity', bins = 15, show.legend = FALSE, color = "black") + theme_bw()
+
+
+ggplot(all_pval, aes(pval)) + 
+  geom_histogram(data=subset(all_pval, Species == 'Chimpanzee'), alpha = 1, aes(y = ..density..), position = 'identity', bins = 15, show.legend = FALSE, fill = "#E77642", color = "black") +
+  geom_histogram(data=subset(all_pval, Species == 'Chimpanzee|Sig. in Humans'), alpha = 0.8, aes(y = ..density..), position = 'identity', bins = 15, show.legend = FALSE, fill = "gray")  + labs(x = "Unadjusted p-values", y = "Density") +  theme_bw() + bjpm +  scale_y_continuous(labels=scaleFUN) +
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 1.5) + 
+  geom_hline(yintercept = pi0est_chimps, size = 1.5) +     
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.53")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6) + labs(x = "Unadjusted p-values")
+  
+  
+ggplot(all_pval, aes(pval)) + 
+  geom_histogram(data=subset(all_pval, Species == 'Chimpanzee'), alpha = 1, aes(y = ..density..), position = 'identity', bins = 15, show.legend = FALSE, fill = "#E77642", color = "black") +
+  geom_histogram(data=subset(all_pval, Species == 'Chimpanzee|Sig. in Humans'), alpha = 0.8, aes(y = ..density..), position = 'identity', bins = 15, show.legend = FALSE, fill = "gray") + theme_bw() + bjpm +  scale_y_continuous(labels=scaleFUN) + labs(x = "Unadjusted p-values", y = "Density") +
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.83, y=1.3, size = 7, colour = "#E77642") +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.53")', color = "grey32", parse=TRUE, x=0.83, y=1.2, size = 7)
+    
+
+ggplot(all_pval, aes(pval, fill = as.factor(Species))) + scale_fill_manual(values=pal[2:3]) + geom_density(data=subset(all_pval, Species == 'Chimpanzee'), alpha = 1, fill = "#E77642") + geom_density(data=subset(all_pval, Species == 'Chimpanzee|Sig. in Humans'), alpha = 0.5, fill = "cyan4") + theme_bw() +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
   theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +  scale_y_continuous(labels=scaleFUN) +     
-  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.55")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.4, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.53")', parse=TRUE, x=0.4, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
-p1_05
 
-   
+neg_p <- as.data.frame(as.numeric(-(all_pval$pval)))
+
+chimps_neg <- cbind(labels_c, neg_p[1:10304,])
+colnames(chimps_neg) <- c("Species", "pval")
+humans_neg <- cbind(labels_h, neg_p[10305:12613,])
+colnames(humans_neg) <- c("Species", "pval")
+
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+
+right_side <- as.data.frame(2-all_pval$pval)
+
+chimps_rs <- cbind(labels_c, right_side[1:10304,])
+colnames(chimps_rs) <- c("Species", "pval")
+humans_rs <- cbind(labels_h, right_side[10305:12613,])
+colnames(humans_rs) <- c("Species", "pval")
+
+
+all_pval_ref <- as.data.frame(rbind(chimps[,1:2], humans[,1:2], chimps_neg, humans_neg, chimps_rs, humans_rs   ))
+all_pval_ref$pval <- as.numeric(all_pval_ref$pval)
+
+ggplot(all_pval_ref, aes(pval, fill = as.factor(Species))) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 1) + theme_bw() +
+  scale_x_continuous(limits = c(-0.5,1.5), breaks = seq(0,1,0.25)) +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") +
+  geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
+  geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +  scale_y_continuous(labels=scaleFUN) +     
+  annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.4, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.53")', parse=TRUE, x=0.4, y=(pi0est_chimps_given_humans+0.07), size = 6)
+
+
 
 # Day 1 to 2
 
@@ -2972,92 +3065,92 @@ multiplot(p1_inc_05,p5_inc_05,p2_inc_05,p6_inc_05,p3_inc_05,p7_inc_05,p4_inc_05,
 
 ```
 
-## Permutation tests
+## Permutation tests (This code should not be run on a laptop computer. Use a HPC instead. For sample results, see Supplemental Data S15 of the Endoderm paper)
 
 ### Permutation test to find the null hypothesis of sharing (reduction in chimps | significant in humans for day 0 to 1 with p-value cutoff of 0.05) 
 
 ```{r}
 ### library
 
-library("picante")
+#library("picante")
 
 ### Make a matrix of the p-values ###
 
   # Chimp p-values
-chimp_var_pval <- array(NA, dim = c(10304, 1))
+#chimp_var_pval <- array(NA, dim = c(10304, 1))
 
-for(i in 1:10304){
-     x <- t(mean_tech_reps[i,7:10])
-     y <- t(mean_tech_reps[i,17:20])
-      htest <- var.test(x, y, alternative = c("greater"))
-     chimp_var_pval[i,1] <- htest$p.value
+#for(i in 1:10304){
+#     x <- t(mean_tech_reps[i,7:10])
+#     y <- t(mean_tech_reps[i,17:20])
+#      htest <- var.test(x, y, alternative = c("greater"))
+#     chimp_var_pval[i,1] <- htest$p.value
 
-}
+#}
 
   # Human p-values
 
-human_var_pval <- array(NA, dim = c(10304, 1))
+#human_var_pval <- array(NA, dim = c(10304, 1))
 
-for(i in 1:10304){
-     x <- t(mean_tech_reps[i,1:6])
-     y <- t(mean_tech_reps[i,11:16])
-     htest <- var.test(x, y, alternative = c("greater"))
-     human_var_pval[i,1] <- htest$p.value
- }
+#for(i in 1:10304){
+#     x <- t(mean_tech_reps[i,1:6])
+#     y <- t(mean_tech_reps[i,11:16])
+#     htest <- var.test(x, y, alternative = c("greater"))
+#     human_var_pval[i,1] <- htest$p.value
+# }
  
 
 ### Matrix for the permuation values
 
-shared_p0_given_permutation <- array(NA, dim = c(100000, 1))
+#shared_p0_given_permutation <- array(NA, dim = c(100000, 1))
   
 ### Randomize chimp p-values ###  
 
-for(i in 1:100000){
-out_p_val <- randomizeMatrix(chimp_var_pval, null.model = "frequency",iterations = 1000)
+#for(i in 1:100000){
+#out_p_val <- randomizeMatrix(chimp_var_pval, null.model = "frequency",iterations = 1000)
 
-var_pval <- as.data.frame(cbind(out_p_val, human_var_pval))
-rownames(var_pval) <- rownames(mean_tech_reps)
-colnames(var_pval) <- c("Chimpanzee", "Human")
-summary(var_pval)
+#var_pval <- as.data.frame(cbind(out_p_val, human_var_pval))
+#rownames(var_pval) <- rownames(mean_tech_reps)
+#colnames(var_pval) <- c("Chimpanzee", "Human")
+#summary(var_pval)
   
 # Set p-value
 
-p_val <- 0.05
+#p_val <- 0.05
 
 # P-val < 0.05 for chimps only
-  num_var_pval_chimps <- var_pval[ which(var_pval[,1] < p_val), ]
+#  num_var_pval_chimps <- var_pval[ which(var_pval[,1] < p_val), ]
 
                     
 # P-val < 0.05 for humans only
-  num_var_pval_humans <- var_pval[ which(var_pval[,2] < p_val), ]
+#  num_var_pval_humans <- var_pval[ which(var_pval[,2] < p_val), ]
   
 # Run for the shared
   # Find the p-values of the chimps given that it was significant in the humans
 
-  subset_var <- as.data.frame(var_pval[ which(var_pval[,2] < p_val), 1:2])
-  num_var_pval_chimp_given_human_no_df <- subset_var[,1]
-  num_var_pval_chimp_given_human <- as.data.frame(subset_var[,1])
+#  subset_var <- as.data.frame(var_pval[ which(var_pval[,2] < p_val), 1:2])
+#  num_var_pval_chimp_given_human_no_df <- subset_var[,1]
+#  num_var_pval_chimp_given_human <- as.data.frame(subset_var[,1])
  
 
 ### Find the Pi_0 estimate for the chimps given significant in the humans
 
 # Obtain pvalues
-chimp_p_values_gen <- as.data.frame(num_var_pval_chimps)
-shared_p_values_gen <- as.data.frame(num_var_pval_chimp_given_human)
+#chimp_p_values_gen <- as.data.frame(num_var_pval_chimps)
+#shared_p_values_gen <- as.data.frame(num_var_pval_chimp_given_human)
 
 
 
 # Pi_0 estimate for the chimps given significant in the humans
-pi0est_chimps_given_humans <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-shared_p0_given_permutation[i,1] <- pi0est_chimps_given_humans
+#pi0est_chimps_given_humans <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#shared_p0_given_permutation[i,1] <- pi0est_chimps_given_humans
 #print(i)
-}
+#}
 
-exp_p1 <- 1-mean(shared_p0_given_permutation)
-exp_p1
-sd_p1 <- sd(1-shared_p0_given_permutation)
+#exp_p1 <- 1-mean(shared_p0_given_permutation)
+#exp_p1
+#sd_p1 <- sd(1-shared_p0_given_permutation)
 
-1-pnorm(0.55, exp_p1, sd_p1)
+#1-pnorm(0.47, exp_p1, sd_p1)
 
 ```
 
@@ -3070,82 +3163,82 @@ sd_p1 <- sd(1-shared_p0_given_permutation)
 ### Make a matrix of the p-values ###
 
   # Chimp p-values
-chimp_var_pval <- array(NA, dim = c(10304, 1))
+#chimp_var_pval <- array(NA, dim = c(10304, 1))
 
-for(i in 1:10304){
-     x <- t(mean_tech_reps[i,7:10])
-     y <- t(mean_tech_reps[i,17:20])
-      htest <- var.test(x, y, alternative = c("greater"))
-     chimp_var_pval[i,1] <- htest$p.value
+#for(i in 1:10304){
+#     x <- t(mean_tech_reps[i,7:10])
+#     y <- t(mean_tech_reps[i,17:20])
+#      htest <- var.test(x, y, alternative = c("greater"))
+#     chimp_var_pval[i,1] <- htest$p.value
 
-}
+# }
 
   # Human p-values
 
-human_var_pval <- array(NA, dim = c(10304, 1))
+# human_var_pval <- array(NA, dim = c(10304, 1))
 
-for(i in 1:10304){
-     x <- t(mean_tech_reps[i,1:6])
-     y <- t(mean_tech_reps[i,11:16])
-     htest <- var.test(x, y, alternative = c("greater"))
-     human_var_pval[i,1] <- htest$p.value
- }
+#for(i in 1:10304){
+#     x <- t(mean_tech_reps[i,1:6])
+#     y <- t(mean_tech_reps[i,11:16])
+#     htest <- var.test(x, y, alternative = c("greater"))
+#     human_var_pval[i,1] <- htest$p.value
+# }
 
 ### Matrix for the permuation values
 
-shared_p0_given_permutation_human <- array(NA, dim = c(100000, 1))
+# shared_p0_given_permutation_human <- array(NA, dim = c(100000, 1))
   
 ### Randomize chimp p-values ###  
 
-for(i in 1:100000){
-out_p_val <- randomizeMatrix(human_var_pval,null.model = "frequency",iterations = 1000)
+# for(i in 1:100000){
+# out_p_val <- randomizeMatrix(human_var_pval,null.model = "frequency",iterations = 1000)
 
-var_pval <- as.data.frame(cbind(out_p_val, chimp_var_pval))
-rownames(var_pval) <- rownames(mean_tech_reps)
-colnames(var_pval) <- c("Human", "Chimpanzee")
-summary(var_pval)
+# var_pval <- as.data.frame(cbind(out_p_val, chimp_var_pval))
+# rownames(var_pval) <- rownames(mean_tech_reps)
+# colnames(var_pval) <- c("Human", "Chimpanzee")
+# summary(var_pval)
   
 # Set p-value
 
-p_val <- 0.05
+# p_val <- 0.05
 
 # P-val < 0.05 for chimps only
-  num_var_pval_humans <- var_pval[ which(var_pval[,1] < p_val), ]
+#  num_var_pval_humans <- var_pval[ which(var_pval[,1] < p_val), ]
 
                     
 # P-val < 0.05 for humans only
-  num_var_pval_chimps <- var_pval[ which(var_pval[,2] < p_val), ]
+#  num_var_pval_chimps <- var_pval[ which(var_pval[,2] < p_val), ]
   
 # Run for the shared
   # Find the p-values of the humans given that it was significant in the chimps
 
-  subset_var <- as.data.frame(var_pval[ which(var_pval[,2] < p_val), 1:2])
-  num_var_pval_human_given_chimp_no_df <- subset_var[,1]
-  num_var_pval_human_given_chimp <- as.data.frame(subset_var[,1])
+#  subset_var <- as.data.frame(var_pval[ which(var_pval[,2] < p_val), 1:2])
+#  num_var_pval_human_given_chimp_no_df <- subset_var[,1]
+#  num_var_pval_human_given_chimp <- as.data.frame(subset_var[,1])
  
 
 ### Find the Pi_0 estimate for the humans given significant in the chimps
 
 # Obtain pvalues
-shared_p_values_gen <- as.data.frame(num_var_pval_human_given_chimp)
+# shared_p_values_gen <- as.data.frame(num_var_pval_human_given_chimp)
 
 
 
 # Pi_0 estimate for the humans given significant in the chimps
 
-pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-shared_p0_given_permutation_human[i,1] <- pi0est_humans_given_chimps
+# pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+# shared_p0_given_permutation_human[i,1] <- pi0est_humans_given_chimps
 
-print(i)
-}
+# print(i)
+# }
 
 
-comp_mean <- 1-mean(shared_p0_given_permutation_human)
-comp_mean
+# comp_mean <- 1-mean(shared_p0_given_permutation_human)
+# comp_mean
 
-sd_human <- 1-shared_p0_given_permutation_human
+# sd_human <- 1-shared_p0_given_permutation_human
 
-1-pnorm(0.84, comp_mean, sd(sd_human))
+# 1-pnorm(0.84, comp_mean, sd(sd_human))
 
 ```
 

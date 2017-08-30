@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2017-04-25" />
+
+<title>Technical_factors_across_days</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Technical_factors_across_days</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>April 25, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#load-the-data-normalized-gene-expression-data-and-technical-factor-information">Load the data (normalized gene expression data and technical factor information)</a></li>
+<li><a href="#an-example-using-passage-at-seed-as-a-response-variable.">An example using passage at seed as a response variable.</a></li>
+<li><a href="#obtain-p-values-for-all-numerical-technical-factors-days-0-to-1">Obtain p-values for all numerical technical factors days 0 to 1</a></li>
+<li><a href="#obtain-p-values-for-categorical-technical-factors-with-2-levels-sex-diiferentiation-batchstart-datelibrary-prep-batch-days-0-to-1">Obtain p-values for categorical technical factors with 2 levels (sex, diiferentiation batch/start date/library prep batch) days 0 to 1</a></li>
+<li><a href="#using-categorical-variables-with-more-than-two-levels-days-0-to-1">Using categorical variables with more than two levels days 0 to 1</a></li>
+<li><a href="#see-which-p-values-are-less-than-0.05-in-days-0-to-1">See which p-values are less than 0.05 in days 0 to 1</a></li>
+<li><a href="#obtain-p-values-for-all-numerical-technical-factors-days-0-to-3">Obtain p-values for all numerical technical factors days 0 to 3</a></li>
+<li><a href="#obtain-p-values-for-categorical-technical-factors-with-2-levels-diiferentiation-batchstart-datelibrary-prep-batch-days-0-to-3">Obtain p-values for categorical technical factors with 2 levels (diiferentiation batch/start date/library prep batch) days 0 to 3</a></li>
+<li><a href="#using-categorical-variables-with-more-than-two-levels-days-0-to-3">Using categorical variables with more than two levels days 0 to 3</a></li>
+<li><a href="#see-which-p-values-are-less-than-0.05-in-days-0-to-3">See which p-values are less than 0.05 in days 0 to 3</a></li>
+<li><a href="#conclusions">Conclusions</a></li>
+</ul>
+</div>
+
+<p>We want to evaluate whether or not the recorded technical factors all similar across biological conditions.</p>
+<p>Therefore, for each technical factor, we will test the variance explained between a model with day and species as fixed effects versus a model with day, species, and day-by-species interactions.</p>
+<div id="load-the-data-normalized-gene-expression-data-and-technical-factor-information" class="section level2">
+<h2>Load the data (normalized gene expression data and technical factor information)</h2>
+<pre class="r"><code># Load library
+
+library(&quot;nnet&quot;)</code></pre>
+<pre><code>## Warning: package &#39;nnet&#39; was built under R version 3.2.3</code></pre>
+<pre class="r"><code># Load cpm data 
+
+cpm_in_cutoff &lt;- read.delim(&quot;../data/cpm_cyclicloess.txt&quot;)
+
+# Load sample information
+
+After_removal_sample_info &lt;- read.csv(&quot;../data/After_removal_sample_info.csv&quot;)
+
+species &lt;- After_removal_sample_info$Species
+day &lt;- as.factor(After_removal_sample_info$Day)
+
+# Test that both day and species are factors
+
+is.factor(species)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>is.factor(day)</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code># Load technical factor information
+
+RNA_seq_info_all &lt;- read.csv(&quot;../data/Endo_TC_Data_Share_Sorting.csv&quot;,  header = T)
+
+dim(RNA_seq_info_all)</code></pre>
+<pre><code>## [1] 130  43</code></pre>
+<pre class="r"><code>RNA_seq_info &lt;- as.data.frame(cbind(RNA_seq_info_all[1:63, 4], RNA_seq_info_all[1:63, 3], RNA_seq_info_all[1:63, 5:27], RNA_seq_info_all[1:63, 30:35], RNA_seq_info_all[1:63, 37:43]))
+
+# Remove library well (only 1/well)
+RNA_seq_info &lt;- RNA_seq_info[,-20]
+
+# Full data set
+dim(RNA_seq_info)</code></pre>
+<pre><code>## [1] 63 37</code></pre>
+<pre class="r"><code># Take out day and species (factors of interest)
+RNA_seq_info_35 &lt;- RNA_seq_info[,-(1:2)]</code></pre>
+</div>
+<div id="an-example-using-passage-at-seed-as-a-response-variable." class="section level2">
+<h2>An example using passage at seed as a response variable.</h2>
+<pre class="r"><code># Make the linear models (the null does not contain an interaction and the full model does)
+
+# Define y
+
+y &lt;- RNA_seq_info_35[1:63,4] 
+
+# Define the null model
+
+fit0 &lt;- lm(y ~ species + day)
+fit0</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ species + day)
+## 
+## Coefficients:
+##  (Intercept)  specieshuman          day1          day2          day3  
+##     24.63771      -1.36653      -0.01695      -0.01695      -0.01695</code></pre>
+<pre class="r"><code># Define the alternative model
+
+fit1 &lt;- lm(y ~ species + day + species*day)
+fit1</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ species + day + species * day)
+## 
+## Coefficients:
+##       (Intercept)       specieshuman               day1  
+##         2.462e+01         -1.339e+00         -1.373e-15  
+##              day2               day3  specieshuman:day1  
+##        -1.454e-15         -6.558e-16         -3.571e-02  
+## specieshuman:day2  specieshuman:day3  
+##        -3.571e-02         -3.571e-02</code></pre>
+<pre class="r"><code># Compare the models using an ANOVA
+anova(fit0, fit1)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: y ~ species + day
+## Model 2: y ~ species + day + species * day
+##   Res.Df    RSS Df Sum of Sq     F Pr(&gt;F)
+## 1     58 269.43                          
+## 2     55 269.43  3  0.003632 2e-04      1</code></pre>
+<pre class="r"><code># Get the p-value associated with the comparison
+
+anova(fit0, fit1)$&quot;Pr(&gt;F)&quot;[2]</code></pre>
+<pre><code>## [1] 0.9999946</code></pre>
+</div>
+<div id="obtain-p-values-for-all-numerical-technical-factors-days-0-to-1" class="section level2">
+<h2>Obtain p-values for all numerical technical factors days 0 to 1</h2>
+<pre class="r"><code>## Subset to only days 0-1
+
+day &lt;- as.factor(day[1:31])
+species &lt;- as.factor(species[1:31])
+
+
+numerical_tech_factors &lt;- c(4, 6,8:9, 12:16,18:20,24:28,30:35)
+# Note: there are not enough samples to make Max. purity estimates.
+
+# Make a matrix
+
+ANOVA_pvalues_01 = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c(&quot;pval_from_ANOVA&quot;), c(&quot;Cell line&quot;, &quot;Batch&quot;, &quot;Sex&quot;, &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;, &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;High conf purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
+
+# Run for the numerical technical factors
+j=1
+for (i in numerical_tech_factors){
+    # Define y (the technical factor)
+  
+    y &lt;- RNA_seq_info_35[1:31,i]
+  
+    # Define the null model
+
+  fit0 &lt;- lm(y ~ species + day)
+
+  # Define the alternative model
+
+  fit1 &lt;- lm(y ~ species + day + species*day)
+
+  # Compare the models using an ANOVA
+  anova(fit0, fit1)
+
+  # Get the p-value associated with the comparison
+
+  ANOVA_pvalues_01[1,i] &lt;- anova(fit0, fit1)$&quot;Pr(&gt;F)&quot;[2]
+}  
+
+# Note: there are not enough samples to make Max. purity estimates. 
+
+ANOVA_pvalues_01[1,10] &lt;- NA</code></pre>
+</div>
+<div id="obtain-p-values-for-categorical-technical-factors-with-2-levels-sex-diiferentiation-batchstart-datelibrary-prep-batch-days-0-to-1" class="section level2">
+<h2>Obtain p-values for categorical technical factors with 2 levels (sex, diiferentiation batch/start date/library prep batch) days 0 to 1</h2>
+<pre class="r"><code>###### FOR DIFFERENTIATION BATCH/START DATE #######
+
+    # Define y (the technical factor)
+  
+    y &lt;- as.numeric(RNA_seq_info_35[1:31,2])
+    
+    # Relevel so 0 and 1
+    
+    y[y == 2] &lt;- 0
+    y[y == 1] &lt;- 1
+    
+    # Define the null model
+
+  mydata &lt;- data.frame(cbind(species, day, y))
+  mydata$species &lt;- as.factor(mydata$species)
+  mydata$day &lt;- as.factor(mydata$day)
+  
+### GLM
+  
+  fit0 &lt;- glm(y ~ day  + species, data = mydata, family = &quot;binomial&quot;)
+  # Define the alternative model
+
+  fit1 &lt;- glm(y ~ day  + species + day*species, data = mydata, family = &quot;binomial&quot;)
+  
+    # Compare the models using an ANOVA
+  anova.fit &lt;- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance &lt;- anova.fit$Deviance[2]
+  deviance.df &lt;- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_01[1,2] &lt;- 1-pchisq(deviance, deviance.df) 
+  ANOVA_pvalues_01[1,5] &lt;- 1-pchisq(deviance, deviance.df) 
+
+  ###### FOR SEX #######
+
+    # Define y (the technical factor)
+  
+    y &lt;- as.character(RNA_seq_info_35[1:31,3])
+    
+    # Relevel so 0 and 1
+    
+    y[y == &quot;F&quot;] &lt;- 0
+    y[y == &quot;M&quot;] &lt;- 1
+    
+    # Define the null model
+
+  mydata &lt;- data.frame(cbind(species, day, y))
+  mydata$species &lt;- as.factor(mydata$species)
+  mydata$day &lt;- as.factor(mydata$day)
+  
+### GLM
+  
+  fit0 &lt;- glm(y ~ day  + species, data = mydata, family = &quot;binomial&quot;)
+  # Define the alternative model
+
+  fit1 &lt;- glm(y ~ day  + species + day*species, data = mydata, family = &quot;binomial&quot;)
+  
+    # Compare the models using an ANOVA
+  anova.fit &lt;- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance &lt;- anova.fit$Deviance[2]
+  deviance.df &lt;- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_01[1,3] &lt;- 1-pchisq(deviance, deviance.df) 
+
+
+  
+  
+###### FOR LIBRARY PREP BATCH #######
+  
+  # Define y (the technical factor)
+  
+    y &lt;- as.numeric(RNA_seq_info_35[1:31,17])
+    
+    # Relevel so 0 and 1
+    
+    y[y == 1] &lt;- 0
+    y[y == 2] &lt;- 1
+    
+   # Combine the variables into 1 data frame
+  mydata &lt;- data.frame(cbind(species, day, y))
+  mydata$species &lt;- as.factor(mydata$species)
+  mydata$day &lt;- as.factor(mydata$day)
+  
+### GLM
+  
+  # Define the null model
+  
+  fit0 &lt;- glm(y ~ day  + species, data = mydata, family = &quot;binomial&quot;)
+  # Define the alternative model
+
+  fit1 &lt;- glm(y ~ day  + species + day*species, data = mydata, family = &quot;binomial&quot;)
+  
+    # Compare the models using an ANOVA
+  anova.fit &lt;- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance &lt;- anova.fit$Deviance[2]
+  deviance.df &lt;- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_01[1,17] &lt;- 1-pchisq(deviance, deviance.df) </code></pre>
+</div>
+<div id="using-categorical-variables-with-more-than-two-levels-days-0-to-1" class="section level2">
+<h2>Using categorical variables with more than two levels days 0 to 1</h2>
+<pre class="r"><code>categorical_tech_factors &lt;- c(1, 7, 11, 21:23, 29 )
+
+# Run for the numerical technical factors
+j=1
+for (i in categorical_tech_factors){
+    # Define y (the technical factor)
+  
+    y &lt;- RNA_seq_info_35[1:31,i]
+
+    # Get data into a dataframe
+    mydata &lt;- data.frame(cbind(species, day, y))
+    mydata$y &lt;- as.factor(mydata$y)
+    mydata$species &lt;- as.factor(mydata$species)
+    mydata$day &lt;- as.factor(mydata$day)
+      
+### GLM
+  
+  fit0 &lt;- multinom(y ~ day  + species, data = mydata)
+  # Define the alternative model
+
+  fit1 &lt;- multinom(y ~ day  + species + day*species, data = mydata)
+
+  # Compare the models using an ANOVA
+  # Get the p-value associated with the comparison
+
+  ANOVA_pvalues_01[1,i] &lt;- anova(fit0, fit1)$&quot;Pr(Chi)&quot;[2]
+}  </code></pre>
+<pre><code>## # weights:  64 (45 variable)
+## initial  value 85.950250 
+## iter  10 value 63.939967
+## iter  20 value 63.532340
+## iter  30 value 63.527997
+## final  value 63.527970 
+## converged
+## # weights:  80 (60 variable)
+## initial  value 85.950250 
+## iter  10 value 63.787448
+## iter  20 value 63.529905
+## iter  30 value 63.527980
+## final  value 63.527969 
+## converged
+## # weights:  24 (15 variable)
+## initial  value 55.544544 
+## iter  10 value 32.404269
+## iter  20 value 31.985102
+## iter  30 value 31.982999
+## final  value 31.982997 
+## converged
+## # weights:  30 (20 variable)
+## initial  value 55.544544 
+## iter  10 value 32.426183
+## iter  20 value 31.983545
+## iter  30 value 31.982997
+## final  value 31.982996 
+## converged
+## # weights:  24 (15 variable)
+## initial  value 55.544544 
+## iter  10 value 52.931649
+## final  value 52.931568 
+## converged
+## # weights:  30 (20 variable)
+## initial  value 55.544544 
+## iter  10 value 52.500355
+## iter  20 value 52.439498
+## iter  30 value 52.437758
+## iter  40 value 52.437614
+## final  value 52.437614 
+## converged
+## # weights:  32 (21 variable)
+## initial  value 64.462688 
+## iter  10 value 41.629660
+## iter  20 value 40.644671
+## iter  30 value 40.640587
+## final  value 40.640560 
+## converged
+## # weights:  40 (28 variable)
+## initial  value 64.462688 
+## iter  10 value 42.358140
+## iter  20 value 40.672671
+## iter  30 value 40.640632
+## final  value 40.640560 
+## converged
+## # weights:  16 (9 variable)
+## initial  value 42.975125 
+## iter  10 value 42.810508
+## iter  10 value 42.810508
+## iter  10 value 42.810508
+## final  value 42.810508 
+## converged
+## # weights:  20 (12 variable)
+## initial  value 42.975125 
+## iter  10 value 42.735138
+## final  value 42.733553 
+## converged
+## # weights:  16 (9 variable)
+## initial  value 42.975125 
+## iter  10 value 42.810508
+## iter  10 value 42.810508
+## iter  10 value 42.810508
+## final  value 42.810508 
+## converged
+## # weights:  20 (12 variable)
+## initial  value 42.975125 
+## iter  10 value 42.735138
+## final  value 42.733553 
+## converged
+## # weights:  16 (9 variable)
+## initial  value 42.975125 
+## iter  10 value 42.810508
+## iter  10 value 42.810508
+## iter  10 value 42.810508
+## final  value 42.810508 
+## converged
+## # weights:  20 (12 variable)
+## initial  value 42.975125 
+## iter  10 value 42.735138
+## final  value 42.733553 
+## converged</code></pre>
+<pre class="r"><code>ANOVA_pvalues_01</code></pre>
+<pre><code>##                 Cell line     Batch       Sex Passage at seed Start date
+## pval_from_ANOVA         1 0.8419522 0.8419522       0.9824348  0.8419522
+##                 Density at seed Harvest time Harvest density
+## pval_from_ANOVA       0.9692987            1       0.6186798
+##                 High conf purity Max purity RNA Extraction Date  RNA conc
+## pval_from_ANOVA        0.1362526         NA            0.963535 0.4905153
+##                       RIN 260 280 RNA 260 230 RNA DNA concentration
+## pval_from_ANOVA 0.6433036   0.1160222   0.1592037         0.5053192
+##                 Library prep batch Library concentration uL sample
+## pval_from_ANOVA          0.8419522             0.5415916 0.4832505
+##                     uL EB Index sequence  Seq pool   Lane r1  Mseqs R1
+## pval_from_ANOVA 0.4832505              1 0.9846624 0.9846624 0.3699091
+##                 Total lane reads 1 Lane prop r1    Dup r1     GC r1
+## pval_from_ANOVA          0.8835576    0.3668641 0.3036041 0.6749494
+##                   Lane r2  Mseqs r2 Total lane reads r2 Lane prop r2
+## pval_from_ANOVA 0.9846624 0.6291315           0.8494038    0.6078586
+##                   Dups r2     GC r2 Total reads
+## pval_from_ANOVA 0.5448301 0.6666955   0.3101537</code></pre>
+<pre class="r"><code>#write.table(ANOVA_pvalues_01, &quot;/Users/laurenblake/Desktop/pc_pvalues.txt&quot;)</code></pre>
+</div>
+<div id="see-which-p-values-are-less-than-0.05-in-days-0-to-1" class="section level2">
+<h2>See which p-values are less than 0.05 in days 0 to 1</h2>
+<pre class="r"><code>ANOVA_pvalues_01[,ANOVA_pvalues_01 &lt; 0.05]</code></pre>
+<pre><code>## [1] NA</code></pre>
+</div>
+<div id="obtain-p-values-for-all-numerical-technical-factors-days-0-to-3" class="section level2">
+<h2>Obtain p-values for all numerical technical factors days 0 to 3</h2>
+<pre class="r"><code># Redefine day and species (includes all 63 samples)
+
+species &lt;- After_removal_sample_info$Species
+day &lt;- as.factor(After_removal_sample_info$Day)
+
+# Make a matrix
+
+numerical_tech_factors &lt;- c(4, 6,8:10, 12:16,18:20,24:28,30:35)
+# Note: there are enough samples to make Max. purity estimates.
+
+# Make a matrix
+
+ANOVA_pvalues_03 = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c(&quot;pval_from_ANOVA&quot;), c(&quot;Cell line&quot;, &quot;Batch&quot;, &quot;Sex&quot;, &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;, &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;High conf purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
+
+# Run for the numerical technical factors
+j=1
+for (i in numerical_tech_factors){
+    # Define y (the technical factor)
+  
+    y &lt;- RNA_seq_info_35[1:63,i]
+  
+    # Define the null model
+
+  fit0 &lt;- lm(y ~ species + day)
+
+  # Define the alternative model
+
+  fit1 &lt;- lm(y ~ species + day + species*day)
+
+  # Compare the models using an ANOVA
+  anova(fit0, fit1)
+
+  # Get the p-value associated with the comparison
+
+  ANOVA_pvalues_03[1,i] &lt;- anova(fit0, fit1)$&quot;Pr(&gt;F)&quot;[2]
+}  </code></pre>
+</div>
+<div id="obtain-p-values-for-categorical-technical-factors-with-2-levels-diiferentiation-batchstart-datelibrary-prep-batch-days-0-to-3" class="section level2">
+<h2>Obtain p-values for categorical technical factors with 2 levels (diiferentiation batch/start date/library prep batch) days 0 to 3</h2>
+<pre class="r"><code>###### FOR DIFFERENTIATION BATCH/START DATE #######
+
+    # Define y (the technical factor)
+  
+    y &lt;- as.numeric(RNA_seq_info_35[1:63,2])
+    
+    # Relevel so 0 and 1
+    
+    y[y == 2] &lt;- 0
+    y[y == 1] &lt;- 1
+    
+    # Define the null model
+
+  mydata &lt;- data.frame(cbind(species, day, y))
+  mydata$species &lt;- as.factor(mydata$species)
+  mydata$day &lt;- as.factor(mydata$day)
+  
+### GLM
+  
+  fit0 &lt;- glm(y ~ day  + species, data = mydata, family = &quot;binomial&quot;)
+  # Define the alternative model
+
+  fit1 &lt;- glm(y ~ day  + species + day*species, data = mydata, family = &quot;binomial&quot;)
+  
+    # Compare the models using an ANOVA
+  anova.fit &lt;- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance &lt;- anova.fit$Deviance[2]
+  deviance.df &lt;- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_03[1,2] &lt;- 1-pchisq(deviance, deviance.df) 
+  ANOVA_pvalues_03[1,5] &lt;- 1-pchisq(deviance, deviance.df) 
+
+  ###### FOR SEX #######
+
+    # Define y (the technical factor)
+  
+    y &lt;- as.character(RNA_seq_info_35[1:63,3])
+    
+    # Relevel so 0 and 1
+    
+    y[y == &quot;F&quot;] &lt;- 0
+    y[y == &quot;M&quot;] &lt;- 1
+    
+    # Define the null model
+
+  mydata &lt;- data.frame(cbind(species, day, y))
+  mydata$species &lt;- as.factor(mydata$species)
+  mydata$day &lt;- as.factor(mydata$day)
+  
+### GLM
+  
+  fit0 &lt;- glm(y ~ day  + species, data = mydata, family = &quot;binomial&quot;)
+  # Define the alternative model
+
+  fit1 &lt;- glm(y ~ day  + species + day*species, data = mydata, family = &quot;binomial&quot;)
+  
+    # Compare the models using an ANOVA
+  anova.fit &lt;- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance &lt;- anova.fit$Deviance[2]
+  deviance.df &lt;- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_03[1,3] &lt;- 1-pchisq(deviance, deviance.df) 
+
+
+  
+  
+###### FOR LIBRARY PREP BATCH #######
+  
+  # Define y (the technical factor)
+  
+    y &lt;- as.numeric(RNA_seq_info_35[1:63,17])
+    
+    # Relevel so 0 and 1
+    
+    y[y == 1] &lt;- 0
+    y[y == 2] &lt;- 1
+    
+   # Combine the variables into 1 data frame
+  mydata &lt;- data.frame(cbind(species, day, y))
+  mydata$species &lt;- as.factor(mydata$species)
+  mydata$day &lt;- as.factor(mydata$day)
+  
+### GLM
+  
+  # Define the null model
+  
+  fit0 &lt;- glm(y ~ day  + species, data = mydata, family = &quot;binomial&quot;)
+  # Define the alternative model
+
+  fit1 &lt;- glm(y ~ day  + species + day*species, data = mydata, family = &quot;binomial&quot;)
+  
+    # Compare the models using an ANOVA
+  anova.fit &lt;- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance &lt;- anova.fit$Deviance[2]
+  deviance.df &lt;- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_03[1,17] &lt;- 1-pchisq(deviance, deviance.df) </code></pre>
+</div>
+<div id="using-categorical-variables-with-more-than-two-levels-days-0-to-3" class="section level2">
+<h2>Using categorical variables with more than two levels days 0 to 3</h2>
+<pre class="r"><code>categorical_tech_factors &lt;- c(1, 7, 11, 21:23, 29 )
+
+# Run for the numerical technical factors
+j=1
+for (i in categorical_tech_factors){
+    # Define y (the technical factor)
+  
+    y &lt;- RNA_seq_info[1:63,i]
+
+    # Get data into a dataframe
+    mydata &lt;- data.frame(cbind(species, day, y))
+    mydata$y &lt;- as.factor(mydata$y)
+    mydata$species &lt;- as.factor(mydata$species)
+    mydata$day &lt;- as.factor(mydata$day)
+      
+### GLM
+  
+  fit0 &lt;- multinom(y ~ day  + species, data = mydata)
+  # Define the alternative model
+
+  fit1 &lt;- multinom(y ~ day  + species + day*species, data = mydata)
+
+  # Compare the models using an ANOVA
+  # Get the p-value associated with the comparison
+
+  ANOVA_pvalues_03[1,i] &lt;- anova(fit0, fit1)$&quot;Pr(Chi)&quot;[2]
+}  </code></pre>
+<pre><code>## # weights:  6 (5 variable)
+## initial  value 43.668272 
+## final  value 0.000069 
+## converged
+## # weights:  9 (8 variable)
+## initial  value 43.668272 
+## final  value 0.000056 
+## converged
+## # weights:  6 (5 variable)
+## initial  value 43.668272 
+## final  value 43.625865 
+## converged
+## # weights:  9 (8 variable)
+## initial  value 43.668272 
+## iter  10 value 43.596599
+## iter  10 value 43.596599
+## iter  10 value 43.596599
+## final  value 43.596599 
+## converged
+## # weights:  180 (145 variable)
+## initial  value 102.035921 
+## iter  10 value 40.476261
+## iter  20 value 39.863843
+## iter  30 value 39.862740
+## final  value 39.862739 
+## converged
+## # weights:  270 (232 variable)
+## initial  value 102.035921 
+## iter  10 value 40.070381
+## iter  20 value 39.863132
+## iter  30 value 39.862739
+## final  value 39.862739 
+## converged
+## # weights:  378 (310 variable)
+## initial  value 261.017488 
+## iter  10 value 134.960765
+## iter  20 value 130.082952
+## iter  30 value 130.070114
+## final  value 130.070098 
+## converged
+## # weights:  567 (496 variable)
+## initial  value 261.017488 
+## iter  10 value 132.711746
+## iter  20 value 130.075479
+## iter  30 value 130.070108
+## final  value 130.070099 
+## converged
+## # weights:  378 (310 variable)
+## initial  value 261.017488 
+## iter  10 value 135.313984
+## iter  20 value 130.191868
+## iter  30 value 130.070248
+## final  value 130.070098 
+## converged
+## # weights:  567 (496 variable)
+## initial  value 261.017488 
+## iter  10 value 134.062671
+## iter  20 value 130.098029
+## iter  30 value 130.070200
+## final  value 130.070099 
+## converged
+## # weights:  96 (75 variable)
+## initial  value 174.673090 
+## iter  10 value 86.778036
+## iter  20 value 82.988239
+## iter  30 value 82.909787
+## iter  40 value 82.908989
+## iter  40 value 82.908988
+## iter  40 value 82.908988
+## final  value 82.908988 
+## converged
+## # weights:  144 (120 variable)
+## initial  value 174.673090 
+## iter  10 value 88.264763
+## iter  20 value 82.972487
+## iter  30 value 82.909766
+## iter  40 value 82.908988
+## iter  40 value 82.908988
+## iter  40 value 82.908988
+## final  value 82.908988 
+## converged
+## # weights:  348 (285 variable)
+## initial  value 255.807910 
+## iter  10 value 139.896630
+## iter  20 value 131.294265
+## iter  30 value 130.079642
+## iter  40 value 130.070127
+## final  value 130.070099 
+## converged
+## # weights:  522 (456 variable)
+## initial  value 255.807910 
+## iter  10 value 138.613203
+## iter  20 value 130.144462
+## iter  30 value 130.070365
+## final  value 130.070099 
+## converged</code></pre>
+<pre class="r"><code>ANOVA_pvalues_03</code></pre>
+<pre><code>##                 Cell line     Batch       Sex Passage at seed Start date
+## pval_from_ANOVA         1 0.9962993 0.9962993       0.9999946  0.9962993
+##                 Density at seed Harvest time Harvest density
+## pval_from_ANOVA        0.999971    0.9962993     0.005792107
+##                 High conf purity   Max purity RNA Extraction Date
+## pval_from_ANOVA     6.415024e-05 0.0008066171                   1
+##                  RNA conc       RIN 260 280 RNA 260 230 RNA
+## pval_from_ANOVA 0.1585667 0.5864589   0.2301219       0.132
+##                 DNA concentration Library prep batch Library concentration
+## pval_from_ANOVA         0.8565571          0.9962993             0.8715344
+##                 uL sample     uL EB Index sequence Seq pool Lane r1
+## pval_from_ANOVA 0.6689692 0.6689692              1        1       1
+##                  Mseqs R1 Total lane reads 1 Lane prop r1    Dup r1
+## pval_from_ANOVA 0.2039331          0.9984402    0.2027423 0.2590957
+##                     GC r1 Lane r2  Mseqs r2 Total lane reads r2
+## pval_from_ANOVA 0.8496839       1 0.6085574           0.9966626
+##                 Lane prop r2   Dups r2     GC r2 Total reads
+## pval_from_ANOVA    0.6080504 0.3468663 0.7606478   0.3474322</code></pre>
+</div>
+<div id="see-which-p-values-are-less-than-0.05-in-days-0-to-3" class="section level2">
+<h2>See which p-values are less than 0.05 in days 0 to 3</h2>
+<pre class="r"><code>ANOVA_pvalues_03[,ANOVA_pvalues_03 &lt; 0.05]</code></pre>
+<pre><code>##  Harvest density High conf purity       Max purity 
+##     5.792107e-03     6.415024e-05     8.066171e-04</code></pre>
+</div>
+<div id="conclusions" class="section level2">
+<h2>Conclusions</h2>
+<p>Conclusions: Interactions are important for describing the relationship between our biological variables of interest (day and species) and Harvest density, as well as our purity estimates for days 0 to 3 but not day 0 to 1.</p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

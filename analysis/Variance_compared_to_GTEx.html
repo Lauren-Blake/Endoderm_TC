@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2017-08-29" />
+
+<title>Variance comparison GTex</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-1.1/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Variance comparison GTex</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>August 29, 2017</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#make-sure-the-data-looks-normally-distributed">Make sure the data looks normally distributed</a></li>
+</ul>
+</div>
+
+<p>Here, we want to compare the variance of GTex LCLs to other GTex tissues. In GTex, since LCLs have 114 samples, we will pick the following tissues with similar sample sizes:</p>
+<ul>
+<li>Brain (cerebellum) with 103 samples</li>
+<li>Artery- coronary with 118 samples</li>
+<li>Colon- sigmoid with 124 samples</li>
+<li>Adrenal gland with 126 samples</li>
+</ul>
+<pre class="r"><code># Library 
+
+library(dplyr)</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
+<pre class="r"><code># Function
+bjp&lt;-
+theme(
+  axis.text.y =  element_text(size = 9,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 10,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 9,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.x = element_text(size = 10,face = &quot;bold&quot;,color = &quot;black&quot;), 
+  plot.title = element_text(size = 13, face = &quot;bold&quot;))
+
+# Import file
+
+Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3 &lt;- read.delim(&quot;~/Desktop/Cells_EBV-transformed_lymphocytes_Analysis.v6p.normalized.expression 3.R&quot;)
+
+Heart_Left_Ventricle_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;~/Desktop/Heart_Left_Ventricle_Analysis.v6p.normalized.expression.R&quot;)
+
+Pancreas_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;~/Desktop/Pancreas_Analysis.v6p.normalized.expression.R&quot;)
+
+Liver_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;~/Desktop/Liver_Analysis.v6p.normalized.expression.R&quot;)
+
+Lung_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;~/Desktop/Lung_Analysis.v6p.normalized.expression.R&quot;)
+
+intersect(intersect(intersect(intersect(colnames(Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3), colnames(Heart_Left_Ventricle_Analysis.v6p.normalized.expression)), colnames(Pancreas_Analysis.v6p.normalized.expression)), colnames(Liver_Analysis.v6p.normalized.expression)), colnames(Lung_Analysis.v6p.normalized.expression))</code></pre>
+<pre><code>##  [1] &quot;X.chr&quot;     &quot;start&quot;     &quot;end&quot;       &quot;gene_id&quot;   &quot;GTEX.WFON&quot;
+##  [6] &quot;GTEX.X3Y1&quot; &quot;GTEX.Y5V5&quot; &quot;GTEX.YEC4&quot; &quot;GTEX.ZPU1&quot; &quot;GTEX.ZTPG&quot;</code></pre>
+<pre class="r"><code># Select 5 desired tissues
+
+indiv_col &lt;- c(&quot;X.chr&quot;, &quot;start&quot;, &quot;end&quot;, &quot;gene_id&quot;, &quot;GTEX.WFON&quot;, &quot;GTEX.X3Y1&quot;, &quot;GTEX.Y5V5&quot;, &quot;GTEX.YEC4&quot;, &quot;GTEX.ZPU1&quot;, &quot;GTEX.ZTPG&quot;)
+
+LCL &lt;- Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3[,indiv_col]
+dim(LCL)</code></pre>
+<pre><code>## [1] 21931    10</code></pre>
+<pre class="r"><code>heart &lt;- Heart_Left_Ventricle_Analysis.v6p.normalized.expression[,indiv_col]
+dim(heart)</code></pre>
+<pre><code>## [1] 22461    10</code></pre>
+<pre class="r"><code>liver &lt;- Liver_Analysis.v6p.normalized.expression[,indiv_col]
+dim(liver)</code></pre>
+<pre><code>## [1] 21848    10</code></pre>
+<pre class="r"><code>lung &lt;- Lung_Analysis.v6p.normalized.expression[,indiv_col]
+dim(lung)</code></pre>
+<pre><code>## [1] 27843    10</code></pre>
+<pre class="r"><code>pancreas &lt;- Pancreas_Analysis.v6p.normalized.expression[,indiv_col]
+dim(pancreas)</code></pre>
+<pre><code>## [1] 23175    10</code></pre>
+<pre class="r"><code># Find the common genes between these 5 tissues
+
+common_geneid &lt;- intersect(intersect(intersect(intersect(LCL$gene_id, heart$gene_id), liver$gene_id), lung$gene_id), pancreas$gene_id)
+
+length(common_geneid)</code></pre>
+<pre><code>## [1] 17542</code></pre>
+<pre class="r"><code># Get the row names for the common genes
+
+LCL_17542 &lt;- which(LCL$gene_id %in% common_geneid)
+LCL_17542_df &lt;- LCL[LCL_17542,]
+dim(LCL_17542_df)</code></pre>
+<pre><code>## [1] 17542    10</code></pre>
+<pre class="r"><code>heart_17542 &lt;- which(heart$gene_id %in% common_geneid)
+heart_17542_df &lt;- heart[heart_17542,]
+dim(heart_17542_df)</code></pre>
+<pre><code>## [1] 17542    10</code></pre>
+<pre class="r"><code>liver_17542 &lt;- which(liver$gene_id %in% common_geneid)
+liver_17542_df &lt;- liver[liver_17542,]
+dim(liver_17542_df)</code></pre>
+<pre><code>## [1] 17542    10</code></pre>
+<pre class="r"><code>lung_17542 &lt;- which(lung$gene_id %in% common_geneid)
+lung_17542_df &lt;- lung[lung_17542,]
+dim(lung_17542_df)</code></pre>
+<pre><code>## [1] 17542    10</code></pre>
+<pre class="r"><code>pancreas_17542 &lt;- which(pancreas$gene_id %in% common_geneid)
+pancreas_17542_df &lt;- pancreas[pancreas_17542,]
+dim(pancreas_17542_df)</code></pre>
+<pre><code>## [1] 17542    10</code></pre>
+<pre class="r"><code># Take the variances of each gene in each data frame
+
+LCL_var &lt;- as.data.frame(apply(as.data.frame(LCL_17542_df[,5:10]),1, var) )
+colnames(LCL_var) &lt;- c(&quot;Variance&quot;)
+
+liver_var &lt;- as.data.frame(apply(as.data.frame(liver_17542_df[,5:10]),1, var) )
+colnames(liver_var) &lt;- c(&quot;Variance&quot;)
+
+lung_var &lt;- as.data.frame(apply(as.data.frame(lung_17542_df[,5:10]),1, var) )
+colnames(lung_var) &lt;- c(&quot;Variance&quot;)
+
+pancreas_var &lt;- as.data.frame(apply(as.data.frame(pancreas_17542_df[,5:10]),1, var) )
+colnames(pancreas_var) &lt;- c(&quot;Variance&quot;)
+
+heart_var &lt;- as.data.frame(apply(as.data.frame(heart_17542_df[,5:10]),1, var) )
+colnames(heart_var) &lt;- c(&quot;Variance&quot;)
+
+# Take log2 variances
+
+LCL_log_var &lt;- log2(LCL_var)
+liver_log_var &lt;- log2(liver_var)
+lung_log_var &lt;- log2(lung_var)
+pancreas_log_var &lt;- log2(pancreas_var)
+heart_log_var &lt;- log2(heart_var)
+
+median(LCL_log_var[,1])</code></pre>
+<pre><code>## [1] -0.6461825</code></pre>
+<pre class="r"><code>median(liver_log_var[,1])</code></pre>
+<pre><code>## [1] -0.3242026</code></pre>
+<pre class="r"><code>median(lung_log_var[,1])</code></pre>
+<pre><code>## [1] -0.4117142</code></pre>
+<pre class="r"><code>median(pancreas_log_var[,1])</code></pre>
+<pre><code>## [1] -0.07430495</code></pre>
+<pre class="r"><code>median(heart_log_var[,1])</code></pre>
+<pre><code>## [1] -0.3732486</code></pre>
+<pre class="r"><code>t.test(LCL_log_var, liver_log_var, alternative = c(&quot;greater&quot;))</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  LCL_log_var and liver_log_var
+## t = -32.526, df = 34803, p-value = 1
+## alternative hypothesis: true difference in means is greater than 0
+## 95 percent confidence interval:
+##  -0.3473949        Inf
+## sample estimates:
+##  mean of x  mean of y 
+## -0.7582014 -0.4275290</code></pre>
+<pre class="r"><code>t.test(LCL_log_var, heart_log_var, alternative = c(&quot;greater&quot;))</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  LCL_log_var and heart_log_var
+## t = -28.238, df = 34643, p-value = 1
+## alternative hypothesis: true difference in means is greater than 0
+## 95 percent confidence interval:
+##  -0.3006455        Inf
+## sample estimates:
+##  mean of x  mean of y 
+## -0.7582014 -0.4741048</code></pre>
+<pre class="r"><code># Make labels
+
+labels1 &lt;- array(&quot;LCL&quot;, dim = c(17542, 1)) 
+labels2 &lt;- array(&quot;Liver&quot;, dim = c(17542, 1)) 
+labels3 &lt;- array(&quot;Lung&quot;, dim = c(17542, 1)) 
+labels4 &lt;- array(&quot;Pancreas&quot;, dim = c(17542, 1)) 
+labels5 &lt;- array(&quot;Heart&quot;, dim = c(17542, 1)) 
+
+# Combine labels
+labels9 &lt;- rbind(labels1, labels2, labels3, labels4, labels5)
+labels &lt;- as.numeric(as.factor(labels9))
+
+# Combine variances
+gtex_log_var &lt;- rbind(as.data.frame(LCL_log_var), as.data.frame(liver_log_var), as.data.frame(lung_log_var), as.data.frame(pancreas_log_var), as.data.frame(heart_log_var))
+
+# Make df for boxplot
+gtex_var_labels &lt;- cbind(gtex_log_var, labels)
+
+p &lt;- ggplot(gtex_var_labels, aes(x = factor(labels), y = gtex_log_var))
+p &lt;- p + geom_violin(aes(fill = factor(labels)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + xlab(&quot;GTEx Tissue&quot;) + ylab(expression(bold(&#39;log&#39;[2]*&#39; variance of normalized gene expression (for each gene)&#39;))) + ggtitle(expression(bold(&#39;log&#39;[2]*&#39; variance of normalized gene expression (n = 17,542 genes) for 5 GTEx tissues&#39;)))
+p &lt;- p + scale_x_discrete(labels=c(&quot;1&quot; = &quot;LCL&quot;, &quot;2&quot; = &quot;Liver&quot;, &quot;3&quot; = &quot;Lung&quot;, &quot;4&quot; = &quot;Pancreas&quot;, &quot;5&quot; = &quot;Heart&quot;)) + bjp
+p</code></pre>
+<pre><code>## Don&#39;t know how to automatically pick scale for object of type data.frame. Defaulting to continuous.</code></pre>
+<p><img src="Variance_compared_to_GTEx_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<div id="make-sure-the-data-looks-normally-distributed" class="section level2">
+<h2>Make sure the data looks normally distributed</h2>
+<pre class="r"><code># Get the row names for the common genes
+
+LCL_17542 &lt;- which(LCL$gene_id %in% common_geneid)
+LCL_17542_df &lt;- LCL[LCL_17542,]
+dim(LCL_17542_df)</code></pre>
+<pre><code>## [1] 17542    10</code></pre>
+<pre class="r"><code>hist(LCL_17542_df[,5])</code></pre>
+<p><img src="Variance_compared_to_GTEx_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>hist(LCL_17542_df[,6])</code></pre>
+<p><img src="Variance_compared_to_GTEx_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

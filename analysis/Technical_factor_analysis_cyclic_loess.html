@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -194,13 +194,14 @@ $(document).ready(function () {
 <li><a href="#find-factors-with-fdr-0.1">Find factors with FDR &lt; 0.1</a><ul>
 <li><a href="#combine-and-test-day-versus-adapter-for-each-sequencing-pool">Combine and test day versus adapter for each sequencing pool</a></li>
 </ul></li>
-<li><a href="#part-three-which-variables-to-put-in-the-model">PART THREE: Which variables to put in the model?</a><ul>
-<li><a href="#check-correlation-between-harvest-density-and-max.-purity">Check correlation between harvest density and max. purity</a></li>
+</ul></li>
+<li><a href="#part-three-which-variables-to-consider-putting-in-the-model">PART THREE: Which variables to consider putting in the model?</a><ul>
 <li><a href="#rin-score">RIN Score</a></li>
+<li><a href="#passage-at-seed">Passage at seed</a></li>
 <li><a href="#harvest-time-and-harvest-densities-supplement">Harvest time and harvest densities (supplement)</a></li>
+<li><a href="#purity">Purity</a></li>
 </ul></li>
-</ul></li>
-<li><a href="#part-one-see-if-any-of-the-variables-for-rna-seq-correlate-with-the-expression-pcs-for-genes-40-samples">PART ONE: See if any of the variables for RNA-Seq correlate with the expression PCs for genes (40 samples)</a><ul>
+<li><a href="#part-four-see-if-any-of-the-variables-for-rna-seq-correlate-with-the-expression-pcs-for-genes-40-samples">PART FOUR: See if any of the variables for RNA-Seq correlate with the expression PCs for genes (40 samples)</a><ul>
 <li><a href="#initialization-1">Initialization</a></li>
 <li><a href="#obtain-gene-expression-pcs-40-samples">Obtain gene expression PCs (40 samples)</a></li>
 <li><a href="#testing-association-between-a-particular-variable-and-pcs-with-a-linear-model-40-samples">Testing association between a particular variable and PCs with a linear model (40 samples)</a></li>
@@ -228,20 +229,22 @@ library(&quot;gdata&quot;)</code></pre>
 ## 
 ##     object.size</code></pre>
 <pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Warning in FUN(X[[i]], ...): failed to assign NativeSymbolInfo for env
+## since env is already defined in the &#39;lazyeval&#39; namespace</code></pre>
 <pre class="r"><code>library(&quot;qvalue&quot;)</code></pre>
 <pre><code>## Warning: package &#39;qvalue&#39; was built under R version 3.2.3</code></pre>
 <pre class="r"><code>library(&quot;glmnet&quot;)</code></pre>
-<pre><code>## Warning: package &#39;glmnet&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Warning: package &#39;glmnet&#39; was built under R version 3.2.5</code></pre>
 <pre><code>## Loading required package: Matrix</code></pre>
 <pre><code>## Warning: package &#39;Matrix&#39; was built under R version 3.2.5</code></pre>
 <pre><code>## Loading required package: foreach</code></pre>
-<pre><code>## Loaded glmnet 2.0-5</code></pre>
+<pre><code>## Loaded glmnet 2.0-10</code></pre>
 <pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
 <pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
 <pre class="r"><code># Load cpm data 
 
-cpm_in_cutoff &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess.txt&quot;)
+cpm_in_cutoff &lt;- read.delim(&quot;../data/cpm_cyclicloess.txt&quot;)
 
 # Load sample information
 
@@ -256,21 +259,18 @@ labels &lt;- paste(Sample_ID, day, sep=&quot; &quot;)
 
 # Load technical factor information
 
-RNA_seq_info_all &lt;- read.csv(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/Endo_TC_Data_Share_Sorting.csv&quot;,  header = T)
+RNA_seq_info_all &lt;- read.csv(&quot;../data/Endo_TC_Data_Share_Sorting.csv&quot;,  header = T)
 
 dim(RNA_seq_info_all)</code></pre>
-<pre><code>## [1] 999  43</code></pre>
+<pre><code>## [1] 130  43</code></pre>
 <pre class="r"><code>RNA_seq_info &lt;- as.data.frame(cbind(RNA_seq_info_all[1:63, 4], RNA_seq_info_all[1:63, 3], RNA_seq_info_all[1:63, 5:27], RNA_seq_info_all[1:63, 30:35], RNA_seq_info_all[1:63, 37:43]))
 
-# Remove day (biological variable of interest)
-RNA_seq_info &lt;- RNA_seq_info[,-8]
-
 # Remove library well (only 1/well)
-RNA_seq_info &lt;- RNA_seq_info[,-19]
+RNA_seq_info &lt;- RNA_seq_info[,-20]
 
 # Full data set
 dim(RNA_seq_info)</code></pre>
-<pre><code>## [1] 63 36</code></pre>
+<pre><code>## [1] 63 37</code></pre>
 </div>
 <div id="obtain-gene-expression-pcs" class="section level2">
 <h2>Obtain gene expression PCs</h2>
@@ -293,7 +293,7 @@ summary &lt;- summary(pca_genes)</code></pre>
 <h2>Plots for PCs versus technical factors</h2>
 <pre class="r"><code>#Create plots for each of the possible confounders versus PCs 1-5
 
-pdf(&#39;~/Desktop/Endoderm_TC/ashlar-trial/data/VarVsGenePCs.pdf&#39;)
+pdf(&#39;../data/VarVsGenePCs.pdf&#39;)
 
 for (i in 2:length(RNA_seq_info)) { 
   par(mfrow=c(1,5))
@@ -363,14 +363,15 @@ for(i in 1:5){
 #Make an empty matrix to put all of the data in
 # Note: Do not include TC day, as it is a biological variable of interest
 
-PC_pvalues = matrix(data = NA, nrow = 5, ncol = 35, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;), c(&quot;Cell line&quot;, &quot;SPSX&quot;, &quot;Batch&quot;, &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;, &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;High conf purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
+PC_pvalues = matrix(data = NA, nrow = 5, ncol = 35, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;), c(&quot;Cell line&quot;,  &quot;Batch&quot;, &quot;Sex&quot;, &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;, &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;Purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
 
-PC_r2 = matrix(data = NA, nrow = 5, ncol = 35, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;), c(&quot;Cell line&quot;, &quot;SPSX&quot;, &quot;Batch&quot;, &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;,   &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;High conf purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
+PC_r2 = matrix(data = NA, nrow = 5, ncol = 35, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;), c(&quot;Cell line&quot;,  &quot;Batch&quot;, &quot;Sex&quot;, &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;,   &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;Purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
 
+# Take out day and species (factors of interest)
+RNA_seq_info_35 &lt;- RNA_seq_info[,-(1:2)]
 
-
-numerical_tech_factors &lt;- c(5,7, 9:11, 13:17, 19:21, 25:29, 31:36)
-categorical_tech_factors &lt;- c(2:4,6, 8, 12, 18, 22:24, 30 )
+numerical_tech_factors &lt;- c(4, 6,8:10, 12:16,18:20,24:28,30:35)
+categorical_tech_factors &lt;- c(1:3, 5,7,11,17,21:23,29)
 
 #Check lm to see how well the variables containing numerical data are correlated with a PC
 
@@ -379,7 +380,7 @@ j=1
 for (i in numerical_tech_factors){
   for (j in 1:5){
   
-  checkPC1 &lt;- lm(pcs[,j] ~ RNA_seq_info[,i])
+  checkPC1 &lt;- lm(pcs[,j] ~ RNA_seq_info_35[,i])
 
 #Get the summary statistics from it
   summary(checkPC1)
@@ -395,8 +396,8 @@ for (i in numerical_tech_factors){
 
 #Put the summary statistics into the matrix w
 
-  PC_pvalues[j, i-1] &lt;- p_fstat
-  PC_r2[j, i-1] &lt;- r2_value
+  PC_pvalues[j, i] &lt;- p_fstat
+  PC_r2[j, i] &lt;- r2_value
   
   }
 
@@ -408,7 +409,7 @@ j=1
 for (i in categorical_tech_factors){
   for (j in 1:5){
   
-  checkPC1 &lt;- lm(pcs[,j] ~ as.factor(RNA_seq_info[,i]))
+  checkPC1 &lt;- lm(pcs[,j] ~ as.factor(RNA_seq_info_35[,i]))
 
 #Get the summary statistics from it
   summary(checkPC1)
@@ -424,72 +425,18 @@ for (i in categorical_tech_factors){
 
 #Put the summary statistics into the matrix w
 
-  PC_pvalues[j, i-1] &lt;- p_fstat
-  PC_r2[j, i-1] &lt;- r2_value
+  PC_pvalues[j, i] &lt;- p_fstat
+  PC_r2[j, i] &lt;- r2_value
   
   }
 
-}</code></pre>
+}
+
+#write.table(PC_pvalues, &quot;/Users/laurenblake/Desktop/pc_pvalues.txt&quot;)</code></pre>
 </div>
 <div id="test-for-potential-violations-of-the-assumptions-of-the-linear-model" class="section level2">
 <h2>Test for potential violations of the assumptions of the linear model</h2>
 <p>Note: I learned in <a href="http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Tech_factor_analysis1_gene_exp.html" class="uri">http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Tech_factor_analysis1_gene_exp.html</a> that this doesn’t work when one or more cells in a column contains an “NA”.</p>
-<pre class="r"><code>#Plot the residuals to look for violations of the assumptions of lm
-
-#pdf(&#39;~/Desktop/Endoderm_TC/ashlar-trial/data/Residuals_vs_var_GenePCs.pdf&#39;)
-
-
-#non_NA_numerical_tech_factor &lt;- c(5,8,  14, 20:22, 26:30, 32:37)
-#non_NA_categorical_tech_factor &lt;- c(2:4,6, 9, 13, 18:19, 23:25, 31 )
-
-#for (i in non_NA_numerical_tech_factor){
-  
-#  par(mfrow=c(1,5))
-  
-#  checkPC1 &lt;- lm(pcs[,1] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC1), ylab = &quot;Residuals (lm with PC1)&quot;, xlab = &quot; &quot;)
-  
-#  checkPC2 &lt;- lm(pcs[,2] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC2), ylab = &quot;Residuals (lm with PC2)&quot;, xlab = &quot; &quot;)
-  
-#  checkPC3 &lt;- lm(pcs[,3] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC3), ylab = &quot;Residuals (lm with PC3)&quot;, xlab = #&quot; &quot;)
-  
-#  checkPC4 &lt;- lm(pcs[,4] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC4), ylab = &quot;Residuals (lm with PC4)&quot;, xlab = &quot; &quot;)
-  
-#  checkPC5 &lt;- lm(pcs[,5] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC5), ylab = &quot;Residuals (lm with PC5)&quot;, xlab = &quot; &quot;)
-  
-#  title(xlab = substitute(paste(k), list(k=colnames(RNA_seq_info)[i])), outer = TRUE, line = -2)
-#  mtext(substitute(paste(&#39;Residuals vs. &#39;, k), list(k=colnames(RNA_seq_info)[i])), side = 3, line = -2, outer = TRUE)
-  
-#}
-
-#  for (i in non_NA_categorical_tech_factor){
-#    par(mfrow=c(1,5))
-   
-#    checkPC1 &lt;- lm(pcs[,1] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC1), ylab = &quot;Residuals (lm with PC1)&quot;, xlab = &quot; &quot;)
-
-#    checkPC2 &lt;- lm(pcs[,2] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC2),  ylab = &quot;Residuals (lm with PC2)&quot;, xlab = &quot; &quot;)
-    
-#    checkPC3 &lt;- lm(pcs[,3] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC3),  ylab = &quot;Residuals (lm with PC3)&quot;, xlab = &quot; &quot;)
-    
-#    checkPC4 &lt;- lm(pcs[,4] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC4),  ylab = &quot;Residuals (lm with PC4)&quot;, xlab = &quot; &quot;)
-    
-#    checkPC5 &lt;- lm(pcs[,5] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC5),  ylab = &quot;Residuals (lm with PC5)&quot;, xlab = &quot; &quot;)
-    
-#    title(xlab = substitute(paste(k), list(k=colnames(RNA_seq_info)[i])), outer = TRUE, line = -2)
-#    mtext(substitute(paste(&#39;Residuals vs. &#39;, k), list(k=colnames(RNA_seq_info)[i])), side = 3, line = -2, outer = TRUE)
-    
-#  }
-
-#dev.off()</code></pre>
 </div>
 <div id="find-which-factors-are-statistically-significant" class="section level2">
 <h2>Find which factors are statistically significant</h2>
@@ -498,15 +445,17 @@ for (i in categorical_tech_factors){
 fdr_val = p.adjust(PC_pvalues, method = &quot;fdr&quot;, n = length(PC_pvalues))
 fdr_val_order = fdr_val[order(fdr_val)]
 hist(fdr_val_order, ylab = &quot;BH-adjusted p-values&quot;, main = &quot;Distribution of Benjamini and Hochberg adjusted p-values&quot;, breaks = 10)</code></pre>
-<p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Number of values significant at 10% FDR 
 
 fdr_val &lt;- matrix(fdr_val, nrow = 5, ncol = 35)
-matrix_fdr_val = matrix(data = fdr_val, nrow = 5, ncol = 35, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;),  c(&quot;Cell line&quot;, &quot;SPSX&quot;, &quot;Batch&quot;, &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;, &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;High conf purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
+matrix_fdr_val = matrix(data = fdr_val, nrow = 5, ncol = 35, dimnames = list(c(&quot;PC1&quot;, &quot;PC2&quot;, &quot;PC3&quot;, &quot;PC4&quot;, &quot;PC5&quot;),  c(&quot;Cell line&quot;,  &quot;Batch&quot;, &quot;Sex&quot;,  &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;, &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;High conf purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
+
+#write.table(matrix_fdr_val, &quot;/Users/laurenblake/Desktop/pc_pvalues.txt&quot;)
 
 # Number of values significant at 10% FDR 
 sum(matrix_fdr_val &lt;= 0.1)</code></pre>
-<pre><code>[1] 28</code></pre>
+<pre><code>[1] 27</code></pre>
 <pre class="r"><code>#Get the coordinates of which variables/PC combinations are significant at FDR 10%
 
 TorF_matrix_fdr &lt;- matrix_fdr_val &lt;=0.1
@@ -517,18 +466,17 @@ coor_to_check &lt;- as.data.frame(coor_to_check)
 
 coor_to_check_col &lt;- coor_to_check$col
 unique(coor_to_check_col)</code></pre>
-<pre><code> [1]  1  2  3  4  5  7  8  9 10 11 12 13 14 17 21 22 23 25 29</code></pre>
+<pre><code> [1]  1  2  4  5  7  8  9 10 11 12 13 14 17 21 22 23 25 29</code></pre>
 <p>** Conclusions from Part I**</p>
 <p>The following variables are associated with one of the PCs tested and will be investigated further in Part 2.</p>
 <ul>
 <li>Cell line</li>
-<li>SPSX</li>
 <li>Batch</li>
 <li>Passage at seed</li>
 <li>Start date</li>
 <li>Harvest time</li>
 <li>Harvest density</li>
-<li>High conf purity</li>
+<li>Purity</li>
 <li>Max purity</li>
 <li>RNA Extraction Date</li>
 <li>RNA conc</li>
@@ -546,10 +494,9 @@ unique(coor_to_check_col)</code></pre>
 <div id="part-two-for-the-variables-that-correlate-see-if-these-segregate-with-either-species-or-tissue" class="section level1">
 <h1>PART TWO: For the variable(s) that correlate, see if these segregate with either species or tissue</h1>
 <p>In coor_to_check_col, row is the PC # and col is the column # -1 that is associated with the PC. Want to take the coor_to_check_col column # and add one.</p>
-<pre class="r"><code>var_numb = unique(coor_to_check_col) + 1
+<pre class="r"><code>var_numb = unique(coor_to_check_col) 
 var.numb &lt;- as.data.frame(var_numb)
 
-pdf(&#39;~/Desktop/Endoderm_TC/ashlar-trial/data/Var_GenePCsVsSpeciesTissue.pdf&#39;)
 
 for (i in var.numb[1:nrow(var.numb),]) { 
 par(mfrow=c(1,2))
@@ -559,16 +506,17 @@ plot(Species, RNA_seq_info[,i], xlab = &quot;Tissue&quot;, ylab = substitute(pas
 
 mtext(substitute(paste(k, &#39; vs. Species and Tissue&#39;), list(k=colnames(RNA_seq_info)[i])), side = 3, line = -2, outer = TRUE)
 
-}
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+}</code></pre>
+<p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-4.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-6.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-8.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-10.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-12.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-14.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-16.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-6-18.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>dev.off()</code></pre>
+<pre><code>null device 
+          1 </code></pre>
 <div id="testing-to-see-if-differences-across-variable-groups-are-statistically-significant-for-day." class="section level2">
 <h2>Testing to see if differences across variable groups are statistically significant for day.</h2>
 <pre class="r"><code># Technical factors to be tested 
 
-numerical_prev_sign_tech_factors &lt;- c(5, 9:11, 13:15, 26)
-categorical_prev_sign_tech_factors &lt;- c(2:4,6, 8, 12, 18, 22:24, 30 )
+numerical_prev_sign_tech_factors &lt;- c(4, 8:10, 12:14,25) 
+categorical_prev_sign_tech_factors &lt;- c(1,2,5,7,11, 17,21:23,29)
 
 #Make a matrix to store the p-values
 
@@ -579,10 +527,10 @@ pvalues_day = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c(&quot;p-v
 #Performing this test of significance for variables that are numerical data (Using an ANOVA)
 j=1
 for (i in numerical_prev_sign_tech_factors) {  
-summary_anova = summary(aov(RNA_seq_info[,i]~ as.factor(day)))
+summary_anova = summary(aov(RNA_seq_info_35[,i]~ as.factor(day)))
 data_summary_anova &lt;- as.data.frame(summary_anova[[1]]$`Pr(&gt;F)`)
 p_val_anova &lt;- data_summary_anova[1,]
-pvalues_day[, i-1] &lt;- p_val_anova  
+pvalues_day[, i] &lt;- p_val_anova  
 j=j+1
 }
 
@@ -592,8 +540,8 @@ j=j+1
 j=1
 for (i in categorical_prev_sign_tech_factors) { 
   
-  pval_chi &lt;- chisq.test(as.factor(RNA_seq_info[,i]), as.factor(day), simulate.p.value = TRUE)$p.value
-  pvalues_day[, i-1] &lt;- pval_chi  
+  pval_chi &lt;- chisq.test(as.factor(RNA_seq_info_35[,i]), as.factor(day), simulate.p.value = TRUE)$p.value
+  pvalues_day[, i] &lt;- pval_chi  
   j=j+1
   
 }</code></pre>
@@ -602,22 +550,22 @@ for (i in categorical_prev_sign_tech_factors) {
 <h2>Testing to see if differences across variable groups are statistically significant for species.</h2>
 <pre class="r"><code># Technical factors to be tested 
 
-numerical_prev_sign_tech_factors &lt;- c(5, 9:11, 13:15, 26)
-categorical_prev_sign_tech_factors &lt;- c(2:4,6, 8, 12, 18, 22:24, 30 )
+numerical_prev_sign_tech_factors &lt;- c(4, 8:10, 12:14,25) 
+categorical_prev_sign_tech_factors &lt;- c(1,2,5,7,11, 17,21:23,29)
 
 #Make a matrix to store the p-values
 
-pvalues_species = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c(&quot;p-value&quot;),  c(&quot;Cell line&quot;, &quot;SPSX&quot;, &quot;Batch&quot;, &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;, &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;High conf purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
+pvalues_species = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c(&quot;p-value&quot;),  c(&quot;Cell line&quot;, &quot;Batch&quot;, &quot;Sex&quot;, &quot;Passage at seed&quot;,  &quot;Start date&quot;, &quot;Density at seed&quot;, &quot;Harvest time&quot;, &quot;Harvest density&quot;, &quot;High conf purity&quot;, &quot;Max purity&quot;, &quot;RNA Extraction Date&quot;, &quot;RNA conc&quot;, &quot;RIN&quot;, &quot;260 280 RNA&quot;, &quot;260 230 RNA&quot;, &quot;DNA concentration&quot;, &quot;Library prep batch&quot;, &quot;Library concentration&quot;, &quot;uL sample&quot;, &quot;uL EB&quot;, &quot;Index sequence&quot;, &quot;Seq pool&quot;, &quot;Lane r1&quot;, &quot;Mseqs R1&quot;, &quot;Total lane reads 1&quot;, &quot;Lane prop r1&quot;, &quot;Dup r1&quot;, &quot;GC r1&quot;, &quot;Lane r2&quot;, &quot;Mseqs r2&quot;, &quot;Total lane reads r2&quot;, &quot;Lane prop r2&quot;, &quot;Dups r2&quot;, &quot;GC r2&quot;, &quot;Total reads&quot;)))
 
 # Numerical
 
 #Performing this test of significance for variables that are numerical data (Using an ANOVA. Note: in this case, the p-value of the ANOVA is the same as the p-value of the beta1 coefficient in lm)
 j=1
 for (i in numerical_prev_sign_tech_factors) {  
-summary_anova = summary(aov(RNA_seq_info[,i]~ as.factor(Species)))
+summary_anova = summary(aov(RNA_seq_info_35[,i]~ as.factor(Species)))
 data_summary_anova &lt;- as.data.frame(summary_anova[[1]]$`Pr(&gt;F)`)
 p_val_anova &lt;- data_summary_anova[1,]
-pvalues_species[, i-1] &lt;- p_val_anova  
+pvalues_species[, i] &lt;- p_val_anova  
 j=j+1
 }
 
@@ -628,8 +576,8 @@ j=j+1
 j=1
 for (i in categorical_prev_sign_tech_factors) { 
   
-  pval_chi &lt;- chisq.test(as.factor(RNA_seq_info[,i]), as.factor(Species), simulate.p.value = TRUE)$p.value
-  pvalues_species[, i-1] &lt;- pval_chi  
+  pval_chi &lt;- chisq.test(as.factor(RNA_seq_info_35[,i]), as.factor(Species), simulate.p.value = TRUE)$p.value
+  pvalues_species[, i] &lt;- pval_chi  
   j=j+1
   
 }
@@ -638,25 +586,61 @@ for (i in categorical_prev_sign_tech_factors) {
 
 collapse_table_full &lt;- rbind(pvalues_day, pvalues_species)
 
-# Get rid of the NAs
+# Want only NAs
+collapse_table &lt;- collapse_table_full[, colSums(is.na(collapse_table_full)) != nrow(collapse_table_full)]
 
-collapse_table &lt;- collapse_table_full[,(var_numb-1)]
-collapse_table</code></pre>
-<pre><code>           Cell line         SPSX Batch Passage at seed Start date
-p-value 1.0000000000 1.0000000000     1      0.99977773          1
-p-value 0.0004997501 0.0004997501     1      0.01227519          1
-        Harvest time Harvest density High conf purity  Max purity
-p-value 0.0004997501    0.0008736023       0.16424734 0.823375937
-p-value 1.0000000000    0.0026053622       0.02830242 0.004607077
-        RNA Extraction Date   RNA conc       RIN 260 280 RNA
-p-value                   1 0.02126824 0.4553421  0.01963749
-p-value                   1 0.09748413 0.7176148  0.44575390
-        Library prep batch Index sequence Seq pool Lane r1
-p-value                  1   0.0004997501        1       1
-p-value                  1   0.9435282359        1       1
-        Total lane reads 1 Lane r2
-p-value          0.9985858       1
-p-value          0.9201341       1</code></pre>
+#write.table(collapse_table, &quot;/Users/laurenblake/Desktop/collapse_table.txt&quot;)</code></pre>
+<pre class="r"><code># Harvest density and Species
+summary(lm(RNA_seq_info$Harvest_density~ as.factor(Species)))</code></pre>
+<pre><code>
+Call:
+lm(formula = RNA_seq_info$Harvest_density ~ as.factor(Species))
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.08357 -0.03479 -0.01226  0.01979  0.23023 
+
+Coefficients:
+                        Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)              0.08558    0.01154   7.417 5.31e-10 ***
+as.factor(Species)human -0.05029    0.01618  -3.107   0.0029 ** 
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.06319 on 59 degrees of freedom
+  (2 observations deleted due to missingness)
+Multiple R-squared:  0.1406,    Adjusted R-squared:  0.1261 
+F-statistic: 9.656 on 1 and 59 DF,  p-value: 0.002902</code></pre>
+<pre class="r"><code># Harvest density and Day
+summary(lm(RNA_seq_info$Harvest_density~ as.factor(day)))</code></pre>
+<pre><code>
+Call:
+lm(formula = RNA_seq_info$Harvest_density ~ as.factor(day))
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.085633 -0.028096 -0.007411  0.012799  0.215255 
+
+Coefficients:
+                Estimate Std. Error t value Pr(&gt;|t|)   
+(Intercept)     0.025926   0.015599   1.662  0.10201   
+as.factor(day)1 0.004177   0.021713   0.192  0.84812   
+as.factor(day)2 0.059567   0.022061   2.700  0.00911 **
+as.factor(day)3 0.074624   0.022061   3.383  0.00130 **
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.06042 on 57 degrees of freedom
+  (2 observations deleted due to missingness)
+Multiple R-squared:  0.2412,    Adjusted R-squared:  0.2012 
+F-statistic: 6.039 on 3 and 57 DF,  p-value: 0.001208</code></pre>
+<pre class="r"><code>chisq.test(as.factor(RNA_seq_info$Harvest_density), as.factor(day), simulate.p.value = TRUE)</code></pre>
+<pre><code>
+    Pearson&#39;s Chi-squared test with simulated p-value (based on 2000
+    replicates)
+
+data:  as.factor(RNA_seq_info$Harvest_density) and as.factor(day)
+X-squared = 183, df = NA, p-value = 0.2339</code></pre>
 </div>
 <div id="find-factors-with-fdr-0.1" class="section level2">
 <h2>Find factors with FDR &lt; 0.1</h2>
@@ -669,31 +653,32 @@ hist(fdr_val_order, ylab = &quot;BH-adjusted p-values&quot;, main = &quot;Distri
 <pre class="r"><code>collapse_table_fdr_val = matrix(data = fdr_val, nrow = 2, ncol = nrow(var.numb), dimnames = list(c(&quot;Day&quot;, &quot;Species&quot;), colnames(collapse_table)))
 
 collapse_table_fdr_val</code></pre>
-<pre><code>          Cell line        SPSX Batch Passage at seed Start date
-Day     1.000000000 1.000000000     1       1.0000000          1
-Species 0.009495252 0.009495252     1       0.1166143          1
-        Harvest time Harvest density High conf purity Max purity
-Day      0.009495252      0.01327875        0.9602152 1.00000000
-Species  1.000000000      0.03300125        0.1955440 0.05001969
-        RNA Extraction Date  RNA conc RIN 260 280 RNA Library prep batch
-Day                       1 0.1616386   1   0.1616386                  1
-Species                   1 0.6173995   1   1.0000000                  1
-        Index sequence Seq pool Lane r1 Total lane reads 1 Lane r2
-Day        0.009495252        1       1                  1       1
-Species    1.000000000        1       1                  1       1</code></pre>
+<pre><code>        Cell line SPSX Passage at seed Start date Harvest time
+Day      1.000000    1       1.0000000          1     0.011994
+Species  0.011994    1       0.1104767          1     1.000000
+        Harvest density High conf purity Max purity RNA Extraction Date
+Day          0.02174627       0.48914734 1.00000000                   1
+Species      0.03481949       0.08328609 0.03033897                   1
+         RNA conc RIN 260 280 RNA Library prep batch Index sequence
+Day     0.1580205   1   0.1575861                  1       0.011994
+Species 0.7730303   1   1.0000000                  1       1.000000
+        Seq pool Lane r1 Total lane reads 1 Lane r2
+Day            1       1                  1       1
+Species        1       1                  1       1</code></pre>
+<pre class="r"><code>write.table(collapse_table_fdr_val, &quot;/Users/laurenblake/Desktop/collapse_table_fdr.txt&quot;)</code></pre>
 <p>** Conclusions from Part 2 **</p>
 <p>The following variables are confounded with day:</p>
 <ul>
-<li>Harvest time (BH adjusted p-value = 0.009495252)</li>
-<li>Harvest density (BH adjusted p-value = 0.01327875)</li>
-<li>Index sequence (BH adjusted p-value = 0.009495252)</li>
+<li>Harvest time (BH adjusted p-value = 0.011994)</li>
+<li>Harvest density (BH adjusted p-value = 0.02174627)</li>
+<li>Index sequence (BH adjusted p-value = 0.011994)</li>
 </ul>
 <p>The following variables are confounded with species:</p>
 <ul>
-<li>Cell line (BH adjusted p-value = 0.009495252)</li>
-<li>SPSX (BH adjusted p-value = 0.009495252)</li>
-<li>Harvest density (BH adjusted p-value = 0.03300125)</li>
-<li>Max. purity (BH adjusted p-value = 0.05001969)</li>
+<li>Cell line (BH adjusted p-value = 0.011994)</li>
+<li>Harvest density (BH adjusted p-value = 0.03481949)</li>
+<li>Purity (BH adjusted p-value = 0.08328609)</li>
+<li>Max. purity (BH adjusted p-value = 0.03033897)</li>
 </ul>
 <pre class="r"><code>plot(day, as.factor(RNA_seq_info[,2]), main = &quot;Cell line versus day&quot;)</code></pre>
 <p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-11-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -727,7 +712,7 @@ Species    1.000000000        1       1                  1       1</code></pre>
 <h3>Combine and test day versus adapter for each sequencing pool</h3>
 <pre class="r"><code># Make table of day, adaptor, and sequencing pool
 
-day_index_pool &lt;- cbind(day, RNA_seq_info[,22], RNA_seq_info[,23]) 
+day_index_pool &lt;- cbind(day, RNA_seq_info$Index_seq, RNA_seq_info$Seq_pool) 
 
 # Test dependency with the adaptors by day 
 
@@ -764,27 +749,14 @@ chisq.test(as.factor(adaptors_pool4[,2]), as.factor(adaptors_pool4[,1]), simulat
 <pre><code>[1] 1</code></pre>
 <pre class="r"><code>  # p-value = 1
 
-fdr_val_4= p.adjust(c(1,1,1,1), method = &quot;fdr&quot;)</code></pre>
+fdr_val_4= p.adjust(c(1,1,1,1), method = &quot;fdr&quot;)
+fdr_val_4</code></pre>
+<pre><code>[1] 1 1 1 1</code></pre>
 </div>
 </div>
-<div id="part-three-which-variables-to-put-in-the-model" class="section level2">
-<h2>PART THREE: Which variables to put in the model?</h2>
-<div id="check-correlation-between-harvest-density-and-max.-purity" class="section level3">
-<h3>Check correlation between harvest density and max. purity</h3>
-<p>Check for degree of similarity between the values of the different technical variables, harvest density and max. purity. For ones that show high correlation (multi-colinearity), we will only want to incorporate one of these variables into the model.</p>
-<pre class="r"><code># Correlation bet. harvest density and max. purity.
-  corr_tech &lt;- summary(lm(RNA_seq_info[,9] ~ RNA_seq_info[,11]))
-
-
-#Get the p-value of the F-statistic
-  corr_tech$fstatistic</code></pre>
-<pre><code>     value      numdf      dendf 
- 0.5549879  1.0000000 20.0000000 </code></pre>
-<pre class="r"><code>  fstat &lt;- as.data.frame(corr_tech$fstatistic)
-  1-pf(fstat[1,], fstat[2,], fstat[3,])</code></pre>
-<pre><code>[1] 0.4649518</code></pre>
-<p>These two factors are not highly correlated (p-value = 0.465).</p>
 </div>
+<div id="part-three-which-variables-to-consider-putting-in-the-model" class="section level1">
+<h1>PART THREE: Which variables to consider putting in the model?</h1>
 <div id="rin-score" class="section level3">
 <h3>RIN Score</h3>
 <pre class="r"><code># Make a table with species, day, and RIN score
@@ -810,8 +782,37 @@ iPSC_prop$Day[iPSC_prop$Day == &quot;2&quot;] &lt;- &quot;Day 2&quot;
 iPSC_prop$Day[iPSC_prop$Day == &quot;3&quot;] &lt;- &quot;Day 3&quot;
 
 ggplot(data = iPSC_prop, aes(y = RIN_Score, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_point(size = 5,  position=position_jitter(width=0.2, height=0.1), show.legend = FALSE) + labs(x = &quot;Species&quot;, y = &quot;RIN score&quot;) + theme_bw()</code></pre>
-<p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-13-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>ggplot(data = iPSC_prop, aes(y = RIN_Score, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot()  + geom_dotplot(binaxis=&#39;y&#39;, stackdir=&#39;center&#39;, binwidth = 0.05) + labs(x = &quot;Species&quot;, y = &quot;RIN score&quot;) + theme_bw()</code></pre>
+<p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-13-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="passage-at-seed" class="section level3">
+<h3>Passage at seed</h3>
+<pre class="r"><code># Make a table with species, day, and RIN score
+species &lt;- After_removal_sample_info$Species
+day &lt;- After_removal_sample_info$Day
+
+iPSC_prop &lt;- as.data.frame(cbind(day, species, RNA_seq_info[1:63,35]), stringsAsFactors = FALSE)
+
+# Remove the 1 sample with a missing RIN score
+
+#remove_NA &lt;- c(26)
+
+#iPSC_prop &lt;- iPSC_prop[-remove_NA, ]
+
+colnames(iPSC_prop) &lt;- c(&quot;Day&quot;, &quot;Species&quot;, &quot;RIN_Score&quot;) 
+
+iPSC_prop$Species[iPSC_prop$Species == &quot;2&quot;] &lt;- &quot;Human&quot;
+iPSC_prop$Species[iPSC_prop$Species == &quot;1&quot;] &lt;- &quot;Chimp&quot;
+
+iPSC_prop$Day[iPSC_prop$Day == &quot;0&quot;] &lt;- &quot;Day 0&quot;
+iPSC_prop$Day[iPSC_prop$Day == &quot;1&quot;] &lt;- &quot;Day 1&quot;
+iPSC_prop$Day[iPSC_prop$Day == &quot;2&quot;] &lt;- &quot;Day 2&quot;
+iPSC_prop$Day[iPSC_prop$Day == &quot;3&quot;] &lt;- &quot;Day 3&quot;
+
+ggplot(data = iPSC_prop, aes(y = RIN_Score, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_point(size = 5,  position=position_jitter(width=0.2, height=0.1), show.legend = FALSE) + labs(x = &quot;Species&quot;, y = &quot;Density at seeding&quot;) + theme_bw()</code></pre>
+<p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-14-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data = iPSC_prop, aes(y = RIN_Score, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot()  + geom_dotplot(binaxis=&#39;y&#39;, stackdir=&#39;center&#39;, binwidth = 0.001) + labs(x = &quot;Species&quot;, y = &quot;Density at seeding&quot;) + theme_bw()</code></pre>
 <p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-14-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="harvest-time-and-harvest-densities-supplement" class="section level3">
@@ -829,32 +830,20 @@ iPSC_prop$Day[iPSC_prop$Day == &quot;1&quot;] &lt;- &quot;Day 1&quot;
 iPSC_prop$Day[iPSC_prop$Day == &quot;2&quot;] &lt;- &quot;Day 2&quot;
 iPSC_prop$Day[iPSC_prop$Day == &quot;3&quot;] &lt;- &quot;Day 3&quot;
 
-# Time is 7
-
-remove_NA &lt;- c(7,23,39,55)
-
-iPSC_prop &lt;- iPSC_prop[-remove_NA, ]
 
 iPSC_prop$Harvest_density &lt;- as.numeric(iPSC_prop$Harvest_density)
 
 ggplot(data = iPSC_prop, aes(y = Harvest_density, x = as.factor(Day)))  + facet_wrap(~ Species, nrow = 1) + geom_boxplot() + geom_point(aes(color = as.factor(Species)), size = 5,  position=position_jitter(width=0.2, height=0.1), show.legend = FALSE)</code></pre>
-<pre><code>Warning: Removed 2 rows containing non-finite values (stat_boxplot).</code></pre>
-<pre><code>Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
 <p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-15-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>ggplot(data = iPSC_prop, aes(y = Harvest_density, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() </code></pre>
-<pre><code>Warning: Removed 2 rows containing non-finite values (stat_boxplot).</code></pre>
 <p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-15-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Harvest density (supplement)
 
 ggplot(data = iPSC_prop, aes(y = Harvest_density, x = Species))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_dotplot(binaxis=&#39;y&#39;, stackdir=&#39;center&#39;) + labs(y = &quot;Harvest density&quot;, title = &quot;Harvest densities for each sample&quot;) + theme_bw()</code></pre>
-<pre><code>Warning: Removed 2 rows containing non-finite values (stat_boxplot).</code></pre>
 <pre><code>`stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<pre><code>Warning: Removed 2 rows containing non-finite values (stat_bindot).</code></pre>
 <p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-15-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ggplot(data = iPSC_prop, aes(y = Harvest_density, x = Species))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_point(size = 5,  position=position_jitter(width=0.2, height=0.1), show.legend = FALSE) + labs(y = &quot;Harvest density&quot;, title = &quot;Harvest densities for each sample&quot;) + theme_bw()</code></pre>
-<pre><code>Warning: Removed 2 rows containing non-finite values (stat_boxplot).
-
-Warning: Removed 2 rows containing missing values (geom_point).</code></pre>
+<pre class="r"><code>ggplot(data = iPSC_prop, aes(y = Harvest_density, x = Species))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_dotplot(binaxis=&#39;y&#39;, stackdir=&#39;center&#39;, dotsize = 0.75) + labs(y = &quot;Harvest density&quot;, title = &quot;Harvest densities for each sample&quot;) + theme_bw()</code></pre>
+<pre><code>`stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-15-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Harvest density for each day species
 
@@ -893,17 +882,23 @@ iPSC_prop$Day[iPSC_prop$Day == &quot;3&quot;] &lt;- &quot;Day 3&quot;
 
 table(iPSC_prop$Day, iPSC_prop$Harvest_time)</code></pre>
 <pre><code>       
-        1:00 PM 1:05 PM 1:06 PM 1:08 PM 1:17 PM 1:20 PM 1:30 PM 11:56
-  Day 0       0       0       0       0       0       0       7     0
-  Day 1       0       4       0       0       0       3       1     0
-  Day 2       4       0       3       0       0       1       0     0
-  Day 3       0       0       1       4       3       0       0     7
+        0.139242857 0.152871429 0.179485714 0.179771429 0.183085714
+  Day 0           1           1           1           1           1
+  Day 1           1           1           1           1           1
+  Day 2           1           1           1           1           1
+  Day 3           1           1           1           1           1
        
-        12:10 12:18 12:30
-  Day 0     0     8     0
-  Day 1     3     0     5
-  Day 2     8     0     0
-  Day 3     1     0     0</code></pre>
+        0.195557143 0.201828571 0.228571429 0.233357143 0.267857143
+  Day 0           1           1           1           1           1
+  Day 1           1           1           2           1           1
+  Day 2           1           1           2           1           1
+  Day 3           1           1           2           1           1
+       
+        0.291428571 0.293714286 0.347142857 0.367857143
+  Day 0           1           1           1           1
+  Day 1           1           1           1           1
+  Day 2           1           1           1           1
+  Day 3           1           1           1           1</code></pre>
 <pre class="r"><code>ggplot(data = iPSC_prop, aes(y = as.factor(Harvest_time), x = Species))  + facet_wrap(~ Day, nrow = 1)  + geom_point(aes(color = Species), size = 5,  position=position_jitter(width=0.2, height=0.1), show.legend = FALSE) + theme_bw()</code></pre>
 <p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-15-5.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>iPSC_prop[which(iPSC_prop$Day == &quot;Day 0&quot; &amp; iPSC_prop$Species == &quot;chimp&quot;) , 4]</code></pre>
@@ -979,19 +974,50 @@ x &lt;- factor(iPSC_prop$Harvest_time,levels = lv)
 ggplot(data = iPSC_prop, aes(y = as.factor(x), x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1)  + geom_dotplot(binaxis=&#39;y&#39;, stackdir=&#39;center&#39;, binwidth = 0.2) + labs(x = &quot;Species&quot;, y = &quot;Harvest time&quot;) + theme_bw()</code></pre>
 <p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-15-7.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
+<div id="purity" class="section level3">
+<h3>Purity</h3>
+<pre class="r"><code># Make a table with species, day, and RIN score
+species &lt;- After_removal_sample_info$Species
+day &lt;- After_removal_sample_info$Day
+
+iPSC_prop &lt;- as.data.frame(cbind(day, species, RNA_seq_info[,10]), stringsAsFactors = FALSE)
+
+# Remove the samples with missing purity
+
+
+
+iPSC_prop_purity &lt;- iPSC_prop[complete.cases(iPSC_prop) == TRUE, ]
+
+colnames(iPSC_prop_purity) &lt;- c(&quot;Day&quot;, &quot;Species&quot;, &quot;Purity&quot;) 
+
+iPSC_prop_purity$Species[iPSC_prop_purity$Species == &quot;2&quot;] &lt;- &quot;Human&quot;
+iPSC_prop_purity$Species[iPSC_prop_purity$Species == &quot;1&quot;] &lt;- &quot;Chimp&quot;
+
+iPSC_prop_purity$Day </code></pre>
+<pre><code> [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2
+[36] 2 2 2 2 2 2 2 2 2 2 2 3 3 3 3 3 3 3 3 3 3 3 3 3 3 3</code></pre>
+<pre class="r"><code>iPSC_prop_purity$Day[iPSC_prop_purity$Day == &quot;0&quot;] &lt;- &quot;Day 0&quot;
+iPSC_prop_purity$Day[iPSC_prop_purity$Day == &quot;1&quot;] &lt;- &quot;Day 1&quot;
+iPSC_prop_purity$Day[iPSC_prop_purity$Day == &quot;2&quot;] &lt;- &quot;Day 2&quot;
+iPSC_prop_purity$Day[iPSC_prop_purity$Day == &quot;3&quot;] &lt;- &quot;Day 3&quot;
+
+ggplot(data = iPSC_prop_purity, aes(y = Purity, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_point(size = 5,  position=position_jitter(width=0.2, height=0.1), show.legend = FALSE) + labs(x = &quot;Species&quot;, y = &quot;Purity&quot;) + theme_bw()</code></pre>
+<p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(data = iPSC_prop_purity, aes(y = Purity, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() +  geom_dotplot(binaxis=&#39;y&#39;, stackdir=&#39;center&#39;, binwidth = .02) + labs(x = &quot;Species&quot;, y = &quot;Purity&quot;) + theme_bw()</code></pre>
+<p><img src="figure/Technical_factor_analysis_cyclic_loess.Rmd/unnamed-chunk-16-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
-<div id="part-one-see-if-any-of-the-variables-for-rna-seq-correlate-with-the-expression-pcs-for-genes-40-samples" class="section level1">
-<h1>PART ONE: See if any of the variables for RNA-Seq correlate with the expression PCs for genes (40 samples)</h1>
+<div id="part-four-see-if-any-of-the-variables-for-rna-seq-correlate-with-the-expression-pcs-for-genes-40-samples" class="section level1">
+<h1>PART FOUR: See if any of the variables for RNA-Seq correlate with the expression PCs for genes (40 samples)</h1>
 <div id="initialization-1" class="section level2">
 <h2>Initialization</h2>
 <pre class="r"><code># Load cpm data 
 
-cpm_in_cutoff_40 &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess_40.txt&quot;)
+cpm_in_cutoff_40 &lt;- read.delim(&quot;../data/cpm_cyclicloess_40.txt&quot;)
 
 # Load sample information
 
-bio_rep_samplefactors &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/samplefactors-filtered.txt&quot;, stringsAsFactors=FALSE)
+bio_rep_samplefactors &lt;- read.delim(&quot;../data/samplefactors-filtered.txt&quot;, stringsAsFactors=FALSE)
 day &lt;- bio_rep_samplefactors$Day
 species &lt;- bio_rep_samplefactors$Species</code></pre>
 </div>
@@ -1128,7 +1154,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -207,10 +207,10 @@ library(&quot;gplots&quot;)</code></pre>
 ## 
 ##     lowess</code></pre>
 <pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
 <pre class="r"><code>library(&quot;RColorBrewer&quot;)
 library(&quot;scales&quot;)</code></pre>
-<pre><code>## Warning: package &#39;scales&#39; was built under R version 3.2.3</code></pre>
+<pre><code>## Warning: package &#39;scales&#39; was built under R version 3.2.5</code></pre>
 <pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
 <pre><code>## Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
 <pre><code>## Loading required package: limma</code></pre>
@@ -241,7 +241,7 @@ library(&quot;colorfulVennPlot&quot;)</code></pre>
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
 ##     attach, detach, gc, load, save</code></pre>
-<pre><code>## R.utils v2.4.0 (2016-09-13) successfully loaded. See ?R.utils for help.</code></pre>
+<pre><code>## R.utils v2.5.0 (2016-11-07) successfully loaded. See ?R.utils for help.</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;R.utils&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:utils&#39;:
@@ -252,7 +252,21 @@ library(&quot;colorfulVennPlot&quot;)</code></pre>
 ##     cat, commandArgs, getOption, inherits, isOpen, parse, warnings</code></pre>
 <pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
 <pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code># Load colors 
+<pre class="r"><code>bjp &lt;-
+theme(
+  panel.border = element_rect(colour = &quot;black&quot;, fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = &quot;bold&quot;),
+  axis.text.y =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 14,face = &quot;bold&quot;),
+  axis.title.x=element_blank(),
+  legend.text = element_text(size = 14,face = &quot;bold&quot;),
+  legend.title = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.x = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.y = element_text(size = 14,face = &quot;bold&quot;),
+  strip.background = element_rect(colour = &quot;black&quot;, size = 2))
+
+# Load colors 
 
 colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
 pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
@@ -375,7 +389,7 @@ corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
 corfit.correlation =   corfit$consensus.correlation
 
 # corfit.correlation = 0.196951
-cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method= &quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
 <p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-2-8.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Plot the density to see shape of the distribution
 
@@ -431,6 +445,171 @@ make_exp_df &lt;- as.data.frame(cbind(exp, day, species))
 colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
 ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=Species)) + ggtitle(&quot;PRDM14 Expression&quot;) + xlab(&quot;Day&quot;) + ylab(&quot;Normalized expression&quot;)</code></pre>
 <p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#KITLG ENSG00000049130
+
+exp_KITLG &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000049130&quot;, rownames(cpm_in_cutoff)), ])
+
+make_exp_df &lt;- as.data.frame(cbind(exp_KITLG, day, Species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=as.factor(Species))) + ggtitle(&quot;KITLG Expression&quot;) + xlab(&quot;Day&quot;) +  ylab(&quot;Normalized expression&quot;) + theme_bw() + bjp</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#KITLG ENSG00000049130
+
+# ENSG00000104313
+# ENSG00000137486
+
+
+# ENSG00000143171
+# Plot data 
+exp_KITLG &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000104313&quot;, rownames(cpm_in_cutoff)), ])
+
+make_exp_df &lt;- as.data.frame(cbind(exp_KITLG, day, Species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=as.factor(Species))) + ggtitle(&quot;EYA1 Expression&quot;) + xlab(&quot;Day&quot;) +  ylab(&quot;Normalized expression&quot;) + theme_bw() + bjp</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-5.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Standardize then plot
+exp_KITLG </code></pre>
+<pre><code>              cpm_in_cutoff[grepl(&quot;ENSG00000104313&quot;, rownames(cpm_in_cutoff)), ]
+D0_20157                                                              2.09108286
+D0_20961                                                              2.03905733
+D0_21792                                                              1.98506373
+D0_28162                                                              2.54441171
+D0_28815                                                              1.68636091
+D0_28815_0116                                                         1.81360219
+D0_29089                                                              1.12387965
+D0_3647                                                               1.37353819
+D0_36470116                                                           0.98405603
+D0_3649                                                              -0.62239112
+D0_3649_0116                                                         -2.30149725
+D0_40300                                                             -0.22462442
+D0_40300_0116                                                         0.19665694
+D0_4955                                                              -0.39779481
+D0_4955_0116                                                         -0.44261278
+D1_20157                                                              3.66108064
+D1_20157_0116                                                         3.29919607
+D1_20961                                                              3.43324856
+D1_21792                                                              3.70167896
+D1_28162                                                              2.86575463
+D1_28815                                                              3.88648205
+D1_28815_0116                                                         3.31620138
+D1_29089                                                              2.82126814
+D1_3647                                                               3.05972010
+D1_3647_0116                                                          3.17305923
+D1_3649                                                               1.27292232
+D1_3649_0116                                                          0.53827113
+D1_40300                                                              1.71371953
+D1_40300_0116                                                         1.65506626
+D1_4955                                                               1.59136843
+D1_4955_0116                                                          2.21888439
+D2_20157                                                              3.32546307
+D2_20157_0116                                                         3.72517542
+D2_20961                                                              3.78472350
+D2_21792                                                              4.12985672
+D2_28162                                                              3.62039124
+D2_28815                                                              3.84381130
+D2_28815_0116                                                         3.70507413
+D2_29089                                                              3.27632944
+D2_3647                                                               4.20660412
+D2_3647_0116                                                          2.78034276
+D2_3649                                                               0.76107868
+D2_3649_0116                                                          0.86581427
+D2_40300                                                              2.99459978
+D2_40300_0116                                                         3.50647908
+D2_4955                                                               1.69326807
+D2_4955_0116                                                          2.70662259
+D3_20157                                                              3.91236664
+D3_20157_0116                                                         3.91678760
+D3_20961                                                              3.74157476
+D3_21792                                                              3.43674479
+D3_28162                                                              3.90839067
+D3_28815                                                              4.13044226
+D3_28815_0116                                                         3.97433118
+D3_29089                                                              3.13621798
+D3_3647                                                               4.07820463
+D3_3647_0116                                                          2.44792638
+D3_3649                                                               0.17644205
+D3_3649_0116                                                         -0.04834571
+D3_40300                                                              2.15289077
+D3_40300_0116                                                         3.45945683
+D3_4955                                                               1.63054490
+D3_4955_0116                                                          2.88421146</code></pre>
+<pre class="r"><code>humans &lt;- c(1:7, 16:23, 32:39, 48:55)
+chimps &lt;- c(8:15, 24:31, 40:47, 56:63)
+
+mean_day0_humans &lt;- mean(exp_KITLG[1:7,] ) 
+mean_day0_chimps &lt;- mean(exp_KITLG[8:15,] ) 
+
+day0humans &lt;- as.data.frame(exp_KITLG[1:7,] - 0.897)
+colnames(day0humans) &lt;- c(&quot;standardized mean&quot;) 
+day0chimps &lt;- as.data.frame(exp_KITLG[8:15,] + 1.179)
+colnames(day0chimps) &lt;- c(&quot;standardized mean&quot;) 
+day1humans &lt;- as.data.frame(exp_KITLG[16:23,] - 0.897)
+colnames(day1humans) &lt;- c(&quot;standardized mean&quot;) 
+day1chimps &lt;- as.data.frame(exp_KITLG[24:31,]  + 1.179)
+colnames(day1chimps) &lt;- c(&quot;standardized mean&quot;) 
+day2humans &lt;- as.data.frame(exp_KITLG[32:39,] - 0.897)
+colnames(day2humans) &lt;- c(&quot;standardized mean&quot;) 
+day2chimps &lt;- as.data.frame(exp_KITLG[40:47,] + 1.179)
+colnames(day2chimps) &lt;- c(&quot;standardized mean&quot;) 
+day3humans &lt;- as.data.frame(exp_KITLG[48:55,] - 0.897)
+colnames(day3humans) &lt;- c(&quot;standardized mean&quot;) 
+day3chimps &lt;- as.data.frame(exp_KITLG[56:63,] + 1.79)
+colnames(day3chimps) &lt;- c(&quot;standardized mean&quot;) 
+
+exp_stand &lt;- rbind(day0humans, day0chimps, day1humans, day1chimps, day2humans, day2chimps, day3humans, day3chimps)
+
+make_exp_df &lt;- as.data.frame(cbind(exp_stand, day, Species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=as.factor(Species))) + ggtitle(&quot;Standardized EYA1 Expression&quot;) + xlab(&quot;Day&quot;) +  ylab(&quot;Standardized expression&quot;) + theme_bw() + bjp</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-6.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Note: ELAC2 is gene 105
+
+gene_105 &lt;- as.data.frame(cpm_in_cutoff[105, ] )
+
+make_exp_df &lt;- as.data.frame(cbind(gene_105, day, Species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=as.factor(Species))) + ggtitle(&quot;ELAC2 Expression&quot;) + xlab(&quot;Day&quot;) +  ylab(&quot;Normalized expression&quot;) + theme_bw() + bjp</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-7.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Standardization - 110, 111, 116, 121, 125, 139
+gene_105 &lt;- as.data.frame(cpm_in_cutoff[151, ] )
+
+make_exp_df &lt;- as.data.frame(cbind(gene_105, day, Species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=as.factor(Species)), show.legend = FALSE) + ggtitle(&quot;RPS20 Gene Expression&quot;) + xlab(&quot;Day&quot;) +  ylab(&quot;Normalized expression&quot;) + theme_bw() + bjp</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-8.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>mean_day0_humans &lt;- median(gene_105[1:7,] ) 
+mean_day0_chimps &lt;- median(gene_105[8:15,] ) 
+
+day0humans &lt;- as.data.frame(gene_105[1:7,] - mean_day0_humans + 1)
+colnames(day0humans) &lt;- c(&quot;standardized mean&quot;) 
+day0chimps &lt;- as.data.frame(gene_105[8:15,] - mean_day0_chimps + 1)
+colnames(day0chimps) &lt;- c(&quot;standardized mean&quot;) 
+day1humans &lt;- as.data.frame(gene_105[16:23,] - mean_day0_humans + 1)
+colnames(day1humans) &lt;- c(&quot;standardized mean&quot;) 
+day1chimps &lt;- as.data.frame(gene_105[24:31,]  - mean_day0_chimps + 1)
+colnames(day1chimps) &lt;- c(&quot;standardized mean&quot;) 
+day2humans &lt;- as.data.frame(gene_105[32:39,] - mean_day0_humans + 1)
+colnames(day2humans) &lt;- c(&quot;standardized mean&quot;) 
+day2chimps &lt;- as.data.frame(gene_105[40:47,] - mean_day0_chimps + 1)
+colnames(day2chimps) &lt;- c(&quot;standardized mean&quot;) 
+day3humans &lt;- as.data.frame(gene_105[48:55,] - mean_day0_humans + 1)
+colnames(day3humans) &lt;- c(&quot;standardized mean&quot;) 
+day3chimps &lt;- as.data.frame(gene_105[56:63,] - mean_day0_chimps + 1)
+colnames(day3chimps) &lt;- c(&quot;standardized mean&quot;) 
+
+exp_stand &lt;- rbind(day0humans, day0chimps, day1humans, day1chimps, day2humans, day2chimps, day3humans, day3chimps)
+
+make_exp_df &lt;- as.data.frame(cbind(exp_stand, day, Species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=as.factor(Species)), show.legend = FALSE) + ggtitle(&quot;Standardized RPS20 Gene Expression&quot;) + xlab(&quot;Day&quot;) +  ylab(&quot;Standardized expression&quot;) + theme_bw() + bjp</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-9.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># reduction in variance
+red_var &lt;- as.data.frame(cpm_in_cutoff[2, ] )
+
+make_exp_df &lt;- as.data.frame(cbind(red_var, day, Species))
+colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=as.factor(Species))) + ggtitle(&quot;KITLG Expression&quot;) + xlab(&quot;Day&quot;) +  ylab(&quot;Normalized expression&quot;) + theme_bw() + bjp</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-3-10.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>cpm_in_cutoff &lt;- cpm.voom.corfit$E
 
 # New heatmap
@@ -439,7 +618,13 @@ ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(a
 
 exp_EOMES &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000163508&quot;, rownames(cpm_in_cutoff)), ])
 
-# GSC (ENSG00000133937)
+make_exp_df &lt;- as.data.frame(cbind(t(exp_EOMES), day, Species))</code></pre>
+<pre><code>Warning in cbind(t(exp_EOMES), day, Species): number of rows of result is
+not a multiple of vector length (arg 2)</code></pre>
+<pre class="r"><code>colnames(make_exp_df) &lt;- c(&quot;CPM&quot;, &quot;Day&quot;, &quot;Species&quot;)
+ggplot(make_exp_df, aes(x=as.factor(Day), y=CPM, fill=Species)) + geom_boxplot(aes(fill=as.factor(Species))) + ggtitle(&quot;EOMES Expression&quot;) + xlab(&quot;Day&quot;) +  ylab(&quot;Normalized expression&quot;) + theme_bw() + bjp</code></pre>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># GSC (ENSG00000133937)
 
 exp_GSC &lt;- as.data.frame(cpm_in_cutoff[grepl(&quot;ENSG00000133937&quot;, rownames(cpm_in_cutoff)), ])
 
@@ -561,7 +746,7 @@ dim(TF_heatmap) </code></pre>
 <pre class="r"><code>gplots::heatmap.2(x=as.matrix(t(TF_heatmap)),
 #                  , distfun = dist(x, method = &quot;euclidean&quot;), 
                   hclustfun = function(x) hclust(dist(x), method = &quot;average&quot;), tracecol=NA, col=colors, denscol=&quot;white&quot;, labCol= labels, ColSideColors=pal[as.integer(as.factor(day))])</code></pre>
-<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-4-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="data-visualization" class="section level3">
 <h3>Data visualization</h3>
@@ -583,8 +768,12 @@ pcs &lt;- data.frame(pc1, pc2, pc3, pc4, pc5)
 
 summary &lt;- summary(pca_genes)
 
-
-ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day), shape=as.factor(species), size=2)) + geom_point() + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;))  + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;) + labs(title = &quot;PCA of normalized endoderm data &quot;)</code></pre>
+# Correlations
+cor(pc1, as.numeric(day))</code></pre>
+<pre><code>[1] 0.9245192</code></pre>
+<pre class="r"><code>cor(pc2, as.numeric(as.factor(species)))</code></pre>
+<pre><code>[1] 0.9329493</code></pre>
+<pre class="r"><code>ggplot(data=pcs, aes(x=pc1, y=pc2, color=as.factor(day), shape=as.factor(species), size=2)) + geom_point() + xlab(paste(&quot;PC1 (&quot;,(summary$importance[2,1]*100), &quot;% of variance)&quot;)) + ylab(paste(&quot;PC2 (&quot;,(summary$importance[2,2]*100), &quot;% of variance)&quot;))  + guides(color = guide_legend(order=1), size = FALSE, shape = guide_legend(order=2)) + scale_color_discrete(name  =&quot;Day&quot;) + labs(title = &quot;PCA of normalized endoderm data &quot;)</code></pre>
 <p><img src="figure/DE_exp_limma_only_cyclic_loess.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="final-no-global-5-fdr-main-paper" class="section level3">
@@ -646,27 +835,31 @@ important_columns &lt;- c(1,2,6)
 
 # Find the genes that are DE at Day 0
 HvCday0 =topTable(fit2, coef=1, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
-dim(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+dim(HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), important_columns])   </code></pre>
 <pre><code>[1] 4475    3</code></pre>
-<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
+<pre class="r"><code>HvCday0_adj_pval &lt;- HvCday0[which(HvCday0$adj.P.Val &lt; 0.05), ]
+HvCday0_adj_pval &lt;- HvCday0[, important_columns]    
 
 # Find the genes that are DE at Day 1
 HvCday1 =topTable(fit2, coef=2, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
 dim(HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), important_columns])</code></pre>
 <pre><code>[1] 4408    3</code></pre>
-<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
+<pre class="r"><code>HvCday1_adj_pval &lt;- HvCday1[which(HvCday1$adj.P.Val &lt; 0.05), ]
+HvCday1_adj_pval &lt;- HvCday1[, important_columns] 
 
 # Find the genes that are DE at Day 2
 HvCday2 =topTable(fit2, coef=3, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
 dim(HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), important_columns]) </code></pre>
 <pre><code>[1] 4712    3</code></pre>
-<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
+<pre class="r"><code>HvCday2_adj_pval &lt;- HvCday2[which(HvCday2$adj.P.Val &lt; 0.05), ]
+HvCday2_adj_pval &lt;- HvCday2[, important_columns] 
 
 # Find the genes that are DE at Day 3
 HvCday3 =topTable(fit2, coef=4, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
-dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])                  </code></pre>
+dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])  </code></pre>
 <pre><code>[1] 5077    3</code></pre>
-<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
+<pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), ]
+HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
 
 #4475
 #4408
@@ -682,17 +875,17 @@ dim(HvCday0_adj_pval)</code></pre>
 <pre><code>[1] 10304     3</code></pre>
 <pre class="r"><code>dim(HvCday3_adj_pval)</code></pre>
 <pre><code>[1] 10304     3</code></pre>
-<pre class="r"><code>write.table(HvCday0, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day0_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(HvCday1, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day1_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(HvCday2, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day2_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(HvCday3, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day3_all_genes.txt&quot;, sep=&quot;\t&quot;)
+<pre class="r"><code>#write.table(HvCday0, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day0_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(HvCday1, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day1_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(HvCday2, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day2_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(HvCday3, &quot;~/Desktop/Endoderm_TC/ashlar-trial/data/HvC_day3_all_genes.txt&quot;, sep=&quot;\t&quot;)
 
 
 # Table 2
-write.table(HvCday0_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/HvC_day0_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(HvCday1_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day1_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(HvCday2_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day2_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(HvCday3_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day3_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(HvCday0_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/Main_paper_April_18/HvC_day0_all_genes.txt&quot;, #sep=&quot;\t&quot;)
+#write.table(HvCday1_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day1_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(HvCday2_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day2_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(HvCday3_adj_pval, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/HvC_day3_all_genes.txt&quot;, sep=&quot;\t&quot;)
 
 
 important_columns &lt;- c(1,2,6)
@@ -701,19 +894,22 @@ important_columns &lt;- c(1,2,6)
 H_day01 =topTable(fit2, coef=5, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
 dim(H_day01[which(H_day01$adj.P.Val &lt; 0.05), important_columns])</code></pre>
 <pre><code>[1] 3231    3</code></pre>
-<pre class="r"><code>#H_day01 &lt;- H_day01[, important_columns]    
+<pre class="r"><code>H_day01 &lt;- H_day01[which(H_day01$adj.P.Val &lt; 0.05), ]
+# H_day01 &lt;- H_day01[, important_columns]    
 
 # Find the genes that are DE at Human Day 1 to Day 2
 H_day12 =topTable(fit2, coef=6, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
 dim(H_day12[which(H_day12$adj.P.Val &lt; 0.05), important_columns])</code></pre>
 <pre><code>[1] 4293    3</code></pre>
-<pre class="r"><code>#H_day12 &lt;- H_day12[, important_columns]  
+<pre class="r"><code>H_day12 &lt;- H_day12[which(H_day12$adj.P.Val &lt; 0.05), ]
+# H_day12 &lt;- H_day12[, important_columns]  
 
 # Find the genes that are DE at Human Day 2 to Day 3
 H_day23 =topTable(fit2, coef=7, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
 dim(H_day23[which(H_day23$adj.P.Val &lt; 0.05), important_columns])</code></pre>
 <pre><code>[1] 1444    3</code></pre>
-<pre class="r"><code>#H_day23 &lt;- H_day23[, important_columns]  
+<pre class="r"><code>H_day23 &lt;- H_day23[which(H_day23$adj.P.Val &lt; 0.05), ]
+H_day23 &lt;- H_day23[, important_columns]  
 
 
 # 3231
@@ -724,19 +920,22 @@ dim(H_day23[which(H_day23$adj.P.Val &lt; 0.05), important_columns])</code></pre>
 C_day01 =topTable(fit2, coef=8, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
 dim(C_day01[which(C_day01$adj.P.Val &lt; 0.05), important_columns])</code></pre>
 <pre><code>[1] 3360    3</code></pre>
-<pre class="r"><code>#C_day01 &lt;- C_day01[, important_columns]    
+<pre class="r"><code>C_day01 &lt;- C_day01[which(C_day01$adj.P.Val &lt; 0.05), ]
+C_day01 &lt;- C_day01[, important_columns]    
 
 # Find the genes that are DE at Chimp Day 1 to Day 2
 C_day12 =topTable(fit2, coef=9, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
 dim(C_day12[which(C_day12$adj.P.Val &lt; 0.05), important_columns])</code></pre>
 <pre><code>[1] 4449    3</code></pre>
-<pre class="r"><code>#C_day12 &lt;- C_day12[, important_columns]  
+<pre class="r"><code>C_day12 &lt;- C_day12[which(C_day12$adj.P.Val &lt; 0.05), ]
+C_day12 &lt;- C_day12[, important_columns]  
 
 # Find the genes that are DE at Chimp Day 2 to Day 3
 C_day23 =topTable(fit2, coef=10, adjust=&quot;BH&quot;, number=Inf, sort.by=&quot;none&quot;)
 dim(C_day23[which(C_day23$adj.P.Val &lt; 0.05), important_columns])</code></pre>
 <pre><code>[1] 3728    3</code></pre>
-<pre class="r"><code>#C_day23 &lt;- C_day23[, important_columns]  
+<pre class="r"><code>C_day23 &lt;- C_day23[which(C_day23$adj.P.Val &lt; 0.05), ]
+C_day23 &lt;- C_day23[, important_columns]  
 
 
 # 3360
@@ -745,124 +944,35 @@ dim(C_day23[which(C_day23$adj.P.Val &lt; 0.05), important_columns])</code></pre>
 
 # Check dimensions
 dim(H_day01)</code></pre>
-<pre><code>[1] 10304     7</code></pre>
+<pre><code>[1] 3231    7</code></pre>
 <pre class="r"><code>dim(H_day12)</code></pre>
-<pre><code>[1] 10304     7</code></pre>
+<pre><code>[1] 4293    7</code></pre>
 <pre class="r"><code>dim(H_day23)</code></pre>
-<pre><code>[1] 10304     7</code></pre>
+<pre><code>[1] 1444    3</code></pre>
 <pre class="r"><code>dim(C_day01)</code></pre>
-<pre><code>[1] 10304     7</code></pre>
+<pre><code>[1] 3360    3</code></pre>
 <pre class="r"><code>dim(C_day12)</code></pre>
-<pre><code>[1] 10304     7</code></pre>
+<pre><code>[1] 4449    3</code></pre>
 <pre class="r"><code>dim(C_day23)</code></pre>
-<pre><code>[1] 10304     7</code></pre>
-<pre class="r"><code>##### Day 0 --&gt; 1 #####
-
-D01bind &lt;- cbind(H_day01, C_day01)
-
-# Human only 
-
-D01_human_only &lt;- D01bind[which(D01bind[,6] &lt;= 0.01 &amp; D01bind[,13] &gt; 0.05) , ]
-nrow(D01_human_only) #508</code></pre>
-<pre><code>[1] 508</code></pre>
-<pre class="r"><code># Chimp only
-
-D01_chimp_only &lt;- D01bind[which(D01bind[,13] &lt;= 0.01 &amp; D01bind[,6] &gt; 0.05) , ]
-nrow(D01_chimp_only) #602</code></pre>
-<pre><code>[1] 602</code></pre>
-<pre class="r"><code># Shared (intersection)
-
-D01_shared &lt;- D01bind[which(D01bind[,13] &lt;= 0.01 &amp; D01bind[,6] &lt;= 0.05 | D01bind[,6] &lt;= 0.01 &amp; D01bind[,13] &lt;= 0.05) , ]
-
-# Check for duplicate rows
-anyDuplicated(D01_shared)</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code>nrow(D01_shared) # 1993</code></pre>
-<pre><code>[1] 1993</code></pre>
-<pre class="r"><code># Test- naive sharing
-
-D01_shared_naive &lt;- D01bind[which(D01bind[,13] &lt;= 0.01 &amp; D01bind[,6] &lt;= 0.01) , ]
-nrow(D01_shared_naive) #1433</code></pre>
-<pre><code>[1] 1433</code></pre>
-<pre class="r"><code># Sign chimps | sign in humans
-
-D01_incomp &lt;- D01bind[which(D01bind[,6] &lt;= 0.01 &amp; D01bind[,13] &lt;= 0.05) , ]
-nrow(D01_incomp) #1669</code></pre>
-<pre><code>[1] 1669</code></pre>
-<pre class="r"><code>##### Day 1 --&gt; 2 #####
-
-D12bind &lt;- cbind(H_day12, C_day12)
-
-# Human only 
-
-D12_human_only &lt;- D12bind[which(D12bind[,6] &lt;= 0.01 &amp; D12bind[,13] &gt; 0.05) , ]
-nrow(D12_human_only) # 705</code></pre>
-<pre><code>[1] 705</code></pre>
-<pre class="r"><code># Chimp only
-
-D12_chimp_only &lt;- D12bind[which(D12bind[,13] &lt;= 0.01 &amp; D12bind[,6] &gt; 0.05) , ]
-nrow(D12_chimp_only) #833</code></pre>
-<pre><code>[1] 833</code></pre>
-<pre class="r"><code># Shared (intersection)
-
-D12_shared &lt;- D01bind[which(D12bind[,13] &lt;= 0.01 &amp; D12bind[,6] &lt;= 0.05 | D12bind[,6] &lt;= 0.01 &amp; D12bind[,13] &lt;= 0.05) , ]
-
-# Check for duplicate rows
-anyDuplicated(D12_shared)</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code>nrow(D12_shared) # 2786</code></pre>
-<pre><code>[1] 2786</code></pre>
-<pre class="r"><code># Sign chimps | sign in humans
-
-D12_incomp &lt;- D12bind[which(D12bind[,6] &lt;= 0.01 &amp; D12bind[,13] &lt;= 0.05) , ]
-nrow(D12_incomp) #2376</code></pre>
-<pre><code>[1] 2376</code></pre>
-<pre class="r"><code>##### Day 2 --&gt; 3 #####
-
-D23bind &lt;- cbind(H_day23, C_day23)
-
-# Human only 
-
-D23_human_only &lt;- D23bind[which(D23bind[,6] &lt;= 0.01 &amp; D23bind[,13] &gt; 0.05) , ]
-nrow(D23_human_only) # 146</code></pre>
-<pre><code>[1] 146</code></pre>
-<pre class="r"><code># Chimp only
-
-D23_chimp_only &lt;- D23bind[which(D23bind[,13] &lt;= 0.01 &amp; D23bind[,6] &gt; 0.05) , ]
-nrow(D23_chimp_only) #1641</code></pre>
-<pre><code>[1] 1641</code></pre>
-<pre class="r"><code># Shared (intersection)
-
-D23_shared &lt;- D23bind[which(D23bind[,13] &lt;= 0.01 &amp; D23bind[,6] &lt;= 0.05 | D23bind[,6] &lt;= 0.01 &amp; D23bind[,13] &lt;= 0.05) , ]
-
-# Check for duplicate rows
-anyDuplicated(D23_shared)</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code>nrow(D23_shared) # 932</code></pre>
-<pre><code>[1] 932</code></pre>
-<pre class="r"><code># Sign chimps | sign in humans
-
-D23_incomp &lt;- D23bind[which(D23bind[,6] &lt;= 0.01 &amp; D23bind[,13] &lt;= 0.05) , ]
-nrow(D23_incomp) #576</code></pre>
-<pre><code>[1] 576</code></pre>
+<pre><code>[1] 3728    3</code></pre>
 <pre class="r"><code># Make a table of the sections
 
-write.table(H_day01, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(H_day12, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(H_day23, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(H_day01, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(H_day12, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(H_day23, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/H_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
 
-write.table(C_day01, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/C_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(C_day12, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/C_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(C_day23, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/C_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(C_day01, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/C_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(C_day12, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/C_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(C_day23, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/C_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
 
 # Table 3
-write.table(H_day01, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(H_day12, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(H_day23, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(H_day01, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(H_day12, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(H_day23, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
 
-write.table(C_day01, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/C_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(C_day12, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/C_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
-write.table(C_day23, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/C_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(C_day01, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/C_day01_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(C_day12, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/C_day12_all_genes.txt&quot;, sep=&quot;\t&quot;)
+#write.table(C_day23, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/C_day23_all_genes.txt&quot;, sep=&quot;\t&quot;)
 
 
 
@@ -898,9 +1008,9 @@ dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; 0.05), important_column
 
 # Table 4
 
-write.table(Sign_day1_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day1_interact.txt&quot;, sep=&quot;\t&quot;)
-write.table(Sign_day2_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day2_interact.txt&quot;, sep=&quot;\t&quot;)
-write.table(Sign_day3_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day3_interact.txt&quot;, sep=&quot;\t&quot;)
+#write.table(Sign_day1_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day1_interact.txt&quot;, sep=&quot;\t&quot;)
+#write.table(Sign_day2_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day2_interact.txt&quot;, sep=&quot;\t&quot;)
+#write.table(Sign_day3_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day3_interact.txt&quot;, sep=&quot;\t&quot;)
 
 ##################### VENN DIAGRAMS ############################
 
@@ -908,52 +1018,51 @@ write.table(Sign_day3_inter, &quot;~/Dropbox/Endoderm TC/Tables_Supplement/H_day
 
 mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
-mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
+
+
 
 
 # Make as pdf 
-Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
-pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/DE_across_species_March_13_5FDR.pdf&quot;)
-  grid.draw(Four_comp)
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
-<pre class="r"><code>mylist_humans_by_day &lt;- list()
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+#pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/DE_across_species_March_13_5FDR.pdf&quot;)
+#  grid.draw(Four_comp)
+#dev.off()
+
+
+mylist_humans_by_day &lt;- list()
 mylist_humans_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
 mylist_humans_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
 mylist_humans_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[7]]])[top3[[names(top3)[7]]]$adj.P.Val &lt; FDR_level]
 
 
 Three_comp_humans &lt;- venn.diagram(mylist_humans_by_day, filename= NULL, main=&quot;DE genes across days in humans (5% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
-pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/DE_across_time_humans_March_13_5FDR.pdf&quot;)
-  grid.draw(Three_comp_humans)
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
-<pre class="r"><code>mylist_chimps_by_day &lt;- list()
+#pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/DE_across_time_humans_March_13_5FDR.pdf&quot;)
+#  grid.draw(Three_comp_humans)
+#dev.off()
+
+mylist_chimps_by_day &lt;- list()
 mylist_chimps_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[8]]])[top3[[names(top3)[8]]]$adj.P.Val &lt; FDR_level]
 mylist_chimps_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[9]]])[top3[[names(top3)[9]]]$adj.P.Val &lt; FDR_level]
 mylist_chimps_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[10]]])[top3[[names(top3)[10]]]$adj.P.Val &lt; FDR_level]
 
 Three_comp_chimps &lt;- venn.diagram(mylist_chimps_by_day, filename= NULL, main=&quot;DE genes across days in chimpanzees (5% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
-pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/DE_across_time_chimps_March_13_5FDR.pdf&quot;)
-  grid.draw(Three_comp_chimps)
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
-<pre class="r"><code>mylist_interact &lt;- list()
+#pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/DE_across_time_chimps_March_13_5FDR.pdf&quot;)
+#  grid.draw(Three_comp_chimps)
+#dev.off()
+
+mylist_interact &lt;- list()
 mylist_interact[[&quot;Human x Day 1&quot;]] &lt;- row.names(top3[[names(top3)[11]]])[top3[[names(top3)[11]]]$adj.P.Val &lt; FDR_level]
 mylist_interact[[&quot;Human x Day 2&quot;]] &lt;- row.names(top3[[names(top3)[12]]])[top3[[names(top3)[12]]]$adj.P.Val &lt; FDR_level]
 mylist_interact[[&quot;Human x Day 3&quot;]] &lt;- row.names(top3[[names(top3)[13]]])[top3[[names(top3)[13]]]$adj.P.Val &lt; FDR_level]
 
 Sig_interaction &lt;- venn.diagram(mylist_interact, filename= NULL, main=&quot;Genes with a significant species-by-day interaction (5% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
-pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/Significant_interactions_March_13_5FDR.pdf&quot;)
-  grid.draw(Sig_interaction)
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+#pdf(file = &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/Significant_interactions_March_13_5FDR.pdf&quot;)
+#  grid.draw(Sig_interaction)
+#dev.off()</code></pre>
 </div>
 <div id="final-no-global-at-fdr-1-both-batches-supplement" class="section level3">
 <h3>Final, no global at FDR 1%, both batches (supplement)</h3>
@@ -1061,52 +1170,48 @@ dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; FDR_level), important_c
 
 mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
-mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 
 
 # Make as pdf 
 Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (1% FDR)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
-pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4a_DE_across_species_March_13_1FDR.pdf&quot;)
-  grid.draw(Four_comp)
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
-<pre class="r"><code>mylist_humans_by_day &lt;- list()
+#pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4a_DE_across_species_March_13_1FDR.pdf&quot;)
+#  grid.draw(Four_comp)
+#dev.off()
+
+
+mylist_humans_by_day &lt;- list()
 mylist_humans_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[5]]])[top3[[names(top3)[5]]]$adj.P.Val &lt; FDR_level]
 mylist_humans_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[6]]])[top3[[names(top3)[6]]]$adj.P.Val &lt; FDR_level]
 mylist_humans_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[7]]])[top3[[names(top3)[7]]]$adj.P.Val &lt; FDR_level]
 
 
 Three_comp_humans &lt;- venn.diagram(mylist_humans_by_day, filename= NULL, main=&quot;DE genes across days in humans (1% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
-pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4b_DE_by_day_human_March_13_1FDR.pdf&quot;)
-  grid.draw(Three_comp_humans)
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
-<pre class="r"><code>mylist_chimps_by_day &lt;- list()
+#pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4b_DE_by_day_human_March_13_1FDR.pdf&quot;)
+#  grid.draw(Three_comp_humans)
+#dev.off()
+
+mylist_chimps_by_day &lt;- list()
 mylist_chimps_by_day[[&quot;DE Days 0 to 1&quot;]] &lt;- row.names(top3[[names(top3)[8]]])[top3[[names(top3)[8]]]$adj.P.Val &lt; FDR_level]
 mylist_chimps_by_day[[&quot;DE Days 1 to 2&quot;]] &lt;-  row.names(top3[[names(top3)[9]]])[top3[[names(top3)[9]]]$adj.P.Val &lt; FDR_level]
 mylist_chimps_by_day[[&quot;DE Days 2 to 3&quot;]] &lt;- row.names(top3[[names(top3)[10]]])[top3[[names(top3)[10]]]$adj.P.Val &lt; FDR_level]
 
 Three_comp_chimps &lt;- venn.diagram(mylist_chimps_by_day, filename= NULL, main=&quot;DE genes across days in chimpanzees (1% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
-pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4c_DE_by_day_chimp_March_13_1FDR.pdf&quot;)
-  grid.draw(Three_comp_chimps)
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
-<pre class="r"><code>mylist_interact &lt;- list()
+#pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4c_DE_by_day_chimp_March_13_1FDR.pdf&quot;)
+#  grid.draw(Three_comp_chimps)
+#dev.off()
+
+mylist_interact &lt;- list()
 mylist_interact[[&quot;Human x Day 1&quot;]] &lt;- row.names(top3[[names(top3)[11]]])[top3[[names(top3)[11]]]$adj.P.Val &lt; FDR_level]
 mylist_interact[[&quot;Human x Day 2&quot;]] &lt;- row.names(top3[[names(top3)[12]]])[top3[[names(top3)[12]]]$adj.P.Val &lt; FDR_level]
 mylist_interact[[&quot;Human x Day 3&quot;]] &lt;- row.names(top3[[names(top3)[13]]])[top3[[names(top3)[13]]]$adj.P.Val &lt; FDR_level]
 
 Sig_interaction &lt;- venn.diagram(mylist_interact, filename= NULL, main=&quot;Genes with a significant species-by-day interaction (1% FDR)&quot;, cex=1.5 , fill = pal[1:3], lty=1, height=2000, width=3000)
-pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4d_Sign_interactions_March_13_1FDR.pdf&quot;)
-  grid.draw(Sig_interaction)
-dev.off()</code></pre>
-<pre><code>quartz_off_screen 
-                2 </code></pre>
+#pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4d_Sign_interactions_March_13_1FDR.pdf&quot;)
+#  grid.draw(Sig_interaction)
+#dev.off()</code></pre>
 </div>
 <div id="final-no-global-at-fdr-10-both-batches-supplement" class="section level3">
 <h3>Final, no global at FDR 10%, both batches (supplement)</h3>
@@ -1214,9 +1319,9 @@ dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; FDR_level), important_c
 
 mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
-mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 
 
 # Make as pdf 
@@ -1446,9 +1551,9 @@ dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; FDR_level), important_c
 
 mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
-mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 
 
 # Make as pdf 
@@ -1615,12 +1720,6 @@ dim(HvCday3[which(HvCday3$adj.P.Val &lt; FDR_level), important_columns])        
 <pre><code>[1] 3848    3</code></pre>
 <pre class="r"><code>HvCday3_adj_pval &lt;- HvCday3[, important_columns]    
 
-#3444
-#3238
-#3739
-#3706
-
-
 
 important_columns &lt;- c(1,2,6)
 
@@ -1688,9 +1787,9 @@ dim(Sign_day3_inter[which(Sign_day3_inter$adj.P.Val &lt; FDR_level), important_c
 
 mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
-mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 
 
 # Make as pdf 
@@ -1837,9 +1936,10 @@ dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])             
 
 mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
 mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
-mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 
 
 # Make as pdf 
@@ -1948,13 +2048,14 @@ dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])             
 
 mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
+
 mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
-mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 
 
 # Make as pdf 
-Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, batch 2)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, 3 highest purity/group)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
 pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4r_DE_by_species_March_13_5FDR_3_high_conf_purity.pdf&quot;)
   grid.draw(Four_comp)
 dev.off()</code></pre>
@@ -2059,13 +2160,13 @@ dim(HvCday3[which(HvCday3$adj.P.Val &lt; 0.05), important_columns])             
 
 mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- row.names(top3[[names(top3)[1]]])[top3[[names(top3)[1]]]$adj.P.Val &lt; FDR_level]
+mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 1&quot;]] &lt;-  row.names(top3[[names(top3)[2]]])[top3[[names(top3)[2]]]$adj.P.Val &lt; FDR_level]
 mylist[[&quot;DE Day 2&quot;]] &lt;- row.names(top3[[names(top3)[3]]])[top3[[names(top3)[3]]]$adj.P.Val &lt; FDR_level]
-mylist[[&quot;DE Day 3&quot;]] &lt;- row.names(top3[[names(top3)[4]]])[top3[[names(top3)[4]]]$adj.P.Val &lt; FDR_level]
 
 
 # Make as pdf 
-Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, batch 2)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
+Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, 3 lowest purity/group)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
 pdf(file = &quot;~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF_4s_DE_by_species_March_13_5FDR_3_low_conf_purity.pdf&quot;)
   grid.draw(Four_comp)
 dev.off()</code></pre>
@@ -2234,9 +2335,9 @@ write.table(Sign_day3_inter, &quot;~/Dropbox/Endoderm TC/DE Analysis_Pairwise/Fi
 
 mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- HvCday0
+mylist[[&quot;DE Day 3&quot;]] &lt;- HvCday3
 mylist[[&quot;DE Day 1&quot;]] &lt;-  HvCday1
 mylist[[&quot;DE Day 2&quot;]] &lt;- HvCday2
-mylist[[&quot;DE Day 3&quot;]] &lt;- HvCday3
 
 
 # Make as pdf 
@@ -2515,7 +2616,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

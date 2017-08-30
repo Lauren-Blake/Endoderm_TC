@@ -23,7 +23,7 @@ source("~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R")
 
 # Load cpm data 
 
-cpm_in_cutoff <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess.txt")
+cpm_in_cutoff <- read.delim("../data/cpm_cyclicloess.txt")
 
 # Load sample information
 
@@ -38,17 +38,14 @@ labels <- paste(Sample_ID, day, sep=" ")
 
 # Load technical factor information
 
-RNA_seq_info_all <- read.csv("~/Desktop/Endoderm_TC/ashlar-trial/data/Endo_TC_Data_Share_Sorting.csv",  header = T)
+RNA_seq_info_all <- read.csv("../data/Endo_TC_Data_Share_Sorting.csv",  header = T)
 
 dim(RNA_seq_info_all)
 
 RNA_seq_info <- as.data.frame(cbind(RNA_seq_info_all[1:63, 4], RNA_seq_info_all[1:63, 3], RNA_seq_info_all[1:63, 5:27], RNA_seq_info_all[1:63, 30:35], RNA_seq_info_all[1:63, 37:43]))
 
-# Remove day (biological variable of interest)
-RNA_seq_info <- RNA_seq_info[,-8]
-
 # Remove library well (only 1/well)
-RNA_seq_info <- RNA_seq_info[,-19]
+RNA_seq_info <- RNA_seq_info[,-20]
 
 # Full data set
 dim(RNA_seq_info)
@@ -79,7 +76,7 @@ summary <- summary(pca_genes)
 ```{r}
 #Create plots for each of the possible confounders versus PCs 1-5
 
-pdf('~/Desktop/Endoderm_TC/ashlar-trial/data/VarVsGenePCs.pdf')
+pdf('../data/VarVsGenePCs.pdf')
 
 for (i in 2:length(RNA_seq_info)) { 
   par(mfrow=c(1,5))
@@ -149,14 +146,15 @@ for(i in 1:5){
 #Make an empty matrix to put all of the data in
 # Note: Do not include TC day, as it is a biological variable of interest
 
-PC_pvalues = matrix(data = NA, nrow = 5, ncol = 35, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5"), c("Cell line", "SPSX", "Batch", "Passage at seed",  "Start date", "Density at seed", "Harvest time", "Harvest density", "High conf purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
+PC_pvalues = matrix(data = NA, nrow = 5, ncol = 35, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5"), c("Cell line",  "Batch", "Sex", "Passage at seed",  "Start date", "Density at seed", "Harvest time", "Harvest density", "Purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
 
-PC_r2 = matrix(data = NA, nrow = 5, ncol = 35, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5"), c("Cell line", "SPSX", "Batch", "Passage at seed",  "Start date", "Density at seed",   "Harvest time", "Harvest density", "High conf purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
+PC_r2 = matrix(data = NA, nrow = 5, ncol = 35, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5"), c("Cell line",  "Batch", "Sex", "Passage at seed",  "Start date", "Density at seed",   "Harvest time", "Harvest density", "Purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
 
+# Take out day and species (factors of interest)
+RNA_seq_info_35 <- RNA_seq_info[,-(1:2)]
 
-
-numerical_tech_factors <- c(5,7, 9:11, 13:17, 19:21, 25:29, 31:36)
-categorical_tech_factors <- c(2:4,6, 8, 12, 18, 22:24, 30 )
+numerical_tech_factors <- c(4, 6,8:10, 12:16,18:20,24:28,30:35)
+categorical_tech_factors <- c(1:3, 5,7,11,17,21:23,29)
 
 #Check lm to see how well the variables containing numerical data are correlated with a PC
 
@@ -165,7 +163,7 @@ j=1
 for (i in numerical_tech_factors){
   for (j in 1:5){
   
-  checkPC1 <- lm(pcs[,j] ~ RNA_seq_info[,i])
+  checkPC1 <- lm(pcs[,j] ~ RNA_seq_info_35[,i])
 
 #Get the summary statistics from it
   summary(checkPC1)
@@ -181,8 +179,8 @@ for (i in numerical_tech_factors){
 
 #Put the summary statistics into the matrix w
 
-  PC_pvalues[j, i-1] <- p_fstat
-  PC_r2[j, i-1] <- r2_value
+  PC_pvalues[j, i] <- p_fstat
+  PC_r2[j, i] <- r2_value
   
   }
 
@@ -194,7 +192,7 @@ j=1
 for (i in categorical_tech_factors){
   for (j in 1:5){
   
-  checkPC1 <- lm(pcs[,j] ~ as.factor(RNA_seq_info[,i]))
+  checkPC1 <- lm(pcs[,j] ~ as.factor(RNA_seq_info_35[,i]))
 
 #Get the summary statistics from it
   summary(checkPC1)
@@ -210,76 +208,20 @@ for (i in categorical_tech_factors){
 
 #Put the summary statistics into the matrix w
 
-  PC_pvalues[j, i-1] <- p_fstat
-  PC_r2[j, i-1] <- r2_value
+  PC_pvalues[j, i] <- p_fstat
+  PC_r2[j, i] <- r2_value
   
   }
 
 }
+
+#write.table(PC_pvalues, "/Users/laurenblake/Desktop/pc_pvalues.txt")
 
 ```
 
 ## Test for potential violations of the assumptions of the linear model
 
 Note: I learned in http://lauren-blake.github.io/Reg_Evo_Primates/analysis/Tech_factor_analysis1_gene_exp.html that this doesn't work when one or more cells in a column contains an "NA". 
-```{r}
-#Plot the residuals to look for violations of the assumptions of lm
-
-#pdf('~/Desktop/Endoderm_TC/ashlar-trial/data/Residuals_vs_var_GenePCs.pdf')
-
-
-#non_NA_numerical_tech_factor <- c(5,8,  14, 20:22, 26:30, 32:37)
-#non_NA_categorical_tech_factor <- c(2:4,6, 9, 13, 18:19, 23:25, 31 )
-
-#for (i in non_NA_numerical_tech_factor){
-  
-#  par(mfrow=c(1,5))
-  
-#  checkPC1 <- lm(pcs[,1] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC1), ylab = "Residuals (lm with PC1)", xlab = " ")
-  
-#  checkPC2 <- lm(pcs[,2] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC2), ylab = "Residuals (lm with PC2)", xlab = " ")
-  
-#  checkPC3 <- lm(pcs[,3] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC3), ylab = "Residuals (lm with PC3)", xlab = #" ")
-  
-#  checkPC4 <- lm(pcs[,4] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC4), ylab = "Residuals (lm with PC4)", xlab = " ")
-  
-#  checkPC5 <- lm(pcs[,5] ~ RNA_seq_info[,i])
-#  plot(RNA_seq_info[,i], resid(checkPC5), ylab = "Residuals (lm with PC5)", xlab = " ")
-  
-#  title(xlab = substitute(paste(k), list(k=colnames(RNA_seq_info)[i])), outer = TRUE, line = -2)
-#  mtext(substitute(paste('Residuals vs. ', k), list(k=colnames(RNA_seq_info)[i])), side = 3, line = -2, outer = TRUE)
-  
-#}
-
-#  for (i in non_NA_categorical_tech_factor){
-#    par(mfrow=c(1,5))
-   
-#    checkPC1 <- lm(pcs[,1] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC1), ylab = "Residuals (lm with PC1)", xlab = " ")
-
-#    checkPC2 <- lm(pcs[,2] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC2),  ylab = "Residuals (lm with PC2)", xlab = " ")
-    
-#    checkPC3 <- lm(pcs[,3] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC3),  ylab = "Residuals (lm with PC3)", xlab = " ")
-    
-#    checkPC4 <- lm(pcs[,4] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC4),  ylab = "Residuals (lm with PC4)", xlab = " ")
-    
-#    checkPC5 <- lm(pcs[,5] ~ as.factor(RNA_seq_info[,i]))
-#    plot(RNA_seq_info[,i], resid(checkPC5),  ylab = "Residuals (lm with PC5)", xlab = " ")
-    
-#    title(xlab = substitute(paste(k), list(k=colnames(RNA_seq_info)[i])), outer = TRUE, line = -2)
-#    mtext(substitute(paste('Residuals vs. ', k), list(k=colnames(RNA_seq_info)[i])), side = 3, line = -2, outer = TRUE)
-    
-#  }
-
-#dev.off()
-```
 
 ## Find which factors are statistically significant
 
@@ -293,7 +235,9 @@ hist(fdr_val_order, ylab = "BH-adjusted p-values", main = "Distribution of Benja
 # Number of values significant at 10% FDR 
 
 fdr_val <- matrix(fdr_val, nrow = 5, ncol = 35)
-matrix_fdr_val = matrix(data = fdr_val, nrow = 5, ncol = 35, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5"),  c("Cell line", "SPSX", "Batch", "Passage at seed",  "Start date", "Density at seed", "Harvest time", "Harvest density", "High conf purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
+matrix_fdr_val = matrix(data = fdr_val, nrow = 5, ncol = 35, dimnames = list(c("PC1", "PC2", "PC3", "PC4", "PC5"),  c("Cell line",  "Batch", "Sex",  "Passage at seed",  "Start date", "Density at seed", "Harvest time", "Harvest density", "High conf purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
+
+#write.table(matrix_fdr_val, "/Users/laurenblake/Desktop/pc_pvalues.txt")
 
 # Number of values significant at 10% FDR 
 sum(matrix_fdr_val <= 0.1)
@@ -315,19 +259,18 @@ unique(coor_to_check_col)
 The following variables are associated with one of the PCs tested and will be investigated further in Part 2.
 
 * Cell line
-* SPSX
 * Batch
 * Passage at seed
-* Start date 
+* Start date
 * Harvest time
 * Harvest density
-* High conf purity
+* Purity
 * Max purity
 * RNA Extraction Date
 * RNA conc
 * RIN
 * 260 280 RNA 
-* Library prep batch 
+* Library prep batch
 * Index sequence
 * Seq pool
 * Lane r1
@@ -338,10 +281,9 @@ The following variables are associated with one of the PCs tested and will be in
 
 In coor_to_check_col, row is the PC # and col is the column # -1 that is associated with the PC. Want to take the coor_to_check_col column # and add one. 
 ```{r}
-var_numb = unique(coor_to_check_col) + 1
+var_numb = unique(coor_to_check_col) 
 var.numb <- as.data.frame(var_numb)
 
-pdf('~/Desktop/Endoderm_TC/ashlar-trial/data/Var_GenePCsVsSpeciesTissue.pdf')
 
 for (i in var.numb[1:nrow(var.numb),]) { 
 par(mfrow=c(1,2))
@@ -360,8 +302,8 @@ dev.off()
 ```{r}
 # Technical factors to be tested 
 
-numerical_prev_sign_tech_factors <- c(5, 9:11, 13:15, 26)
-categorical_prev_sign_tech_factors <- c(2:4,6, 8, 12, 18, 22:24, 30 )
+numerical_prev_sign_tech_factors <- c(4, 8:10, 12:14,25) 
+categorical_prev_sign_tech_factors <- c(1,2,5,7,11, 17,21:23,29)
 
 #Make a matrix to store the p-values
 
@@ -372,10 +314,10 @@ pvalues_day = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c("p-value"
 #Performing this test of significance for variables that are numerical data (Using an ANOVA)
 j=1
 for (i in numerical_prev_sign_tech_factors) {  
-summary_anova = summary(aov(RNA_seq_info[,i]~ as.factor(day)))
+summary_anova = summary(aov(RNA_seq_info_35[,i]~ as.factor(day)))
 data_summary_anova <- as.data.frame(summary_anova[[1]]$`Pr(>F)`)
 p_val_anova <- data_summary_anova[1,]
-pvalues_day[, i-1] <- p_val_anova  
+pvalues_day[, i] <- p_val_anova  
 j=j+1
 }
 
@@ -385,8 +327,8 @@ j=j+1
 j=1
 for (i in categorical_prev_sign_tech_factors) { 
   
-  pval_chi <- chisq.test(as.factor(RNA_seq_info[,i]), as.factor(day), simulate.p.value = TRUE)$p.value
-  pvalues_day[, i-1] <- pval_chi  
+  pval_chi <- chisq.test(as.factor(RNA_seq_info_35[,i]), as.factor(day), simulate.p.value = TRUE)$p.value
+  pvalues_day[, i] <- pval_chi  
   j=j+1
   
 }
@@ -400,22 +342,22 @@ for (i in categorical_prev_sign_tech_factors) {
 ```{r}
 # Technical factors to be tested 
 
-numerical_prev_sign_tech_factors <- c(5, 9:11, 13:15, 26)
-categorical_prev_sign_tech_factors <- c(2:4,6, 8, 12, 18, 22:24, 30 )
+numerical_prev_sign_tech_factors <- c(4, 8:10, 12:14,25) 
+categorical_prev_sign_tech_factors <- c(1,2,5,7,11, 17,21:23,29)
 
 #Make a matrix to store the p-values
 
-pvalues_species = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c("p-value"),  c("Cell line", "SPSX", "Batch", "Passage at seed",  "Start date", "Density at seed", "Harvest time", "Harvest density", "High conf purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
+pvalues_species = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c("p-value"),  c("Cell line", "Batch", "Sex", "Passage at seed",  "Start date", "Density at seed", "Harvest time", "Harvest density", "High conf purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
 
 # Numerical
 
 #Performing this test of significance for variables that are numerical data (Using an ANOVA. Note: in this case, the p-value of the ANOVA is the same as the p-value of the beta1 coefficient in lm)
 j=1
 for (i in numerical_prev_sign_tech_factors) {  
-summary_anova = summary(aov(RNA_seq_info[,i]~ as.factor(Species)))
+summary_anova = summary(aov(RNA_seq_info_35[,i]~ as.factor(Species)))
 data_summary_anova <- as.data.frame(summary_anova[[1]]$`Pr(>F)`)
 p_val_anova <- data_summary_anova[1,]
-pvalues_species[, i-1] <- p_val_anova  
+pvalues_species[, i] <- p_val_anova  
 j=j+1
 }
 
@@ -426,8 +368,8 @@ j=j+1
 j=1
 for (i in categorical_prev_sign_tech_factors) { 
   
-  pval_chi <- chisq.test(as.factor(RNA_seq_info[,i]), as.factor(Species), simulate.p.value = TRUE)$p.value
-  pvalues_species[, i-1] <- pval_chi  
+  pval_chi <- chisq.test(as.factor(RNA_seq_info_35[,i]), as.factor(Species), simulate.p.value = TRUE)$p.value
+  pvalues_species[, i] <- pval_chi  
   j=j+1
   
 }
@@ -436,11 +378,24 @@ for (i in categorical_prev_sign_tech_factors) {
 
 collapse_table_full <- rbind(pvalues_day, pvalues_species)
 
-# Get rid of the NAs
+# Want only NAs
+collapse_table <- collapse_table_full[, colSums(is.na(collapse_table_full)) != nrow(collapse_table_full)]
 
-collapse_table <- collapse_table_full[,(var_numb-1)]
-collapse_table
+#write.table(collapse_table, "/Users/laurenblake/Desktop/collapse_table.txt")
+
 ```
+
+```{r}
+# Harvest density and Species
+summary(lm(RNA_seq_info$Harvest_density~ as.factor(Species)))
+
+# Harvest density and Day
+summary(lm(RNA_seq_info$Harvest_density~ as.factor(day)))
+
+chisq.test(as.factor(RNA_seq_info$Harvest_density), as.factor(day), simulate.p.value = TRUE)
+
+```
+
 
 
 ## Find factors with FDR < 0.1
@@ -455,22 +410,25 @@ hist(fdr_val_order, ylab = "BH-adjusted p-values", main = "Distribution of Benja
 collapse_table_fdr_val = matrix(data = fdr_val, nrow = 2, ncol = nrow(var.numb), dimnames = list(c("Day", "Species"), colnames(collapse_table)))
 
 collapse_table_fdr_val
+
+write.table(collapse_table_fdr_val, "/Users/laurenblake/Desktop/collapse_table_fdr.txt")
+
 ```
 
 ** Conclusions from Part 2 **
 
 The following variables are confounded with day:
 
-* Harvest time (BH adjusted p-value = 0.009495252)
-* Harvest density (BH adjusted p-value = 0.01327875)
-* Index sequence (BH adjusted p-value = 0.009495252)
+* Harvest time (BH adjusted p-value = 0.011994)
+* Harvest density (BH adjusted p-value = 0.02174627)
+* Index sequence (BH adjusted p-value =  0.011994)
 
 The following variables are confounded with species:
 
-* Cell line (BH adjusted p-value = 0.009495252)
-* SPSX (BH adjusted p-value = 0.009495252)
-* Harvest density (BH adjusted p-value = 0.03300125)
-* Max. purity (BH adjusted p-value = 0.05001969)
+* Cell line (BH adjusted p-value = 0.011994)
+* Harvest density (BH adjusted p-value = 0.03481949)
+* Purity (BH adjusted p-value = 0.08328609)
+* Max. purity (BH adjusted p-value = 0.03033897)
 
 ```{r}
 plot(day, as.factor(RNA_seq_info[,2]), main = "Cell line versus day")
@@ -496,7 +454,7 @@ plot(Species, RNA_seq_info[,22], main = "Index sequence versus species")
 ```{r}
 # Make table of day, adaptor, and sequencing pool
 
-day_index_pool <- cbind(day, RNA_seq_info[,22], RNA_seq_info[,23]) 
+day_index_pool <- cbind(day, RNA_seq_info$Index_seq, RNA_seq_info$Seq_pool) 
 
 # Test dependency with the adaptors by day 
 
@@ -534,32 +492,13 @@ chisq.test(as.factor(adaptors_pool4[,2]), as.factor(adaptors_pool4[,1]), simulat
   # p-value = 1
 
 fdr_val_4= p.adjust(c(1,1,1,1), method = "fdr")
+fdr_val_4
 ```
 
 
 
 
-## PART THREE: Which variables to put in the model?
-
-### Check correlation between harvest density and max. purity
-
-Check for degree of similarity between the values of the different technical variables, harvest density and max. purity. For ones that show high correlation (multi-colinearity), we will only want to incorporate one of these variables into the model. 
-
-```{r}
-# Correlation bet. harvest density and max. purity.
-  corr_tech <- summary(lm(RNA_seq_info[,9] ~ RNA_seq_info[,11]))
-
-
-#Get the p-value of the F-statistic
-  corr_tech$fstatistic
-
-  fstat <- as.data.frame(corr_tech$fstatistic)
-  1-pf(fstat[1,], fstat[2,], fstat[3,])
-  
-
-```
-
-These two factors are not highly correlated (p-value = 0.465). 
+# PART THREE: Which variables to consider putting in the model?
 
 ### RIN Score 
 
@@ -594,6 +533,38 @@ ggplot(data = iPSC_prop, aes(y = RIN_Score, x = as.factor(Species)))  + facet_wr
 
 ```
 
+### Passage at seed
+
+```{r}
+# Make a table with species, day, and RIN score
+species <- After_removal_sample_info$Species
+day <- After_removal_sample_info$Day
+
+iPSC_prop <- as.data.frame(cbind(day, species, RNA_seq_info[1:63,35]), stringsAsFactors = FALSE)
+
+# Remove the 1 sample with a missing RIN score
+
+#remove_NA <- c(26)
+
+#iPSC_prop <- iPSC_prop[-remove_NA, ]
+
+colnames(iPSC_prop) <- c("Day", "Species", "RIN_Score") 
+
+iPSC_prop$Species[iPSC_prop$Species == "2"] <- "Human"
+iPSC_prop$Species[iPSC_prop$Species == "1"] <- "Chimp"
+
+iPSC_prop$Day[iPSC_prop$Day == "0"] <- "Day 0"
+iPSC_prop$Day[iPSC_prop$Day == "1"] <- "Day 1"
+iPSC_prop$Day[iPSC_prop$Day == "2"] <- "Day 2"
+iPSC_prop$Day[iPSC_prop$Day == "3"] <- "Day 3"
+
+ggplot(data = iPSC_prop, aes(y = RIN_Score, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_point(size = 5,  position=position_jitter(width=0.2, height=0.1), show.legend = FALSE) + labs(x = "Species", y = "Density at seeding") + theme_bw()
+
+
+ggplot(data = iPSC_prop, aes(y = RIN_Score, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot()  + geom_dotplot(binaxis='y', stackdir='center', binwidth = 0.001) + labs(x = "Species", y = "Density at seeding") + theme_bw()
+
+
+```
 
 
 ### Harvest time and harvest densities (supplement)
@@ -612,11 +583,6 @@ iPSC_prop$Day[iPSC_prop$Day == "1"] <- "Day 1"
 iPSC_prop$Day[iPSC_prop$Day == "2"] <- "Day 2"
 iPSC_prop$Day[iPSC_prop$Day == "3"] <- "Day 3"
 
-# Time is 7
-
-remove_NA <- c(7,23,39,55)
-
-iPSC_prop <- iPSC_prop[-remove_NA, ]
 
 iPSC_prop$Harvest_density <- as.numeric(iPSC_prop$Harvest_density)
 
@@ -628,7 +594,7 @@ ggplot(data = iPSC_prop, aes(y = Harvest_density, x = as.factor(Species)))  + fa
 
 ggplot(data = iPSC_prop, aes(y = Harvest_density, x = Species))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_dotplot(binaxis='y', stackdir='center') + labs(y = "Harvest density", title = "Harvest densities for each sample") + theme_bw()
 
-ggplot(data = iPSC_prop, aes(y = Harvest_density, x = Species))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_point(size = 5,  position=position_jitter(width=0.2, height=0.1), show.legend = FALSE) + labs(y = "Harvest density", title = "Harvest densities for each sample") + theme_bw()
+ggplot(data = iPSC_prop, aes(y = Harvest_density, x = Species))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_dotplot(binaxis='y', stackdir='center', dotsize = 0.75) + labs(y = "Harvest density", title = "Harvest densities for each sample") + theme_bw()
 
 
 # Harvest density for each day species
@@ -718,20 +684,53 @@ ggplot(data = iPSC_prop, aes(y = as.factor(x), x = as.factor(Species)))  + facet
 
 ```
 
+### Purity
+
+```{r}
+# Make a table with species, day, and RIN score
+species <- After_removal_sample_info$Species
+day <- After_removal_sample_info$Day
+
+iPSC_prop <- as.data.frame(cbind(day, species, RNA_seq_info[,10]), stringsAsFactors = FALSE)
+
+# Remove the samples with missing purity
 
 
-# PART ONE: See if any of the variables for RNA-Seq correlate with the expression PCs for genes (40 samples)
+
+iPSC_prop_purity <- iPSC_prop[complete.cases(iPSC_prop) == TRUE, ]
+
+colnames(iPSC_prop_purity) <- c("Day", "Species", "Purity") 
+
+iPSC_prop_purity$Species[iPSC_prop_purity$Species == "2"] <- "Human"
+iPSC_prop_purity$Species[iPSC_prop_purity$Species == "1"] <- "Chimp"
+
+iPSC_prop_purity$Day 
+
+iPSC_prop_purity$Day[iPSC_prop_purity$Day == "0"] <- "Day 0"
+iPSC_prop_purity$Day[iPSC_prop_purity$Day == "1"] <- "Day 1"
+iPSC_prop_purity$Day[iPSC_prop_purity$Day == "2"] <- "Day 2"
+iPSC_prop_purity$Day[iPSC_prop_purity$Day == "3"] <- "Day 3"
+
+ggplot(data = iPSC_prop_purity, aes(y = Purity, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() + geom_point(size = 5,  position=position_jitter(width=0.2, height=0.1), show.legend = FALSE) + labs(x = "Species", y = "Purity") + theme_bw()
+
+ggplot(data = iPSC_prop_purity, aes(y = Purity, x = as.factor(Species)))  + facet_wrap(~ Day, nrow = 1) + geom_boxplot() +  geom_dotplot(binaxis='y', stackdir='center', binwidth = .02) + labs(x = "Species", y = "Purity") + theme_bw()
+```
+
+
+
+
+# PART FOUR: See if any of the variables for RNA-Seq correlate with the expression PCs for genes (40 samples)
 
 ## Initialization
 
 ```{r}
 # Load cpm data 
 
-cpm_in_cutoff_40 <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/cpm_cyclicloess_40.txt")
+cpm_in_cutoff_40 <- read.delim("../data/cpm_cyclicloess_40.txt")
 
 # Load sample information
 
-bio_rep_samplefactors <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/samplefactors-filtered.txt", stringsAsFactors=FALSE)
+bio_rep_samplefactors <- read.delim("../data/samplefactors-filtered.txt", stringsAsFactors=FALSE)
 day <- bio_rep_samplefactors$Day
 species <- bio_rep_samplefactors$Species
 ```

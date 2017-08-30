@@ -197,9 +197,10 @@ dim(C_day23)
 
 mylist <- list()
 mylist[["DE Day 0"]] <- HvCday0
+mylist[["DE Day 3"]] <- HvCday3
 mylist[["DE Day 1"]] <- HvCday1 
 mylist[["DE Day 2"]] <- HvCday2
-mylist[["DE Day 3"]] <- HvCday3
+
 
 # Make as pdf 
 Four_comp <- venn.diagram(mylist, filename= NULL, main="DE genes between species per day (5% FDR, RPKM, 63 samples)", cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
@@ -407,5 +408,68 @@ Four_comp <- venn.diagram(mylist, filename= NULL, main="DE genes between species
 pdf(file = "~/Dropbox/Endoderm TC/Tables_Supplement/Supplementary_Figures/SF4ww_Four_comparisons_RPKM_adj_CPM.pdf")
   grid.draw(Four_comp)
 dev.off()
+```
+
+## Compare the TMM-normalized log2(CPM) to the TMM and cyclic loess normalized data
+
+```{r}
+# TMM+cyclic loess
+species <- c("H", "H","H","H","H","H","H", "C", "C","C","C","C","C","C","C","H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C", "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C", "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C")
+
+day <- c("0", "0","0","0","0","0","0", "0", "0", "0","0","0","0","0", "0", "1","1","1","1","1","1","1","1", "1","1","1","1","1","1","1","1",  "2", "2","2","2","2","2","2","2","2", "2","2","2","2","2","2","2",  "3", "3","3","3","3","3","3","3",  "3", "3","3","3","3","3","3", "3")
+
+labels <- paste(species, day, sep=" ")
+
+# Take the TMM of the genes that meet the criteria
+
+dge_in_cutoff <- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff <- calcNormFactors(dge_in_cutoff)
+
+
+
+design <- model.matrix(~ species*day )
+
+colnames(design)[1] <- "Intercept"
+colnames(design) <- gsub("speciesH", "Human", colnames(design))
+colnames(design) <- gsub(":", ".", colnames(design))
+
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+
+cpm.voom <- voom(dge_in_cutoff, design, normalize.method="cyclicloess")
+
+corfit <- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation = corfit$consensus.correlation
+
+cpm.voom.corfit <- voom(dge_in_cutoff, design, plot = TRUE, normalize.method="cyclicloess", block=individual, correlation = corfit.correlation )
+
+cpm_cyclic_loess <- cpm.voom.corfit$E
+
+# TMM only
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+
+cpm.voom <- voom(dge_in_cutoff, design, normalize.method="none")
+
+corfit <- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation = corfit$consensus.correlation
+
+cpm.voom.corfit <- voom(dge_in_cutoff, design, plot = TRUE, normalize.method="none", block=individual, correlation = corfit.correlation )
+
+cpm_tmm<- cpm.voom.corfit$E
+
+# Find the correlation
+
+Cor_values = matrix(data = NA, nrow = 63, ncol = 1, dimnames = list(c("human 0", "human 0", "human 0", "human 0", "human 0", "human 0", "human 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "chimp 0", "human 1", "human 1", "human 1", "human 1", "human 1", "human 1", "human 1", "human 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1", "chimp 1",  "human 2", "human 2", "human 2", "human 2", "human 2", "human 2",  "human 2", "human 2",  "chimp 2", "chimp 2", "chimp 2", "chimp 2", "chimp 2", "chimp 2", "chimp 2", "chimp 2", "human 3", "human 3", "human 3", "human 3", "human 3", "human 3", "human 3", "human 3", "chimp 3",  "chimp 3",  "chimp 3",  "chimp 3", "chimp 3",  "chimp 3",  "chimp 3",  "chimp 3"), c("Pearson's correlation")))
+
+for (i in 1:63){
+  Cor_values[i,1] <- cor(cpm_tmm[,i], cpm_cyclic_loess[,i])
+}
+
+summary(Cor_values)
 ```
 

@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -188,6 +188,7 @@ $(document).ready(function () {
 <li><a href="#compare-the-rpkm-values-calculated-by-each-of-the-methods">Compare the RPKM values calculated by each of the methods</a></li>
 <li><a href="#pca-method-2">PCA (method 2)</a></li>
 <li><a href="#number-of-de-genes-rpkm-method-2">Number of DE genes RPKM Method 2</a></li>
+<li><a href="#compare-the-tmm-normalized-log2cpm-to-the-tmm-and-cyclic-loess-normalized-data">Compare the TMM-normalized log2(CPM) to the TMM and cyclic loess normalized data</a></li>
 </ul>
 </div>
 
@@ -202,7 +203,7 @@ library(&quot;gplots&quot;)</code></pre>
 ## 
 ##     lowess</code></pre>
 <pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
 <pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
 <pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
 <pre class="r"><code>library(&quot;colorfulVennPlot&quot;)</code></pre>
@@ -403,9 +404,10 @@ dim(H_day01)</code></pre>
 <pre><code>[1] 10304     3</code></pre>
 <pre class="r"><code>mylist &lt;- list()
 mylist[[&quot;DE Day 0&quot;]] &lt;- HvCday0
+mylist[[&quot;DE Day 3&quot;]] &lt;- HvCday3
 mylist[[&quot;DE Day 1&quot;]] &lt;- HvCday1 
 mylist[[&quot;DE Day 2&quot;]] &lt;- HvCday2
-mylist[[&quot;DE Day 3&quot;]] &lt;- HvCday3
+
 
 # Make as pdf 
 Four_comp &lt;- venn.diagram(mylist, filename= NULL, main=&quot;DE genes between species per day (5% FDR, RPKM, 63 samples)&quot;, cex=1.5 , fill = pal[1:4], lty=1, height=2000, width=3000)
@@ -627,6 +629,74 @@ dev.off()</code></pre>
 <pre><code>quartz_off_screen 
                 2 </code></pre>
 </div>
+<div id="compare-the-tmm-normalized-log2cpm-to-the-tmm-and-cyclic-loess-normalized-data" class="section level2">
+<h2>Compare the TMM-normalized log2(CPM) to the TMM and cyclic loess normalized data</h2>
+<pre class="r"><code># TMM+cyclic loess
+species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;, &quot;3&quot;)
+
+labels &lt;- paste(species, day, sep=&quot; &quot;)
+
+# Take the TMM of the genes that meet the criteria
+
+dge_in_cutoff &lt;- DGEList(counts=as.matrix(counts_genes_in_cutoff), genes=rownames(counts_genes_in_cutoff), group = as.character(t(labels)))
+dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
+
+
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;speciesH&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation = corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/RPKM_analysis.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cpm_cyclic_loess &lt;- cpm.voom.corfit$E
+
+# TMM only
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;none&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation = corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;none&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/RPKM_analysis.Rmd/unnamed-chunk-10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>cpm_tmm&lt;- cpm.voom.corfit$E
+
+# Find the correlation
+
+Cor_values = matrix(data = NA, nrow = 63, ncol = 1, dimnames = list(c(&quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;human 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;chimp 0&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;human 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;, &quot;chimp 1&quot;,  &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;, &quot;human 2&quot;,  &quot;human 2&quot;, &quot;human 2&quot;,  &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;chimp 2&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;human 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;, &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;,  &quot;chimp 3&quot;), c(&quot;Pearson&#39;s correlation&quot;)))
+
+for (i in 1:63){
+  Cor_values[i,1] &lt;- cor(cpm_tmm[,i], cpm_cyclic_loess[,i])
+}
+
+summary(Cor_values)</code></pre>
+<pre><code> Pearson&#39;s correlation
+ Min.   :0.9992       
+ 1st Qu.:0.9998       
+ Median :0.9999       
+ Mean   :0.9998       
+ 3rd Qu.:0.9999       
+ Max.   :1.0000       </code></pre>
+</div>
 
 
 <!-- some extra javascript for older browsers -->
@@ -676,7 +746,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

@@ -1,0 +1,496 @@
+---
+title: "Technical_factors_across_days"
+author: "Lauren Blake"
+date: "April 25, 2017"
+output: html_document
+---
+
+We want to evaluate whether or not the recorded technical factors all similar across biological conditions.
+
+Therefore, for each technical factor, we will test the variance explained between a model with day and species as fixed effects versus a model with day, species, and day-by-species interactions. 
+
+## Load the data (normalized gene expression data and technical factor information)
+
+```{r}
+# Load library
+
+library("nnet")
+
+# Load cpm data 
+
+cpm_in_cutoff <- read.delim("../data/cpm_cyclicloess.txt")
+
+# Load sample information
+
+After_removal_sample_info <- read.csv("../data/After_removal_sample_info.csv")
+
+species <- After_removal_sample_info$Species
+day <- as.factor(After_removal_sample_info$Day)
+
+# Test that both day and species are factors
+
+is.factor(species)
+is.factor(day)
+
+# Load technical factor information
+
+RNA_seq_info_all <- read.csv("../data/Endo_TC_Data_Share_Sorting.csv",  header = T)
+
+dim(RNA_seq_info_all)
+
+RNA_seq_info <- as.data.frame(cbind(RNA_seq_info_all[1:63, 4], RNA_seq_info_all[1:63, 3], RNA_seq_info_all[1:63, 5:27], RNA_seq_info_all[1:63, 30:35], RNA_seq_info_all[1:63, 37:43]))
+
+# Remove library well (only 1/well)
+RNA_seq_info <- RNA_seq_info[,-20]
+
+# Full data set
+dim(RNA_seq_info)
+
+# Take out day and species (factors of interest)
+RNA_seq_info_35 <- RNA_seq_info[,-(1:2)]
+
+
+```
+
+## An example using passage at seed as a response variable. 
+
+```{r}
+# Make the linear models (the null does not contain an interaction and the full model does)
+
+# Define y
+
+y <- RNA_seq_info_35[1:63,4] 
+
+# Define the null model
+
+fit0 <- lm(y ~ species + day)
+fit0
+
+# Define the alternative model
+
+fit1 <- lm(y ~ species + day + species*day)
+fit1
+
+# Compare the models using an ANOVA
+anova(fit0, fit1)
+
+# Get the p-value associated with the comparison
+
+anova(fit0, fit1)$"Pr(>F)"[2]
+```
+
+## Obtain p-values for all numerical technical factors days 0 to 1
+
+```{r}
+## Subset to only days 0-1
+
+day <- as.factor(day[1:31])
+species <- as.factor(species[1:31])
+
+
+numerical_tech_factors <- c(4, 6,8:9, 12:16,18:20,24:28,30:35)
+# Note: there are not enough samples to make Max. purity estimates.
+
+# Make a matrix
+
+ANOVA_pvalues_01 = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c("pval_from_ANOVA"), c("Cell line", "Batch", "Sex", "Passage at seed",  "Start date", "Density at seed", "Harvest time", "Harvest density", "High conf purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
+
+# Run for the numerical technical factors
+j=1
+for (i in numerical_tech_factors){
+    # Define y (the technical factor)
+  
+    y <- RNA_seq_info_35[1:31,i]
+  
+    # Define the null model
+
+  fit0 <- lm(y ~ species + day)
+
+  # Define the alternative model
+
+  fit1 <- lm(y ~ species + day + species*day)
+
+  # Compare the models using an ANOVA
+  anova(fit0, fit1)
+
+  # Get the p-value associated with the comparison
+
+  ANOVA_pvalues_01[1,i] <- anova(fit0, fit1)$"Pr(>F)"[2]
+}  
+
+# Note: there are not enough samples to make Max. purity estimates. 
+
+ANOVA_pvalues_01[1,10] <- NA
+
+```
+
+## Obtain p-values for categorical technical factors with 2 levels (sex, diiferentiation batch/start date/library prep batch) days 0 to 1
+
+```{r}
+
+###### FOR DIFFERENTIATION BATCH/START DATE #######
+
+    # Define y (the technical factor)
+  
+    y <- as.numeric(RNA_seq_info_35[1:31,2])
+    
+    # Relevel so 0 and 1
+    
+    y[y == 2] <- 0
+    y[y == 1] <- 1
+    
+    # Define the null model
+
+  mydata <- data.frame(cbind(species, day, y))
+  mydata$species <- as.factor(mydata$species)
+  mydata$day <- as.factor(mydata$day)
+  
+### GLM
+  
+  fit0 <- glm(y ~ day  + species, data = mydata, family = "binomial")
+  # Define the alternative model
+
+  fit1 <- glm(y ~ day  + species + day*species, data = mydata, family = "binomial")
+  
+    # Compare the models using an ANOVA
+  anova.fit <- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance <- anova.fit$Deviance[2]
+  deviance.df <- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_01[1,2] <- 1-pchisq(deviance, deviance.df) 
+  ANOVA_pvalues_01[1,5] <- 1-pchisq(deviance, deviance.df) 
+
+  ###### FOR SEX #######
+
+    # Define y (the technical factor)
+  
+    y <- as.character(RNA_seq_info_35[1:31,3])
+    
+    # Relevel so 0 and 1
+    
+    y[y == "F"] <- 0
+    y[y == "M"] <- 1
+    
+    # Define the null model
+
+  mydata <- data.frame(cbind(species, day, y))
+  mydata$species <- as.factor(mydata$species)
+  mydata$day <- as.factor(mydata$day)
+  
+### GLM
+  
+  fit0 <- glm(y ~ day  + species, data = mydata, family = "binomial")
+  # Define the alternative model
+
+  fit1 <- glm(y ~ day  + species + day*species, data = mydata, family = "binomial")
+  
+    # Compare the models using an ANOVA
+  anova.fit <- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance <- anova.fit$Deviance[2]
+  deviance.df <- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_01[1,3] <- 1-pchisq(deviance, deviance.df) 
+
+
+  
+  
+###### FOR LIBRARY PREP BATCH #######
+  
+  # Define y (the technical factor)
+  
+    y <- as.numeric(RNA_seq_info_35[1:31,17])
+    
+    # Relevel so 0 and 1
+    
+    y[y == 1] <- 0
+    y[y == 2] <- 1
+    
+   # Combine the variables into 1 data frame
+  mydata <- data.frame(cbind(species, day, y))
+  mydata$species <- as.factor(mydata$species)
+  mydata$day <- as.factor(mydata$day)
+  
+### GLM
+  
+  # Define the null model
+  
+  fit0 <- glm(y ~ day  + species, data = mydata, family = "binomial")
+  # Define the alternative model
+
+  fit1 <- glm(y ~ day  + species + day*species, data = mydata, family = "binomial")
+  
+    # Compare the models using an ANOVA
+  anova.fit <- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance <- anova.fit$Deviance[2]
+  deviance.df <- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_01[1,17] <- 1-pchisq(deviance, deviance.df) 
+
+```
+
+## Using categorical variables with more than two levels days 0 to 1
+
+```{r}
+categorical_tech_factors <- c(1, 7, 11, 21:23, 29 )
+
+# Run for the numerical technical factors
+j=1
+for (i in categorical_tech_factors){
+    # Define y (the technical factor)
+  
+    y <- RNA_seq_info_35[1:31,i]
+
+    # Get data into a dataframe
+    mydata <- data.frame(cbind(species, day, y))
+    mydata$y <- as.factor(mydata$y)
+    mydata$species <- as.factor(mydata$species)
+    mydata$day <- as.factor(mydata$day)
+      
+### GLM
+  
+  fit0 <- multinom(y ~ day  + species, data = mydata)
+  # Define the alternative model
+
+  fit1 <- multinom(y ~ day  + species + day*species, data = mydata)
+
+  # Compare the models using an ANOVA
+  # Get the p-value associated with the comparison
+
+  ANOVA_pvalues_01[1,i] <- anova(fit0, fit1)$"Pr(Chi)"[2]
+}  
+
+ANOVA_pvalues_01
+
+#write.table(ANOVA_pvalues_01, "/Users/laurenblake/Desktop/pc_pvalues.txt")
+```
+
+## See which p-values are less than 0.05 in days 0 to 1
+
+```{r}
+ANOVA_pvalues_01[,ANOVA_pvalues_01 < 0.05]
+```
+
+
+
+
+## Obtain p-values for all numerical technical factors days 0 to 3
+
+```{r}
+# Redefine day and species (includes all 63 samples)
+
+species <- After_removal_sample_info$Species
+day <- as.factor(After_removal_sample_info$Day)
+
+# Make a matrix
+
+numerical_tech_factors <- c(4, 6,8:10, 12:16,18:20,24:28,30:35)
+# Note: there are enough samples to make Max. purity estimates.
+
+# Make a matrix
+
+ANOVA_pvalues_03 = matrix(data = NA, nrow = 1, ncol = 35, dimnames = list(c("pval_from_ANOVA"), c("Cell line", "Batch", "Sex", "Passage at seed",  "Start date", "Density at seed", "Harvest time", "Harvest density", "High conf purity", "Max purity", "RNA Extraction Date", "RNA conc", "RIN", "260 280 RNA", "260 230 RNA", "DNA concentration", "Library prep batch", "Library concentration", "uL sample", "uL EB", "Index sequence", "Seq pool", "Lane r1", "Mseqs R1", "Total lane reads 1", "Lane prop r1", "Dup r1", "GC r1", "Lane r2", "Mseqs r2", "Total lane reads r2", "Lane prop r2", "Dups r2", "GC r2", "Total reads")))
+
+# Run for the numerical technical factors
+j=1
+for (i in numerical_tech_factors){
+    # Define y (the technical factor)
+  
+    y <- RNA_seq_info_35[1:63,i]
+  
+    # Define the null model
+
+  fit0 <- lm(y ~ species + day)
+
+  # Define the alternative model
+
+  fit1 <- lm(y ~ species + day + species*day)
+
+  # Compare the models using an ANOVA
+  anova(fit0, fit1)
+
+  # Get the p-value associated with the comparison
+
+  ANOVA_pvalues_03[1,i] <- anova(fit0, fit1)$"Pr(>F)"[2]
+}  
+
+
+```
+
+## Obtain p-values for categorical technical factors with 2 levels (diiferentiation batch/start date/library prep batch) days 0 to 3
+
+```{r}
+
+###### FOR DIFFERENTIATION BATCH/START DATE #######
+
+    # Define y (the technical factor)
+  
+    y <- as.numeric(RNA_seq_info_35[1:63,2])
+    
+    # Relevel so 0 and 1
+    
+    y[y == 2] <- 0
+    y[y == 1] <- 1
+    
+    # Define the null model
+
+  mydata <- data.frame(cbind(species, day, y))
+  mydata$species <- as.factor(mydata$species)
+  mydata$day <- as.factor(mydata$day)
+  
+### GLM
+  
+  fit0 <- glm(y ~ day  + species, data = mydata, family = "binomial")
+  # Define the alternative model
+
+  fit1 <- glm(y ~ day  + species + day*species, data = mydata, family = "binomial")
+  
+    # Compare the models using an ANOVA
+  anova.fit <- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance <- anova.fit$Deviance[2]
+  deviance.df <- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_03[1,2] <- 1-pchisq(deviance, deviance.df) 
+  ANOVA_pvalues_03[1,5] <- 1-pchisq(deviance, deviance.df) 
+
+  ###### FOR SEX #######
+
+    # Define y (the technical factor)
+  
+    y <- as.character(RNA_seq_info_35[1:63,3])
+    
+    # Relevel so 0 and 1
+    
+    y[y == "F"] <- 0
+    y[y == "M"] <- 1
+    
+    # Define the null model
+
+  mydata <- data.frame(cbind(species, day, y))
+  mydata$species <- as.factor(mydata$species)
+  mydata$day <- as.factor(mydata$day)
+  
+### GLM
+  
+  fit0 <- glm(y ~ day  + species, data = mydata, family = "binomial")
+  # Define the alternative model
+
+  fit1 <- glm(y ~ day  + species + day*species, data = mydata, family = "binomial")
+  
+    # Compare the models using an ANOVA
+  anova.fit <- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance <- anova.fit$Deviance[2]
+  deviance.df <- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_03[1,3] <- 1-pchisq(deviance, deviance.df) 
+
+
+  
+  
+###### FOR LIBRARY PREP BATCH #######
+  
+  # Define y (the technical factor)
+  
+    y <- as.numeric(RNA_seq_info_35[1:63,17])
+    
+    # Relevel so 0 and 1
+    
+    y[y == 1] <- 0
+    y[y == 2] <- 1
+    
+   # Combine the variables into 1 data frame
+  mydata <- data.frame(cbind(species, day, y))
+  mydata$species <- as.factor(mydata$species)
+  mydata$day <- as.factor(mydata$day)
+  
+### GLM
+  
+  # Define the null model
+  
+  fit0 <- glm(y ~ day  + species, data = mydata, family = "binomial")
+  # Define the alternative model
+
+  fit1 <- glm(y ~ day  + species + day*species, data = mydata, family = "binomial")
+  
+    # Compare the models using an ANOVA
+  anova.fit <- anova(fit0, fit1)
+
+  
+# Extract deviance: a measure of goodness-of-fit of the model, equivalent to R-square in linear models
+  deviance <- anova.fit$Deviance[2]
+  deviance.df <- anova.fit$Df[2]
+
+  # Compute significance value of the deviance
+
+  ANOVA_pvalues_03[1,17] <- 1-pchisq(deviance, deviance.df) 
+
+```
+
+## Using categorical variables with more than two levels days 0 to 3
+
+```{r}
+categorical_tech_factors <- c(1, 7, 11, 21:23, 29 )
+
+# Run for the numerical technical factors
+j=1
+for (i in categorical_tech_factors){
+    # Define y (the technical factor)
+  
+    y <- RNA_seq_info[1:63,i]
+
+    # Get data into a dataframe
+    mydata <- data.frame(cbind(species, day, y))
+    mydata$y <- as.factor(mydata$y)
+    mydata$species <- as.factor(mydata$species)
+    mydata$day <- as.factor(mydata$day)
+      
+### GLM
+  
+  fit0 <- multinom(y ~ day  + species, data = mydata)
+  # Define the alternative model
+
+  fit1 <- multinom(y ~ day  + species + day*species, data = mydata)
+
+  # Compare the models using an ANOVA
+  # Get the p-value associated with the comparison
+
+  ANOVA_pvalues_03[1,i] <- anova(fit0, fit1)$"Pr(Chi)"[2]
+}  
+
+ANOVA_pvalues_03
+
+```
+
+## See which p-values are less than 0.05 in days 0 to 3
+
+```{r}
+ANOVA_pvalues_03[,ANOVA_pvalues_03 < 0.05]
+```
+
+## Conclusions
+Conclusions: Interactions are important for describing the relationship between our biological variables of interest (day and species) and Harvest density, as well as our purity estimates for days 0 to 3 but not day 0 to 1. 
+

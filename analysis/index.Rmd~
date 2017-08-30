@@ -11,11 +11,11 @@ title: "Home"
 
 ## Analysis
 
-*  [Data Exploration and Normalization](../analysis/Endoderm_core_runs.html)
+*  [Data Exploration and Normalization](../analysis/Endoderm_TC_core_runs.html)
 *  [Analysis of Technical Factors](../analysis/Technical_factor_analysis_cyclic_loess.html)
 *  [Pairwise Analysis of Differential Expression](../analysis/DE_exp_limma_only_cyclic_loess.html)
 *  [RPKM analysis](../analysis/RPKM_analysis.html)
 *  [Comparison of Two Methods of Combining Technical Replicates](../analysis/Compare_methods_combining_technical_replicates_cyclic_loess.html)
-*  [Cormotif using Averaged Technical Replicates](../analysis/Cormotif_avg_log2_CPM_new.html)
+*  [Cormotif using Averaged Technical Replicates](../analysis/Cormotif_avg_log2_CPM_cyclic_loess_new.html)
 *  [Analysis of Variance](../analysis/Temporal_changes_variation_cyclicloess.html) 
 *  [GO information](../analysis/GO_enrichment_cyclic_loess.html)
