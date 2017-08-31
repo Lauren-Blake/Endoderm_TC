@@ -22,6 +22,29 @@ library("RColorBrewer")
 # Load colors
 pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
 
+# Functions for plots
+
+bjpm<-
+theme(
+  panel.border = element_rect(colour = "black", fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = "bold"),
+  axis.text.y =  element_text(size = 14,face = "bold",color = "black"),
+  axis.text.x =  element_text(size = 14,face = "bold",color = "black"),
+  axis.title.y = element_text(size = 14,face = "bold"),
+  axis.title.x=element_blank(),
+  legend.text = element_text(size = 14,face = "bold"),
+  legend.title = element_text(size = 14,face = "bold"),
+  strip.text.x = element_text(size = 14,face = "bold"),
+  strip.text.y = element_text(size = 14,face = "bold"),
+  strip.background = element_rect(colour = "black", size = 2))
+
+bjp<-
+theme(
+  axis.text.y =  element_text(size = 9,face = "bold",color = "black"),
+  axis.title.y = element_text(size = 10,face = "bold",color = "black"),
+  axis.text.x =  element_text(size = 9,face = "bold",color = "black"),
+  axis.title.x = element_text(size = 10,face = "bold",color = "black"), 
+  plot.title = element_text(size = 13, face = "bold"))
 
 
 # Load cyclic loess normalized data
@@ -208,29 +231,6 @@ HC_var <- rbind(as.data.frame(log_chimps_day0_var), as.data.frame(log_chimps_day
 HC_var_labels <- cbind(HC_var, labels, labels10)
 
 dim(HC_var_labels)
-
-
-bjpm<-
-theme(
-  panel.border = element_rect(colour = "black", fill = NA, size = 2),
-  plot.title = element_text(size = 16, face = "bold"),
-  axis.text.y =  element_text(size = 14,face = "bold",color = "black"),
-  axis.text.x =  element_text(size = 14,face = "bold",color = "black"),
-  axis.title.y = element_text(size = 14,face = "bold"),
-  axis.title.x=element_blank(),
-  legend.text = element_text(size = 14,face = "bold"),
-  legend.title = element_text(size = 14,face = "bold"),
-  strip.text.x = element_text(size = 14,face = "bold"),
-  strip.text.y = element_text(size = 14,face = "bold"),
-  strip.background = element_rect(colour = "black", size = 2))
-
-bjp<-
-theme(
-  axis.text.y =  element_text(size = 9,face = "bold",color = "black"),
-  axis.title.y = element_text(size = 10,face = "bold",color = "black"),
-  axis.text.x =  element_text(size = 9,face = "bold",color = "black"),
-  axis.title.x = element_text(size = 10,face = "bold",color = "black"), 
-  plot.title = element_text(size = 13, face = "bold"))
 
 
 p <- ggplot(HC_var_labels, aes(x = factor(labels), y = HC_var))

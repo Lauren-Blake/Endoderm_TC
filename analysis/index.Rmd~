@@ -13,9 +13,11 @@ title: "Home"
 
 *  [Data Exploration and Normalization](../analysis/Endoderm_TC_core_runs.html)
 *  [Analysis of Technical Factors](../analysis/Technical_factor_analysis_cyclic_loess.html)
+*  [Technical Factors Across Days](../analysis/Technical_factors_across_days.html)
 *  [Pairwise Analysis of Differential Expression](../analysis/DE_exp_limma_only_cyclic_loess.html)
 *  [RPKM analysis](../analysis/RPKM_analysis.html)
 *  [Comparison of Two Methods of Combining Technical Replicates](../analysis/Compare_methods_combining_technical_replicates_cyclic_loess.html)
 *  [Cormotif using Averaged Technical Replicates](../analysis/Cormotif_avg_log2_CPM_cyclic_loess_new.html)
 *  [Analysis of Variance](../analysis/Temporal_changes_variation_cyclicloess.html) 
+*  [Analysis Incorporating Purity Information](../analysis/Analysis_purity_information.html)
 *  [GO information](../analysis/GO_enrichment_cyclic_loess.html)
