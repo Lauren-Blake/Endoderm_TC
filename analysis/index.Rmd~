@@ -20,4 +20,6 @@ title: "Home"
 *  [Cormotif using Averaged Technical Replicates](../analysis/Cormotif_avg_log2_CPM_cyclic_loess_new.html)
 *  [Analysis of Variance](../analysis/Temporal_changes_variation_cyclicloess.html) 
 *  [Analysis Incorporating Purity Information](../analysis/Analysis_purity_information.html)
+*  [Variance comparison in GTEx Tissues](../analysis/Variance_compared_to_GTEx.html)
 *  [GO information](../analysis/GO_enrichment_cyclic_loess.html)
+*  [Lethality information](../Lethality_analysis.Rmd)

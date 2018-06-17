@@ -209,6 +209,27 @@ cors <- cor(cpm_in_cutoff, method="spearman", use="pairwise.complete.obs")
 heatmap.2( cors, scale="column", col = colors, margins = c(12, 12), trace='none', denscol="white", labCol=labels, ColSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Species))], RowSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))
 
 
+species <- c("H", "H","H","H","H","H","H", "H", "C", "C","C","C","C","C","C","C","H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C", "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C", "H","H","H","H","H","H","H","H",  "C", "C","C","C","C","C","C","C")
+
+day <- c("0", "0","0","0","0","0","0", "0", "0", "0", "0","0","0","0","0", "0","1","1","1","1","1","1","1","1", "1","1","1","1","1","1","1","1",  "2", "2","2","2","2","2","2","2","2", "2","2","2","2","2","2","2",  "3", "3","3","3","3","3","3","3",  "3", "3","3","3","3","3","3", "3")
+
+
+design <- model.matrix(~ species*day )
+
+colnames(design)[1] <- "Intercept"
+colnames(design) <- gsub("speciesH", "Human", colnames(design))
+colnames(design) <- gsub(":", ".", colnames(design))
+#colnames(design) <- gsub("batch2", "batch", colnames(design))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom <- voom(dge_in_cutoff, design, normalize.method="cyclicloess")
+
+corfit <- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation =   corfit$consensus.correlation
+
+cpm.voom.corfit <- voom(dge_in_cutoff, design, plot = TRUE, normalize.method="cyclicloess", block=individual, correlation = corfit.correlation )
 ```
 
 ## Visualizing the filtered data
@@ -216,7 +237,7 @@ heatmap.2( cors, scale="column", col = colors, margins = c(12, 12), trace='none'
 ```{r}
 # Make PCA plots with the factors colored by day
 
-pca_genes <- prcomp(t(cpm_in_cutoff), scale = T)
+pca_genes <- prcomp(t(cpm.voom.corfit$E), scale = T)
 scores <- pca_genes$x
 
 ### PCs 1 and 2 
@@ -229,6 +250,8 @@ for (n in 2:2){
   col.v <- pal[as.integer(species)]
   plot_scores(pca_genes, scores, n, n+1, col.v)
 }
+
+pca_for_tmm_outlier <- scores[,1:5]
 ```
 
 From the PCA plot, we see that Sample D0201570116 is a clear outlier and doesn't cluster with anything, including its technical replicate. We will remove this sample and then go through the same process as above to visualize the data. 
@@ -295,7 +318,6 @@ head(summary(cpm_in_cutoff))
 # Make plot 
 hist(cpm_in_cutoff, main = "log2(CPM) values in filtered data (10,304 genes from 63 samples)", breaks = 100, ylim = c(0, 50000), xlab = "log2(CPM) values")
 
-
 ```
 
 There are 10,304 genes remaining. 
@@ -308,6 +330,13 @@ sample <- Endoderm_mapping_core_1$Sample[-2]
 
 pca_genes <- prcomp(t(cpm_in_cutoff), scale = T, retx = TRUE, center = TRUE)
 scores <- pca_genes$x
+
+
+pca_for_tmm_only <- scores[,1:5]
+
+#write.table(pca_for_tmm_outlier, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS3A.txt")
+
+#write.table(pca_for_tmm_only, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS3B.txt")
 
 ### PCs Plots on filtered and normalized data
 # PCs 1 and 2

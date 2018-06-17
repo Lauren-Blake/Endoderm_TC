@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -21,8 +21,8 @@
 <script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="libs/navigation-1.1/tabsets.js"></script>
-<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="libs/highlightjs-1.1/highlight.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">
 
@@ -66,10 +66,12 @@ body {
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -197,24 +199,19 @@ $(document).ready(function () {
 <pre class="r"><code># Load libraries
 
 library(&quot;gplots&quot;)</code></pre>
-<pre><code>## Warning: package &#39;gplots&#39; was built under R version 3.2.4</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;gplots&#39;</code></pre>
 <pre><code>## The following object is masked from &#39;package:stats&#39;:
 ## 
 ##     lowess</code></pre>
-<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.4</code></pre>
-<pre class="r"><code>library(&quot;RColorBrewer&quot;)
-library(&quot;scales&quot;)</code></pre>
-<pre><code>## Warning: package &#39;scales&#39; was built under R version 3.2.3</code></pre>
-<pre class="r"><code>library(&quot;edgeR&quot;)</code></pre>
-<pre><code>## Warning: package &#39;edgeR&#39; was built under R version 3.2.4</code></pre>
+<pre class="r"><code>library(&quot;ggplot2&quot;)
+library(&quot;RColorBrewer&quot;)
+library(&quot;scales&quot;)
+library(&quot;edgeR&quot;)</code></pre>
 <pre><code>## Loading required package: limma</code></pre>
-<pre><code>## Warning: package &#39;limma&#39; was built under R version 3.2.4</code></pre>
-<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
-<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code># Load colors 
+<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)
+
+# Load colors 
 
 colors &lt;- colorRampPalette(c(brewer.pal(9, &quot;Blues&quot;)[1],brewer.pal(9, &quot;Blues&quot;)[9]))(100)
 pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
@@ -274,8 +271,8 @@ plot_scores &lt;- function(pca, scores, n, m, cols, points=F, pchs =20, legend=F
 # Check that there&#39;s no &quot;NAs&quot; in the data
 select &lt;- counts_genes
 summary(apply(select, 1, var) == 0)</code></pre>
-<pre><code>   Mode   FALSE    TRUE    NA&#39;s 
-logical   25466    4564       0 </code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   25466    4564 </code></pre>
 <pre class="r"><code>row_sub = apply(counts_genes, 1, function(row) all(row !=0 ))
 counts_genes_no0 &lt;- counts_genes[row_sub,]
 
@@ -471,160 +468,118 @@ dge_in_cutoff &lt;- calcNormFactors(dge_in_cutoff)
 cpm_in_cutoff &lt;- cpm(dge_in_cutoff, normalized.lib.sizes=TRUE, log=TRUE)
 
 head(summary(cpm_in_cutoff))</code></pre>
-<pre><code>    D0_20157         D0_20157_0116         D0_20961       
- &quot;Min.   :-0.9894  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-3.625  &quot;
- &quot;1st Qu.: 3.9680  &quot; &quot;1st Qu.: 3.066  &quot; &quot;1st Qu.: 4.048  &quot;
- &quot;Median : 5.3500  &quot; &quot;Median : 5.165  &quot; &quot;Median : 5.354  &quot;
- &quot;Mean   : 5.2974  &quot; &quot;Mean   : 4.839  &quot; &quot;Mean   : 5.308  &quot;
- &quot;3rd Qu.: 6.5794  &quot; &quot;3rd Qu.: 6.874  &quot; &quot;3rd Qu.: 6.575  &quot;
- &quot;Max.   :12.7214  &quot; &quot;Max.   :14.024  &quot; &quot;Max.   :12.545  &quot;
-    D0_21792           D0_28162           D0_28815       
- &quot;Min.   :-3.906  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot;
- &quot;1st Qu.: 3.840  &quot; &quot;1st Qu.: 4.030  &quot; &quot;1st Qu.: 3.981  &quot;
- &quot;Median : 5.292  &quot; &quot;Median : 5.396  &quot; &quot;Median : 5.345  &quot;
- &quot;Mean   : 5.206  &quot; &quot;Mean   : 5.311  &quot; &quot;Mean   : 5.277  &quot;
- &quot;3rd Qu.: 6.600  &quot; &quot;3rd Qu.: 6.591  &quot; &quot;3rd Qu.: 6.574  &quot;
- &quot;Max.   :12.780  &quot; &quot;Max.   :12.369  &quot; &quot;Max.   :12.697  &quot;
- D0_28815_0116         D0_29089           D0_3647        
- &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-3.847  &quot;
- &quot;1st Qu.: 3.983  &quot; &quot;1st Qu.: 4.058  &quot; &quot;1st Qu.: 3.919  &quot;
- &quot;Median : 5.350  &quot; &quot;Median : 5.357  &quot; &quot;Median : 5.308  &quot;
- &quot;Mean   : 5.286  &quot; &quot;Mean   : 5.313  &quot; &quot;Mean   : 5.251  &quot;
- &quot;3rd Qu.: 6.564  &quot; &quot;3rd Qu.: 6.584  &quot; &quot;3rd Qu.: 6.596  &quot;
- &quot;Max.   :12.859  &quot; &quot;Max.   :12.393  &quot; &quot;Max.   :12.686  &quot;
-  D0_36470116          D0_3649          D0_3649_0116     
- &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot;
- &quot;1st Qu.: 3.708  &quot; &quot;1st Qu.: 3.895  &quot; &quot;1st Qu.: 3.757  &quot;
- &quot;Median : 5.246  &quot; &quot;Median : 5.299  &quot; &quot;Median : 5.267  &quot;
- &quot;Mean   : 5.164  &quot; &quot;Mean   : 5.222  &quot; &quot;Mean   : 5.168  &quot;
- &quot;3rd Qu.: 6.608  &quot; &quot;3rd Qu.: 6.578  &quot; &quot;3rd Qu.: 6.610  &quot;
- &quot;Max.   :12.476  &quot; &quot;Max.   :12.764  &quot; &quot;Max.   :12.925  &quot;
-    D0_40300        D0_40300_0116         D0_4955        
- &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-4.746  &quot;
- &quot;1st Qu.: 3.952  &quot; &quot;1st Qu.: 3.897  &quot; &quot;1st Qu.: 3.850  &quot;
- &quot;Median : 5.327  &quot; &quot;Median : 5.325  &quot; &quot;Median : 5.286  &quot;
- &quot;Mean   : 5.246  &quot; &quot;Mean   : 5.255  &quot; &quot;Mean   : 5.205  &quot;
- &quot;3rd Qu.: 6.590  &quot; &quot;3rd Qu.: 6.603  &quot; &quot;3rd Qu.: 6.582  &quot;
- &quot;Max.   :12.897  &quot; &quot;Max.   :12.788  &quot; &quot;Max.   :12.819  &quot;
-  D0_4955_0116         D1_20157        D1_20157_0116     
- &quot;Min.   :-6.277  &quot; &quot;Min.   :-2.359  &quot; &quot;Min.   :-2.563  &quot;
- &quot;1st Qu.: 3.870  &quot; &quot;1st Qu.: 3.950  &quot; &quot;1st Qu.: 3.958  &quot;
- &quot;Median : 5.314  &quot; &quot;Median : 5.350  &quot; &quot;Median : 5.348  &quot;
- &quot;Mean   : 5.234  &quot; &quot;Mean   : 5.303  &quot; &quot;Mean   : 5.301  &quot;
- &quot;3rd Qu.: 6.604  &quot; &quot;3rd Qu.: 6.608  &quot; &quot;3rd Qu.: 6.593  &quot;
- &quot;Max.   :12.687  &quot; &quot;Max.   :12.742  &quot; &quot;Max.   :12.874  &quot;
-    D1_20961           D1_21792           D1_28162       
- &quot;Min.   :-1.452  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-3.585  &quot;
- &quot;1st Qu.: 3.995  &quot; &quot;1st Qu.: 3.940  &quot; &quot;1st Qu.: 4.023  &quot;
- &quot;Median : 5.357  &quot; &quot;Median : 5.351  &quot; &quot;Median : 5.380  &quot;
- &quot;Mean   : 5.312  &quot; &quot;Mean   : 5.293  &quot; &quot;Mean   : 5.315  &quot;
- &quot;3rd Qu.: 6.587  &quot; &quot;3rd Qu.: 6.603  &quot; &quot;3rd Qu.: 6.590  &quot;
- &quot;Max.   :12.358  &quot; &quot;Max.   :12.642  &quot; &quot;Max.   :12.838  &quot;
-    D1_28815        D1_28815_0116         D1_29089       
- &quot;Min.   :-6.277  &quot; &quot;Min.   :-4.527  &quot; &quot;Min.   :-3.943  &quot;
- &quot;1st Qu.: 3.913  &quot; &quot;1st Qu.: 3.965  &quot; &quot;1st Qu.: 4.016  &quot;
- &quot;Median : 5.344  &quot; &quot;Median : 5.353  &quot; &quot;Median : 5.365  &quot;
- &quot;Mean   : 5.285  &quot; &quot;Mean   : 5.307  &quot; &quot;Mean   : 5.317  &quot;
- &quot;3rd Qu.: 6.601  &quot; &quot;3rd Qu.: 6.596  &quot; &quot;3rd Qu.: 6.600  &quot;
- &quot;Max.   :12.705  &quot; &quot;Max.   :12.724  &quot; &quot;Max.   :12.346  &quot;
-    D1_3647          D1_3647_0116         D1_3649        
- &quot;Min.   :-2.492  &quot; &quot;Min.   :-2.163  &quot; &quot;Min.   :-6.277  &quot;
- &quot;1st Qu.: 3.932  &quot; &quot;1st Qu.: 3.912  &quot; &quot;1st Qu.: 3.841  &quot;
- &quot;Median : 5.324  &quot; &quot;Median : 5.329  &quot; &quot;Median : 5.306  &quot;
- &quot;Mean   : 5.285  &quot; &quot;Mean   : 5.293  &quot; &quot;Mean   : 5.240  &quot;
- &quot;3rd Qu.: 6.617  &quot; &quot;3rd Qu.: 6.643  &quot; &quot;3rd Qu.: 6.618  &quot;
- &quot;Max.   :12.896  &quot; &quot;Max.   :12.942  &quot; &quot;Max.   :12.758  &quot;
-  D1_3649_0116         D1_40300        D1_40300_0116     
- &quot;Min.   :-3.535  &quot; &quot;Min.   :-4.028  &quot; &quot;Min.   :-1.474  &quot;
- &quot;1st Qu.: 3.749  &quot; &quot;1st Qu.: 3.813  &quot; &quot;1st Qu.: 3.947  &quot;
- &quot;Median : 5.260  &quot; &quot;Median : 5.290  &quot; &quot;Median : 5.356  &quot;
- &quot;Mean   : 5.195  &quot; &quot;Mean   : 5.206  &quot; &quot;Mean   : 5.306  &quot;
- &quot;3rd Qu.: 6.613  &quot; &quot;3rd Qu.: 6.580  &quot; &quot;3rd Qu.: 6.615  &quot;
- &quot;Max.   :12.607  &quot; &quot;Max.   :13.001  &quot; &quot;Max.   :12.780  &quot;
-    D1_4955          D1_4955_0116         D2_20157       
- &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-1.643  &quot;
- &quot;1st Qu.: 3.759  &quot; &quot;1st Qu.: 3.813  &quot; &quot;1st Qu.: 4.034  &quot;
- &quot;Median : 5.281  &quot; &quot;Median : 5.311  &quot; &quot;Median : 5.383  &quot;
- &quot;Mean   : 5.189  &quot; &quot;Mean   : 5.243  &quot; &quot;Mean   : 5.348  &quot;
- &quot;3rd Qu.: 6.612  &quot; &quot;3rd Qu.: 6.643  &quot; &quot;3rd Qu.: 6.572  &quot;
- &quot;Max.   :12.896  &quot; &quot;Max.   :12.712  &quot; &quot;Max.   :13.725  &quot;
- D2_20157_0116         D2_20961            D2_21792       
- &quot;Min.   :-1.862  &quot; &quot;Min.   :-0.2512  &quot; &quot;Min.   :-1.138  &quot;
- &quot;1st Qu.: 3.977  &quot; &quot;1st Qu.: 4.0231  &quot; &quot;1st Qu.: 4.019  &quot;
- &quot;Median : 5.370  &quot; &quot;Median : 5.3629  &quot; &quot;Median : 5.366  &quot;
- &quot;Mean   : 5.316  &quot; &quot;Mean   : 5.3503  &quot; &quot;Mean   : 5.349  &quot;
- &quot;3rd Qu.: 6.594  &quot; &quot;3rd Qu.: 6.5847  &quot; &quot;3rd Qu.: 6.580  &quot;
- &quot;Max.   :13.646  &quot; &quot;Max.   :13.2244  &quot; &quot;Max.   :12.932  &quot;
-    D2_28162           D2_28815        D2_28815_0116     
- &quot;Min.   :-2.997  &quot; &quot;Min.   :-2.890  &quot; &quot;Min.   :-3.607  &quot;
- &quot;1st Qu.: 4.030  &quot; &quot;1st Qu.: 4.096  &quot; &quot;1st Qu.: 4.021  &quot;
- &quot;Median : 5.386  &quot; &quot;Median : 5.415  &quot; &quot;Median : 5.383  &quot;
- &quot;Mean   : 5.334  &quot; &quot;Mean   : 5.381  &quot; &quot;Mean   : 5.339  &quot;
- &quot;3rd Qu.: 6.583  &quot; &quot;3rd Qu.: 6.669  &quot; &quot;3rd Qu.: 6.569  &quot;
- &quot;Max.   :13.897  &quot; &quot;Max.   :12.443  &quot; &quot;Max.   :13.251  &quot;
-    D2_29089           D2_3647           D2_3647_0116     
- &quot;Min.   :-1.372  &quot; &quot;Min.   :-0.9076  &quot; &quot;Min.   :-1.522  &quot;
- &quot;1st Qu.: 4.092  &quot; &quot;1st Qu.: 3.9531  &quot; &quot;1st Qu.: 4.039  &quot;
- &quot;Median : 5.370  &quot; &quot;Median : 5.3625  &quot; &quot;Median : 5.390  &quot;
- &quot;Mean   : 5.357  &quot; &quot;Mean   : 5.3251  &quot; &quot;Mean   : 5.342  &quot;
- &quot;3rd Qu.: 6.560  &quot; &quot;3rd Qu.: 6.6357  &quot; &quot;3rd Qu.: 6.619  &quot;
- &quot;Max.   :12.522  &quot; &quot;Max.   :13.1232  &quot; &quot;Max.   :13.607  &quot;
-    D2_3649          D2_3649_0116         D2_40300        
- &quot;Min.   :-2.161  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-0.7417  &quot;
- &quot;1st Qu.: 4.003  &quot; &quot;1st Qu.: 3.881  &quot; &quot;1st Qu.: 3.9560  &quot;
- &quot;Median : 5.366  &quot; &quot;Median : 5.340  &quot; &quot;Median : 5.3484  &quot;
- &quot;Mean   : 5.317  &quot; &quot;Mean   : 5.234  &quot; &quot;Mean   : 5.3038  &quot;
- &quot;3rd Qu.: 6.601  &quot; &quot;3rd Qu.: 6.610  &quot; &quot;3rd Qu.: 6.6030  &quot;
- &quot;Max.   :13.594  &quot; &quot;Max.   :12.862  &quot; &quot;Max.   :13.2013  &quot;
- D2_40300_0116         D2_4955          D2_4955_0116     
- &quot;Min.   :-1.791  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot;
- &quot;1st Qu.: 3.960  &quot; &quot;1st Qu.: 3.940  &quot; &quot;1st Qu.: 3.931  &quot;
- &quot;Median : 5.359  &quot; &quot;Median : 5.329  &quot; &quot;Median : 5.364  &quot;
- &quot;Mean   : 5.314  &quot; &quot;Mean   : 5.271  &quot; &quot;Mean   : 5.290  &quot;
- &quot;3rd Qu.: 6.648  &quot; &quot;3rd Qu.: 6.577  &quot; &quot;3rd Qu.: 6.655  &quot;
- &quot;Max.   :13.587  &quot; &quot;Max.   :13.100  &quot; &quot;Max.   :13.514  &quot;
-    D3_20157        D3_20157_0116         D3_20961        
- &quot;Min.   :-2.060  &quot; &quot;Min.   :-2.545  &quot; &quot;Min.   :-0.5907  &quot;
- &quot;1st Qu.: 4.114  &quot; &quot;1st Qu.: 4.091  &quot; &quot;1st Qu.: 4.1101  &quot;
- &quot;Median : 5.409  &quot; &quot;Median : 5.414  &quot; &quot;Median : 5.3860  &quot;
- &quot;Mean   : 5.379  &quot; &quot;Mean   : 5.361  &quot; &quot;Mean   : 5.3744  &quot;
- &quot;3rd Qu.: 6.606  &quot; &quot;3rd Qu.: 6.606  &quot; &quot;3rd Qu.: 6.5787  &quot;
- &quot;Max.   :13.317  &quot; &quot;Max.   :14.284  &quot; &quot;Max.   :13.1152  &quot;
-    D3_21792           D3_28162           D3_28815       
- &quot;Min.   :-0.958  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-2.907  &quot;
- &quot;1st Qu.: 4.106  &quot; &quot;1st Qu.: 4.031  &quot; &quot;1st Qu.: 3.981  &quot;
- &quot;Median : 5.395  &quot; &quot;Median : 5.431  &quot; &quot;Median : 5.388  &quot;
- &quot;Mean   : 5.379  &quot; &quot;Mean   : 5.346  &quot; &quot;Mean   : 5.316  &quot;
- &quot;3rd Qu.: 6.580  &quot; &quot;3rd Qu.: 6.613  &quot; &quot;3rd Qu.: 6.611  &quot;
- &quot;Max.   :12.253  &quot; &quot;Max.   :14.448  &quot; &quot;Max.   :13.826  &quot;
- D3_28815_0116         D3_29089           D3_3647         
- &quot;Min.   :-3.671  &quot; &quot;Min.   :-3.900  &quot; &quot;Min.   :-0.9919  &quot;
- &quot;1st Qu.: 4.034  &quot; &quot;1st Qu.: 4.173  &quot; &quot;1st Qu.: 4.0378  &quot;
- &quot;Median : 5.402  &quot; &quot;Median : 5.405  &quot; &quot;Median : 5.3931  &quot;
- &quot;Mean   : 5.354  &quot; &quot;Mean   : 5.388  &quot; &quot;Mean   : 5.3686  &quot;
- &quot;3rd Qu.: 6.590  &quot; &quot;3rd Qu.: 6.541  &quot; &quot;3rd Qu.: 6.6459  &quot;
- &quot;Max.   :13.294  &quot; &quot;Max.   :12.500  &quot; &quot;Max.   :13.5213  &quot;
-  D3_3647_0116         D3_3649          D3_3649_0116     
- &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot; &quot;Min.   :-6.277  &quot;
- &quot;1st Qu.: 4.021  &quot; &quot;1st Qu.: 4.083  &quot; &quot;1st Qu.: 3.917  &quot;
- &quot;Median : 5.409  &quot; &quot;Median : 5.412  &quot; &quot;Median : 5.384  &quot;
- &quot;Mean   : 5.312  &quot; &quot;Mean   : 5.323  &quot; &quot;Mean   : 5.222  &quot;
- &quot;3rd Qu.: 6.646  &quot; &quot;3rd Qu.: 6.595  &quot; &quot;3rd Qu.: 6.641  &quot;
- &quot;Max.   :14.144  &quot; &quot;Max.   :14.109  &quot; &quot;Max.   :13.168  &quot;
-    D3_40300        D3_40300_0116         D3_4955        
- &quot;Min.   :-6.277  &quot; &quot;Min.   :-3.749  &quot; &quot;Min.   :-6.277  &quot;
- &quot;1st Qu.: 4.070  &quot; &quot;1st Qu.: 4.016  &quot; &quot;1st Qu.: 4.038  &quot;
- &quot;Median : 5.410  &quot; &quot;Median : 5.403  &quot; &quot;Median : 5.429  &quot;
- &quot;Mean   : 5.353  &quot; &quot;Mean   : 5.314  &quot; &quot;Mean   : 5.336  &quot;
- &quot;3rd Qu.: 6.606  &quot; &quot;3rd Qu.: 6.629  &quot; &quot;3rd Qu.: 6.631  &quot;
- &quot;Max.   :13.482  &quot; &quot;Max.   :14.081  &quot; &quot;Max.   :13.279  &quot;
-  D3_4955_0116     
- &quot;Min.   :-6.277  &quot;
- &quot;1st Qu.: 3.977  &quot;
- &quot;Median : 5.398  &quot;
- &quot;Mean   : 5.285  &quot;
- &quot;3rd Qu.: 6.646  &quot;
- &quot;Max.   :14.189  &quot;</code></pre>
+<pre><code>    D0_20157       D0_20157_0116       D0_20961         D0_21792     
+ Min.   :-0.9894   Min.   :-6.277   Min.   :-3.625   Min.   :-3.906  
+ 1st Qu.: 3.9680   1st Qu.: 3.066   1st Qu.: 4.048   1st Qu.: 3.840  
+ Median : 5.3500   Median : 5.165   Median : 5.354   Median : 5.292  
+ Mean   : 5.2974   Mean   : 4.839   Mean   : 5.308   Mean   : 5.206  
+ 3rd Qu.: 6.5794   3rd Qu.: 6.874   3rd Qu.: 6.575   3rd Qu.: 6.600  
+ Max.   :12.7214   Max.   :14.024   Max.   :12.545   Max.   :12.780  
+    D0_28162         D0_28815      D0_28815_0116       D0_29089     
+ Min.   :-6.277   Min.   :-6.277   Min.   :-6.277   Min.   :-6.277  
+ 1st Qu.: 4.030   1st Qu.: 3.981   1st Qu.: 3.983   1st Qu.: 4.058  
+ Median : 5.396   Median : 5.345   Median : 5.350   Median : 5.357  
+ Mean   : 5.311   Mean   : 5.277   Mean   : 5.286   Mean   : 5.313  
+ 3rd Qu.: 6.591   3rd Qu.: 6.574   3rd Qu.: 6.564   3rd Qu.: 6.584  
+ Max.   :12.369   Max.   :12.697   Max.   :12.859   Max.   :12.393  
+    D0_3647        D0_36470116        D0_3649        D0_3649_0116   
+ Min.   :-3.847   Min.   :-6.277   Min.   :-6.277   Min.   :-6.277  
+ 1st Qu.: 3.919   1st Qu.: 3.708   1st Qu.: 3.895   1st Qu.: 3.757  
+ Median : 5.308   Median : 5.246   Median : 5.299   Median : 5.267  
+ Mean   : 5.251   Mean   : 5.164   Mean   : 5.222   Mean   : 5.168  
+ 3rd Qu.: 6.596   3rd Qu.: 6.608   3rd Qu.: 6.578   3rd Qu.: 6.610  
+ Max.   :12.686   Max.   :12.476   Max.   :12.764   Max.   :12.925  
+    D0_40300      D0_40300_0116       D0_4955        D0_4955_0116   
+ Min.   :-6.277   Min.   :-6.277   Min.   :-4.746   Min.   :-6.277  
+ 1st Qu.: 3.952   1st Qu.: 3.897   1st Qu.: 3.850   1st Qu.: 3.870  
+ Median : 5.327   Median : 5.325   Median : 5.286   Median : 5.314  
+ Mean   : 5.246   Mean   : 5.255   Mean   : 5.205   Mean   : 5.234  
+ 3rd Qu.: 6.590   3rd Qu.: 6.603   3rd Qu.: 6.582   3rd Qu.: 6.604  
+ Max.   :12.897   Max.   :12.788   Max.   :12.819   Max.   :12.687  
+    D1_20157      D1_20157_0116       D1_20961         D1_21792     
+ Min.   :-2.359   Min.   :-2.563   Min.   :-1.452   Min.   :-6.277  
+ 1st Qu.: 3.950   1st Qu.: 3.958   1st Qu.: 3.995   1st Qu.: 3.940  
+ Median : 5.350   Median : 5.348   Median : 5.357   Median : 5.351  
+ Mean   : 5.303   Mean   : 5.301   Mean   : 5.312   Mean   : 5.293  
+ 3rd Qu.: 6.608   3rd Qu.: 6.593   3rd Qu.: 6.587   3rd Qu.: 6.603  
+ Max.   :12.742   Max.   :12.874   Max.   :12.358   Max.   :12.642  
+    D1_28162         D1_28815      D1_28815_0116       D1_29089     
+ Min.   :-3.585   Min.   :-6.277   Min.   :-4.527   Min.   :-3.943  
+ 1st Qu.: 4.023   1st Qu.: 3.913   1st Qu.: 3.965   1st Qu.: 4.016  
+ Median : 5.380   Median : 5.344   Median : 5.353   Median : 5.365  
+ Mean   : 5.315   Mean   : 5.285   Mean   : 5.307   Mean   : 5.317  
+ 3rd Qu.: 6.590   3rd Qu.: 6.601   3rd Qu.: 6.596   3rd Qu.: 6.600  
+ Max.   :12.838   Max.   :12.705   Max.   :12.724   Max.   :12.346  
+    D1_3647        D1_3647_0116       D1_3649        D1_3649_0116   
+ Min.   :-2.492   Min.   :-2.163   Min.   :-6.277   Min.   :-3.535  
+ 1st Qu.: 3.932   1st Qu.: 3.912   1st Qu.: 3.841   1st Qu.: 3.749  
+ Median : 5.324   Median : 5.329   Median : 5.306   Median : 5.260  
+ Mean   : 5.285   Mean   : 5.293   Mean   : 5.240   Mean   : 5.195  
+ 3rd Qu.: 6.617   3rd Qu.: 6.643   3rd Qu.: 6.618   3rd Qu.: 6.613  
+ Max.   :12.896   Max.   :12.942   Max.   :12.758   Max.   :12.607  
+    D1_40300      D1_40300_0116       D1_4955        D1_4955_0116   
+ Min.   :-4.028   Min.   :-1.474   Min.   :-6.277   Min.   :-6.277  
+ 1st Qu.: 3.813   1st Qu.: 3.947   1st Qu.: 3.759   1st Qu.: 3.813  
+ Median : 5.290   Median : 5.356   Median : 5.281   Median : 5.311  
+ Mean   : 5.206   Mean   : 5.306   Mean   : 5.189   Mean   : 5.243  
+ 3rd Qu.: 6.580   3rd Qu.: 6.615   3rd Qu.: 6.612   3rd Qu.: 6.643  
+ Max.   :13.001   Max.   :12.780   Max.   :12.896   Max.   :12.712  
+    D2_20157      D2_20157_0116       D2_20961          D2_21792     
+ Min.   :-1.643   Min.   :-1.862   Min.   :-0.2512   Min.   :-1.138  
+ 1st Qu.: 4.034   1st Qu.: 3.977   1st Qu.: 4.0231   1st Qu.: 4.019  
+ Median : 5.383   Median : 5.370   Median : 5.3629   Median : 5.366  
+ Mean   : 5.348   Mean   : 5.316   Mean   : 5.3503   Mean   : 5.349  
+ 3rd Qu.: 6.572   3rd Qu.: 6.594   3rd Qu.: 6.5847   3rd Qu.: 6.580  
+ Max.   :13.725   Max.   :13.646   Max.   :13.2244   Max.   :12.932  
+    D2_28162         D2_28815      D2_28815_0116       D2_29089     
+ Min.   :-2.997   Min.   :-2.890   Min.   :-3.607   Min.   :-1.372  
+ 1st Qu.: 4.030   1st Qu.: 4.096   1st Qu.: 4.021   1st Qu.: 4.092  
+ Median : 5.386   Median : 5.415   Median : 5.383   Median : 5.370  
+ Mean   : 5.334   Mean   : 5.381   Mean   : 5.339   Mean   : 5.357  
+ 3rd Qu.: 6.583   3rd Qu.: 6.669   3rd Qu.: 6.569   3rd Qu.: 6.560  
+ Max.   :13.897   Max.   :12.443   Max.   :13.251   Max.   :12.522  
+    D2_3647         D2_3647_0116       D2_3649        D2_3649_0116   
+ Min.   :-0.9076   Min.   :-1.522   Min.   :-2.161   Min.   :-6.277  
+ 1st Qu.: 3.9531   1st Qu.: 4.039   1st Qu.: 4.003   1st Qu.: 3.881  
+ Median : 5.3625   Median : 5.390   Median : 5.366   Median : 5.340  
+ Mean   : 5.3251   Mean   : 5.342   Mean   : 5.317   Mean   : 5.234  
+ 3rd Qu.: 6.6357   3rd Qu.: 6.619   3rd Qu.: 6.601   3rd Qu.: 6.610  
+ Max.   :13.1232   Max.   :13.607   Max.   :13.594   Max.   :12.862  
+    D2_40300       D2_40300_0116       D2_4955        D2_4955_0116   
+ Min.   :-0.7417   Min.   :-1.791   Min.   :-6.277   Min.   :-6.277  
+ 1st Qu.: 3.9560   1st Qu.: 3.960   1st Qu.: 3.940   1st Qu.: 3.931  
+ Median : 5.3484   Median : 5.359   Median : 5.329   Median : 5.364  
+ Mean   : 5.3038   Mean   : 5.314   Mean   : 5.271   Mean   : 5.290  
+ 3rd Qu.: 6.6030   3rd Qu.: 6.648   3rd Qu.: 6.577   3rd Qu.: 6.655  
+ Max.   :13.2013   Max.   :13.587   Max.   :13.100   Max.   :13.514  
+    D3_20157      D3_20157_0116       D3_20961          D3_21792     
+ Min.   :-2.060   Min.   :-2.545   Min.   :-0.5907   Min.   :-0.958  
+ 1st Qu.: 4.114   1st Qu.: 4.091   1st Qu.: 4.1101   1st Qu.: 4.106  
+ Median : 5.409   Median : 5.414   Median : 5.3860   Median : 5.395  
+ Mean   : 5.379   Mean   : 5.361   Mean   : 5.3744   Mean   : 5.379  
+ 3rd Qu.: 6.606   3rd Qu.: 6.606   3rd Qu.: 6.5787   3rd Qu.: 6.580  
+ Max.   :13.317   Max.   :14.284   Max.   :13.1152   Max.   :12.253  
+    D3_28162         D3_28815      D3_28815_0116       D3_29089     
+ Min.   :-6.277   Min.   :-2.907   Min.   :-3.671   Min.   :-3.900  
+ 1st Qu.: 4.031   1st Qu.: 3.981   1st Qu.: 4.034   1st Qu.: 4.173  
+ Median : 5.431   Median : 5.388   Median : 5.402   Median : 5.405  
+ Mean   : 5.346   Mean   : 5.316   Mean   : 5.354   Mean   : 5.388  
+ 3rd Qu.: 6.613   3rd Qu.: 6.611   3rd Qu.: 6.590   3rd Qu.: 6.541  
+ Max.   :14.448   Max.   :13.826   Max.   :13.294   Max.   :12.500  
+    D3_3647         D3_3647_0116       D3_3649        D3_3649_0116   
+ Min.   :-0.9919   Min.   :-6.277   Min.   :-6.277   Min.   :-6.277  
+ 1st Qu.: 4.0378   1st Qu.: 4.021   1st Qu.: 4.083   1st Qu.: 3.917  
+ Median : 5.3931   Median : 5.409   Median : 5.412   Median : 5.384  
+ Mean   : 5.3686   Mean   : 5.312   Mean   : 5.323   Mean   : 5.222  
+ 3rd Qu.: 6.6459   3rd Qu.: 6.646   3rd Qu.: 6.595   3rd Qu.: 6.641  
+ Max.   :13.5213   Max.   :14.144   Max.   :14.109   Max.   :13.168  
+    D3_40300      D3_40300_0116       D3_4955        D3_4955_0116   
+ Min.   :-6.277   Min.   :-3.749   Min.   :-6.277   Min.   :-6.277  
+ 1st Qu.: 4.070   1st Qu.: 4.016   1st Qu.: 4.038   1st Qu.: 3.977  
+ Median : 5.410   Median : 5.403   Median : 5.429   Median : 5.398  
+ Mean   : 5.353   Mean   : 5.314   Mean   : 5.336   Mean   : 5.285  
+ 3rd Qu.: 6.606   3rd Qu.: 6.629   3rd Qu.: 6.631   3rd Qu.: 6.646  
+ Max.   :13.482   Max.   :14.081   Max.   :13.279   Max.   :14.189  </code></pre>
 <pre class="r"><code># Make density plots of the filtered data
 
 plotDensities(cpm_in_cutoff, col=pal[as.numeric(species)], legend=&quot;topright&quot;)</code></pre>
@@ -639,12 +594,34 @@ cors &lt;- cor(cpm_in_cutoff, method=&quot;spearman&quot;, use=&quot;pairwise.co
 
 heatmap.2( cors, scale=&quot;column&quot;, col = colors, margins = c(12, 12), trace=&#39;none&#39;, denscol=&quot;white&quot;, labCol=labels, ColSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Species))], RowSideColors=pal[as.integer(as.factor(Endoderm_mapping_core_1$Day))+9], cexCol = 0.2 + 1/log10(15), cexRow = 0.2 + 1/log10(15))</code></pre>
 <p><img src="figure/Normalize_again.Rmd/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>species &lt;- c(&quot;H&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;, &quot;H&quot;, &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;, &quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,&quot;H&quot;,  &quot;C&quot;, &quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;,&quot;C&quot;)
+
+day &lt;- c(&quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;, &quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;,&quot;0&quot;, &quot;0&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;, &quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,&quot;1&quot;,  &quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;, &quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,&quot;2&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,  &quot;3&quot;, &quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;,&quot;3&quot;, &quot;3&quot;)
+
+
+design &lt;- model.matrix(~ species*day )
+
+colnames(design)[1] &lt;- &quot;Intercept&quot;
+colnames(design) &lt;- gsub(&quot;speciesH&quot;, &quot;Human&quot;, colnames(design))
+colnames(design) &lt;- gsub(&quot;:&quot;, &quot;.&quot;, colnames(design))
+#colnames(design) &lt;- gsub(&quot;batch2&quot;, &quot;batch&quot;, colnames(design))
+
+# We want a random effect term for individual. As a result, we want to run voom twice. See https://support.bioconductor.org/p/59700/
+
+cpm.voom &lt;- voom(dge_in_cutoff, design, normalize.method=&quot;cyclicloess&quot;)
+
+corfit &lt;- duplicateCorrelation(cpm.voom, design, block=individual)
+
+corfit.correlation =   corfit$consensus.correlation
+
+cpm.voom.corfit &lt;- voom(dge_in_cutoff, design, plot = TRUE, normalize.method=&quot;cyclicloess&quot;, block=individual, correlation = corfit.correlation )</code></pre>
+<p><img src="figure/Normalize_again.Rmd/unnamed-chunk-6-4.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="visualizing-the-filtered-data" class="section level2">
 <h2>Visualizing the filtered data</h2>
 <pre class="r"><code># Make PCA plots with the factors colored by day
 
-pca_genes &lt;- prcomp(t(cpm_in_cutoff), scale = T)
+pca_genes &lt;- prcomp(t(cpm.voom.corfit$E), scale = T)
 scores &lt;- pca_genes$x
 
 ### PCs 1 and 2 
@@ -652,12 +629,15 @@ for (n in 1:1){
   col.v &lt;- pal[as.integer(species)]
   plot_scores(pca_genes, scores, n, n+1, col.v)
 }</code></pre>
+<pre><code>Warning: NAs introduced by coercion</code></pre>
 <p><img src="figure/Normalize_again.Rmd/unnamed-chunk-7-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>for (n in 2:2){
   col.v &lt;- pal[as.integer(species)]
   plot_scores(pca_genes, scores, n, n+1, col.v)
 }</code></pre>
+<pre><code>Warning: NAs introduced by coercion</code></pre>
 <p><img src="figure/Normalize_again.Rmd/unnamed-chunk-7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pca_for_tmm_outlier &lt;- scores[,1:5]</code></pre>
 <p>From the PCA plot, we see that Sample D0201570116 is a clear outlier and doesn’t cluster with anything, including its technical replicate. We will remove this sample and then go through the same process as above to visualize the data.</p>
 </div>
 <div id="normalization-after-removal-of-sample-d0201570116" class="section level2">
@@ -717,153 +697,118 @@ write.table(cpm_in_cutoff,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/cpm
 dim(cpm_in_cutoff)</code></pre>
 <pre><code>[1] 10304    63</code></pre>
 <pre class="r"><code>head(summary(cpm_in_cutoff))</code></pre>
-<pre><code>    D0_20157           D0_20961           D0_21792       
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-4.394  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 3.969  &quot; &quot;1st Qu.: 4.063  &quot; &quot;1st Qu.: 3.831  &quot;
- &quot;Median : 5.358  &quot; &quot;Median : 5.375  &quot; &quot;Median : 5.291  &quot;
- &quot;Mean   : 5.294  &quot; &quot;Mean   : 5.320  &quot; &quot;Mean   : 5.196  &quot;
- &quot;3rd Qu.: 6.592  &quot; &quot;3rd Qu.: 6.597  &quot; &quot;3rd Qu.: 6.600  &quot;
- &quot;Max.   :12.735  &quot; &quot;Max.   :12.572  &quot; &quot;Max.   :12.787  &quot;
-    D0_28162           D0_28815        D0_28815_0116     
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 4.027  &quot; &quot;1st Qu.: 3.976  &quot; &quot;1st Qu.: 3.979  &quot;
- &quot;Median : 5.397  &quot; &quot;Median : 5.355  &quot; &quot;Median : 5.354  &quot;
- &quot;Mean   : 5.305  &quot; &quot;Mean   : 5.278  &quot; &quot;Mean   : 5.286  &quot;
- &quot;3rd Qu.: 6.597  &quot; &quot;3rd Qu.: 6.584  &quot; &quot;3rd Qu.: 6.576  &quot;
- &quot;Max.   :12.377  &quot; &quot;Max.   :12.712  &quot; &quot;Max.   :12.873  &quot;
-    D0_29089           D0_3647          D0_36470116      
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-3.860  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 4.068  &quot; &quot;1st Qu.: 3.888  &quot; &quot;1st Qu.: 3.759  &quot;
- &quot;Median : 5.368  &quot; &quot;Median : 5.284  &quot; &quot;Median : 5.305  &quot;
- &quot;Mean   : 5.318  &quot; &quot;Mean   : 5.225  &quot; &quot;Mean   : 5.220  &quot;
- &quot;3rd Qu.: 6.599  &quot; &quot;3rd Qu.: 6.577  &quot; &quot;3rd Qu.: 6.671  &quot;
- &quot;Max.   :12.413  &quot; &quot;Max.   :12.671  &quot; &quot;Max.   :12.543  &quot;
-    D0_3649          D0_3649_0116         D0_40300       
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 3.889  &quot; &quot;1st Qu.: 3.790  &quot; &quot;1st Qu.: 3.935  &quot;
- &quot;Median : 5.297  &quot; &quot;Median : 5.298  &quot; &quot;Median : 5.322  &quot;
- &quot;Mean   : 5.215  &quot; &quot;Mean   : 5.194  &quot; &quot;Mean   : 5.238  &quot;
- &quot;3rd Qu.: 6.578  &quot; &quot;3rd Qu.: 6.646  &quot; &quot;3rd Qu.: 6.585  &quot;
- &quot;Max.   :12.769  &quot; &quot;Max.   :12.963  &quot; &quot;Max.   :12.901  &quot;
- D0_40300_0116         D0_4955          D0_4955_0116     
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-4.729  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 3.876  &quot; &quot;1st Qu.: 3.869  &quot; &quot;1st Qu.: 3.847  &quot;
- &quot;Median : 5.311  &quot; &quot;Median : 5.309  &quot; &quot;Median : 5.302  &quot;
- &quot;Mean   : 5.236  &quot; &quot;Mean   : 5.222  &quot; &quot;Mean   : 5.216  &quot;
- &quot;3rd Qu.: 6.593  &quot; &quot;3rd Qu.: 6.608  &quot; &quot;3rd Qu.: 6.595  &quot;
- &quot;Max.   :12.781  &quot; &quot;Max.   :12.848  &quot; &quot;Max.   :12.680  &quot;
-    D1_20157        D1_20157_0116         D1_20961       
- &quot;Min.   :-4.542  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-1.443  &quot;
- &quot;1st Qu.: 3.918  &quot; &quot;1st Qu.: 3.939  &quot; &quot;1st Qu.: 3.986  &quot;
- &quot;Median : 5.330  &quot; &quot;Median : 5.347  &quot; &quot;Median : 5.359  &quot;
- &quot;Mean   : 5.276  &quot; &quot;Mean   : 5.291  &quot; &quot;Mean   : 5.308  &quot;
- &quot;3rd Qu.: 6.591  &quot; &quot;3rd Qu.: 6.595  &quot; &quot;3rd Qu.: 6.591  &quot;
- &quot;Max.   :12.731  &quot; &quot;Max.   :12.879  &quot; &quot;Max.   :12.367  &quot;
-    D1_21792           D1_28162           D1_28815       
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-3.571  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 3.910  &quot; &quot;1st Qu.: 4.022  &quot; &quot;1st Qu.: 3.883  &quot;
- &quot;Median : 5.330  &quot; &quot;Median : 5.391  &quot; &quot;Median : 5.332  &quot;
- &quot;Mean   : 5.269  &quot; &quot;Mean   : 5.320  &quot; &quot;Mean   : 5.266  &quot;
- &quot;3rd Qu.: 6.591  &quot; &quot;3rd Qu.: 6.604  &quot; &quot;3rd Qu.: 6.591  &quot;
- &quot;Max.   :12.632  &quot; &quot;Max.   :12.857  &quot; &quot;Max.   :12.700  &quot;
- D1_28815_0116         D1_29089           D1_3647        
- &quot;Min.   :-4.525  &quot; &quot;Min.   :-3.941  &quot; &quot;Min.   :-2.519  &quot;
- &quot;1st Qu.: 3.951  &quot; &quot;1st Qu.: 4.010  &quot; &quot;1st Qu.: 3.880  &quot;
- &quot;Median : 5.353  &quot; &quot;Median : 5.361  &quot; &quot;Median : 5.290  &quot;
- &quot;Mean   : 5.300  &quot; &quot;Mean   : 5.306  &quot; &quot;Mean   : 5.247  &quot;
- &quot;3rd Qu.: 6.596  &quot; &quot;3rd Qu.: 6.595  &quot; &quot;3rd Qu.: 6.586  &quot;
- &quot;Max.   :12.730  &quot; &quot;Max.   :12.350  &quot; &quot;Max.   :12.868  &quot;
-  D1_3647_0116         D1_3649          D1_3649_0116     
- &quot;Min.   :-2.185  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-3.497  &quot;
- &quot;1st Qu.: 3.869  &quot; &quot;1st Qu.: 3.828  &quot; &quot;1st Qu.: 3.779  &quot;
- &quot;Median : 5.300  &quot; &quot;Median : 5.295  &quot; &quot;Median : 5.299  &quot;
- &quot;Mean   : 5.261  &quot; &quot;Mean   : 5.225  &quot; &quot;Mean   : 5.231  &quot;
- &quot;3rd Qu.: 6.615  &quot; &quot;3rd Qu.: 6.608  &quot; &quot;3rd Qu.: 6.655  &quot;
- &quot;Max.   :12.919  &quot; &quot;Max.   :12.753  &quot; &quot;Max.   :12.652  &quot;
-    D1_40300        D1_40300_0116         D1_4955        
- &quot;Min.   :-4.004  &quot; &quot;Min.   :-1.499  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 3.830  &quot; &quot;1st Qu.: 3.908  &quot; &quot;1st Qu.: 3.774  &quot;
- &quot;Median : 5.317  &quot; &quot;Median : 5.320  &quot; &quot;Median : 5.309  &quot;
- &quot;Mean   : 5.228  &quot; &quot;Mean   : 5.270  &quot; &quot;Mean   : 5.211  &quot;
- &quot;3rd Qu.: 6.609  &quot; &quot;3rd Qu.: 6.585  &quot; &quot;3rd Qu.: 6.641  &quot;
- &quot;Max.   :13.033  &quot; &quot;Max.   :12.755  &quot; &quot;Max.   :12.929  &quot;
-  D1_4955_0116         D2_20157        D2_20157_0116     
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-4.271  &quot; &quot;Min.   :-3.292  &quot;
- &quot;1st Qu.: 3.792  &quot; &quot;1st Qu.: 4.037  &quot; &quot;1st Qu.: 3.999  &quot;
- &quot;Median : 5.300  &quot; &quot;Median : 5.395  &quot; &quot;Median : 5.394  &quot;
- &quot;Mean   : 5.227  &quot; &quot;Mean   : 5.357  &quot; &quot;Mean   : 5.335  &quot;
- &quot;3rd Qu.: 6.633  &quot; &quot;3rd Qu.: 6.588  &quot; &quot;3rd Qu.: 6.619  &quot;
- &quot;Max.   :12.707  &quot; &quot;Max.   :13.745  &quot; &quot;Max.   :13.676  &quot;
-    D2_20961            D2_21792           D2_28162       
- &quot;Min.   :-0.8512  &quot; &quot;Min.   :-4.110  &quot; &quot;Min.   :-2.973  &quot;
- &quot;1st Qu.: 4.0502  &quot; &quot;1st Qu.: 4.037  &quot; &quot;1st Qu.: 4.043  &quot;
- &quot;Median : 5.3955  &quot; &quot;Median : 5.390  &quot; &quot;Median : 5.406  &quot;
- &quot;Mean   : 5.3806  &quot; &quot;Mean   : 5.368  &quot; &quot;Mean   : 5.352  &quot;
- &quot;3rd Qu.: 6.6221  &quot; &quot;3rd Qu.: 6.607  &quot; &quot;3rd Qu.: 6.605  &quot;
- &quot;Max.   :13.2650  &quot; &quot;Max.   :12.962  &quot; &quot;Max.   :13.925  &quot;
-    D2_28815        D2_28815_0116         D2_29089       
- &quot;Min.   :-2.881  &quot; &quot;Min.   :-3.593  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 4.100  &quot; &quot;1st Qu.: 4.024  &quot; &quot;1st Qu.: 4.096  &quot;
- &quot;Median : 5.418  &quot; &quot;Median : 5.393  &quot; &quot;Median : 5.378  &quot;
- &quot;Mean   : 5.384  &quot; &quot;Mean   : 5.347  &quot; &quot;Mean   : 5.361  &quot;
- &quot;3rd Qu.: 6.676  &quot; &quot;3rd Qu.: 6.582  &quot; &quot;3rd Qu.: 6.572  &quot;
- &quot;Max.   :12.454  &quot; &quot;Max.   :13.269  &quot; &quot;Max.   :12.539  &quot;
-    D2_3647           D2_3647_0116         D2_3649        
- &quot;Min.   :-0.9384  &quot; &quot;Min.   :-1.542  &quot; &quot;Min.   :-2.164  &quot;
- &quot;1st Qu.: 3.9096  &quot; &quot;1st Qu.: 4.018  &quot; &quot;1st Qu.: 3.998  &quot;
- &quot;Median : 5.3231  &quot; &quot;Median : 5.363  &quot; &quot;Median : 5.358  &quot;
- &quot;Mean   : 5.2865  &quot; &quot;Mean   : 5.316  &quot; &quot;Mean   : 5.307  &quot;
- &quot;3rd Qu.: 6.6014  &quot; &quot;3rd Qu.: 6.596  &quot; &quot;3rd Qu.: 6.592  &quot;
- &quot;Max.   :13.0918  &quot; &quot;Max.   :13.587  &quot; &quot;Max.   :13.590  &quot;
-  D2_3649_0116         D2_40300        D2_40300_0116     
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-0.721  &quot; &quot;Min.   :-1.810  &quot;
- &quot;1st Qu.: 3.899  &quot; &quot;1st Qu.: 3.966  &quot; &quot;1st Qu.: 3.933  &quot;
- &quot;Median : 5.365  &quot; &quot;Median : 5.361  &quot; &quot;Median : 5.334  &quot;
- &quot;Mean   : 5.256  &quot; &quot;Mean   : 5.319  &quot; &quot;Mean   : 5.288  &quot;
- &quot;3rd Qu.: 6.634  &quot; &quot;3rd Qu.: 6.622  &quot; &quot;3rd Qu.: 6.624  &quot;
- &quot;Max.   :12.890  &quot; &quot;Max.   :13.223  &quot; &quot;Max.   :13.569  &quot;
-    D2_4955          D2_4955_0116         D3_20157       
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-4.450  &quot;
- &quot;1st Qu.: 3.967  &quot; &quot;1st Qu.: 3.906  &quot; &quot;1st Qu.: 4.121  &quot;
- &quot;Median : 5.359  &quot; &quot;Median : 5.344  &quot; &quot;Median : 5.425  &quot;
- &quot;Mean   : 5.303  &quot; &quot;Mean   : 5.269  &quot; &quot;Mean   : 5.391  &quot;
- &quot;3rd Qu.: 6.612  &quot; &quot;3rd Qu.: 6.639  &quot; &quot;3rd Qu.: 6.624  &quot;
- &quot;Max.   :13.138  &quot; &quot;Max.   :13.500  &quot; &quot;Max.   :13.339  &quot;
- D3_20157_0116         D3_20961           D3_21792       
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-2.778  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 4.096  &quot; &quot;1st Qu.: 4.129  &quot; &quot;1st Qu.: 4.113  &quot;
- &quot;Median : 5.417  &quot; &quot;Median : 5.409  &quot; &quot;Median : 5.407  &quot;
- &quot;Mean   : 5.362  &quot; &quot;Mean   : 5.395  &quot; &quot;Mean   : 5.387  &quot;
- &quot;3rd Qu.: 6.614  &quot; &quot;3rd Qu.: 6.602  &quot; &quot;3rd Qu.: 6.595  &quot;
- &quot;Max.   :14.296  &quot; &quot;Max.   :13.145  &quot; &quot;Max.   :12.272  &quot;
-    D3_28162           D3_28815        D3_28815_0116     
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-2.882  &quot; &quot;Min.   :-3.658  &quot;
- &quot;1st Qu.: 4.055  &quot; &quot;1st Qu.: 3.998  &quot; &quot;1st Qu.: 4.037  &quot;
- &quot;Median : 5.457  &quot; &quot;Median : 5.410  &quot; &quot;Median : 5.413  &quot;
- &quot;Mean   : 5.371  &quot; &quot;Mean   : 5.335  &quot; &quot;Mean   : 5.362  &quot;
- &quot;3rd Qu.: 6.645  &quot; &quot;3rd Qu.: 6.637  &quot; &quot;3rd Qu.: 6.603  &quot;
- &quot;Max.   :14.483  &quot; &quot;Max.   :13.854  &quot; &quot;Max.   :13.312  &quot;
-    D3_29089           D3_3647          D3_3647_0116     
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-1.014  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 4.166  &quot; &quot;1st Qu.: 4.004  &quot; &quot;1st Qu.: 4.003  &quot;
- &quot;Median : 5.402  &quot; &quot;Median : 5.365  &quot; &quot;Median : 5.393  &quot;
- &quot;Mean   : 5.381  &quot; &quot;Mean   : 5.340  &quot; &quot;Mean   : 5.293  &quot;
- &quot;3rd Qu.: 6.540  &quot; &quot;3rd Qu.: 6.619  &quot; &quot;3rd Qu.: 6.628  &quot;
- &quot;Max.   :12.502  &quot; &quot;Max.   :13.499  &quot; &quot;Max.   :14.131  &quot;
-    D3_3649          D3_3649_0116         D3_40300       
- &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 4.062  &quot; &quot;1st Qu.: 3.934  &quot; &quot;1st Qu.: 4.042  &quot;
- &quot;Median : 5.393  &quot; &quot;Median : 5.392  &quot; &quot;Median : 5.391  &quot;
- &quot;Mean   : 5.304  &quot; &quot;Mean   : 5.233  &quot; &quot;Mean   : 5.334  &quot;
- &quot;3rd Qu.: 6.580  &quot; &quot;3rd Qu.: 6.654  &quot; &quot;3rd Qu.: 6.591  &quot;
- &quot;Max.   :14.095  &quot; &quot;Max.   :13.184  &quot; &quot;Max.   :13.469  &quot;
- D3_40300_0116         D3_4955          D3_4955_0116     
- &quot;Min.   :-3.739  &quot; &quot;Min.   :-6.284  &quot; &quot;Min.   :-6.284  &quot;
- &quot;1st Qu.: 4.025  &quot; &quot;1st Qu.: 4.026  &quot; &quot;1st Qu.: 3.957  &quot;
- &quot;Median : 5.413  &quot; &quot;Median : 5.418  &quot; &quot;Median : 5.380  &quot;
- &quot;Mean   : 5.321  &quot; &quot;Mean   : 5.325  &quot; &quot;Mean   : 5.268  &quot;
- &quot;3rd Qu.: 6.641  &quot; &quot;3rd Qu.: 6.623  &quot; &quot;3rd Qu.: 6.635  &quot;
- &quot;Max.   :14.095  &quot; &quot;Max.   :13.274  &quot; &quot;Max.   :14.179  &quot;</code></pre>
+<pre><code>    D0_20157         D0_20961         D0_21792         D0_28162     
+ Min.   :-6.284   Min.   :-4.394   Min.   :-6.284   Min.   :-6.284  
+ 1st Qu.: 3.969   1st Qu.: 4.063   1st Qu.: 3.831   1st Qu.: 4.027  
+ Median : 5.358   Median : 5.375   Median : 5.291   Median : 5.397  
+ Mean   : 5.294   Mean   : 5.320   Mean   : 5.196   Mean   : 5.305  
+ 3rd Qu.: 6.592   3rd Qu.: 6.597   3rd Qu.: 6.600   3rd Qu.: 6.597  
+ Max.   :12.735   Max.   :12.572   Max.   :12.787   Max.   :12.377  
+    D0_28815      D0_28815_0116       D0_29089         D0_3647      
+ Min.   :-6.284   Min.   :-6.284   Min.   :-6.284   Min.   :-3.860  
+ 1st Qu.: 3.976   1st Qu.: 3.979   1st Qu.: 4.068   1st Qu.: 3.888  
+ Median : 5.355   Median : 5.354   Median : 5.368   Median : 5.284  
+ Mean   : 5.278   Mean   : 5.286   Mean   : 5.318   Mean   : 5.225  
+ 3rd Qu.: 6.584   3rd Qu.: 6.576   3rd Qu.: 6.599   3rd Qu.: 6.577  
+ Max.   :12.712   Max.   :12.873   Max.   :12.413   Max.   :12.671  
+  D0_36470116        D0_3649        D0_3649_0116       D0_40300     
+ Min.   :-6.284   Min.   :-6.284   Min.   :-6.284   Min.   :-6.284  
+ 1st Qu.: 3.759   1st Qu.: 3.889   1st Qu.: 3.790   1st Qu.: 3.935  
+ Median : 5.305   Median : 5.297   Median : 5.298   Median : 5.322  
+ Mean   : 5.220   Mean   : 5.215   Mean   : 5.194   Mean   : 5.238  
+ 3rd Qu.: 6.671   3rd Qu.: 6.578   3rd Qu.: 6.646   3rd Qu.: 6.585  
+ Max.   :12.543   Max.   :12.769   Max.   :12.963   Max.   :12.901  
+ D0_40300_0116       D0_4955        D0_4955_0116       D1_20157     
+ Min.   :-6.284   Min.   :-4.729   Min.   :-6.284   Min.   :-4.542  
+ 1st Qu.: 3.876   1st Qu.: 3.869   1st Qu.: 3.847   1st Qu.: 3.918  
+ Median : 5.311   Median : 5.309   Median : 5.302   Median : 5.330  
+ Mean   : 5.236   Mean   : 5.222   Mean   : 5.216   Mean   : 5.276  
+ 3rd Qu.: 6.593   3rd Qu.: 6.608   3rd Qu.: 6.595   3rd Qu.: 6.591  
+ Max.   :12.781   Max.   :12.848   Max.   :12.680   Max.   :12.731  
+ D1_20157_0116       D1_20961         D1_21792         D1_28162     
+ Min.   :-6.284   Min.   :-1.443   Min.   :-6.284   Min.   :-3.571  
+ 1st Qu.: 3.939   1st Qu.: 3.986   1st Qu.: 3.910   1st Qu.: 4.022  
+ Median : 5.347   Median : 5.359   Median : 5.330   Median : 5.391  
+ Mean   : 5.291   Mean   : 5.308   Mean   : 5.269   Mean   : 5.320  
+ 3rd Qu.: 6.595   3rd Qu.: 6.591   3rd Qu.: 6.591   3rd Qu.: 6.604  
+ Max.   :12.879   Max.   :12.367   Max.   :12.632   Max.   :12.857  
+    D1_28815      D1_28815_0116       D1_29089         D1_3647      
+ Min.   :-6.284   Min.   :-4.525   Min.   :-3.941   Min.   :-2.519  
+ 1st Qu.: 3.883   1st Qu.: 3.951   1st Qu.: 4.010   1st Qu.: 3.880  
+ Median : 5.332   Median : 5.353   Median : 5.361   Median : 5.290  
+ Mean   : 5.266   Mean   : 5.300   Mean   : 5.306   Mean   : 5.247  
+ 3rd Qu.: 6.591   3rd Qu.: 6.596   3rd Qu.: 6.595   3rd Qu.: 6.586  
+ Max.   :12.700   Max.   :12.730   Max.   :12.350   Max.   :12.868  
+  D1_3647_0116       D1_3649        D1_3649_0116       D1_40300     
+ Min.   :-2.185   Min.   :-6.284   Min.   :-3.497   Min.   :-4.004  
+ 1st Qu.: 3.869   1st Qu.: 3.828   1st Qu.: 3.779   1st Qu.: 3.830  
+ Median : 5.300   Median : 5.295   Median : 5.299   Median : 5.317  
+ Mean   : 5.261   Mean   : 5.225   Mean   : 5.231   Mean   : 5.228  
+ 3rd Qu.: 6.615   3rd Qu.: 6.608   3rd Qu.: 6.655   3rd Qu.: 6.609  
+ Max.   :12.919   Max.   :12.753   Max.   :12.652   Max.   :13.033  
+ D1_40300_0116       D1_4955        D1_4955_0116       D2_20157     
+ Min.   :-1.499   Min.   :-6.284   Min.   :-6.284   Min.   :-4.271  
+ 1st Qu.: 3.908   1st Qu.: 3.774   1st Qu.: 3.792   1st Qu.: 4.037  
+ Median : 5.320   Median : 5.309   Median : 5.300   Median : 5.395  
+ Mean   : 5.270   Mean   : 5.211   Mean   : 5.227   Mean   : 5.357  
+ 3rd Qu.: 6.585   3rd Qu.: 6.641   3rd Qu.: 6.633   3rd Qu.: 6.588  
+ Max.   :12.755   Max.   :12.929   Max.   :12.707   Max.   :13.745  
+ D2_20157_0116       D2_20961          D2_21792         D2_28162     
+ Min.   :-3.292   Min.   :-0.8512   Min.   :-4.110   Min.   :-2.973  
+ 1st Qu.: 3.999   1st Qu.: 4.0502   1st Qu.: 4.037   1st Qu.: 4.043  
+ Median : 5.394   Median : 5.3955   Median : 5.390   Median : 5.406  
+ Mean   : 5.335   Mean   : 5.3806   Mean   : 5.368   Mean   : 5.352  
+ 3rd Qu.: 6.619   3rd Qu.: 6.6221   3rd Qu.: 6.607   3rd Qu.: 6.605  
+ Max.   :13.676   Max.   :13.2650   Max.   :12.962   Max.   :13.925  
+    D2_28815      D2_28815_0116       D2_29089         D2_3647       
+ Min.   :-2.881   Min.   :-3.593   Min.   :-6.284   Min.   :-0.9384  
+ 1st Qu.: 4.100   1st Qu.: 4.024   1st Qu.: 4.096   1st Qu.: 3.9096  
+ Median : 5.418   Median : 5.393   Median : 5.378   Median : 5.3231  
+ Mean   : 5.384   Mean   : 5.347   Mean   : 5.361   Mean   : 5.2865  
+ 3rd Qu.: 6.676   3rd Qu.: 6.582   3rd Qu.: 6.572   3rd Qu.: 6.6014  
+ Max.   :12.454   Max.   :13.269   Max.   :12.539   Max.   :13.0918  
+  D2_3647_0116       D2_3649        D2_3649_0116       D2_40300     
+ Min.   :-1.542   Min.   :-2.164   Min.   :-6.284   Min.   :-0.721  
+ 1st Qu.: 4.018   1st Qu.: 3.998   1st Qu.: 3.899   1st Qu.: 3.966  
+ Median : 5.363   Median : 5.358   Median : 5.365   Median : 5.361  
+ Mean   : 5.316   Mean   : 5.307   Mean   : 5.256   Mean   : 5.319  
+ 3rd Qu.: 6.596   3rd Qu.: 6.592   3rd Qu.: 6.634   3rd Qu.: 6.622  
+ Max.   :13.587   Max.   :13.590   Max.   :12.890   Max.   :13.223  
+ D2_40300_0116       D2_4955        D2_4955_0116       D3_20157     
+ Min.   :-1.810   Min.   :-6.284   Min.   :-6.284   Min.   :-4.450  
+ 1st Qu.: 3.933   1st Qu.: 3.967   1st Qu.: 3.906   1st Qu.: 4.121  
+ Median : 5.334   Median : 5.359   Median : 5.344   Median : 5.425  
+ Mean   : 5.288   Mean   : 5.303   Mean   : 5.269   Mean   : 5.391  
+ 3rd Qu.: 6.624   3rd Qu.: 6.612   3rd Qu.: 6.639   3rd Qu.: 6.624  
+ Max.   :13.569   Max.   :13.138   Max.   :13.500   Max.   :13.339  
+ D3_20157_0116       D3_20961         D3_21792         D3_28162     
+ Min.   :-6.284   Min.   :-2.778   Min.   :-6.284   Min.   :-6.284  
+ 1st Qu.: 4.096   1st Qu.: 4.129   1st Qu.: 4.113   1st Qu.: 4.055  
+ Median : 5.417   Median : 5.409   Median : 5.407   Median : 5.457  
+ Mean   : 5.362   Mean   : 5.395   Mean   : 5.387   Mean   : 5.371  
+ 3rd Qu.: 6.614   3rd Qu.: 6.602   3rd Qu.: 6.595   3rd Qu.: 6.645  
+ Max.   :14.296   Max.   :13.145   Max.   :12.272   Max.   :14.483  
+    D3_28815      D3_28815_0116       D3_29089         D3_3647      
+ Min.   :-2.882   Min.   :-3.658   Min.   :-6.284   Min.   :-1.014  
+ 1st Qu.: 3.998   1st Qu.: 4.037   1st Qu.: 4.166   1st Qu.: 4.004  
+ Median : 5.410   Median : 5.413   Median : 5.402   Median : 5.365  
+ Mean   : 5.335   Mean   : 5.362   Mean   : 5.381   Mean   : 5.340  
+ 3rd Qu.: 6.637   3rd Qu.: 6.603   3rd Qu.: 6.540   3rd Qu.: 6.619  
+ Max.   :13.854   Max.   :13.312   Max.   :12.502   Max.   :13.499  
+  D3_3647_0116       D3_3649        D3_3649_0116       D3_40300     
+ Min.   :-6.284   Min.   :-6.284   Min.   :-6.284   Min.   :-6.284  
+ 1st Qu.: 4.003   1st Qu.: 4.062   1st Qu.: 3.934   1st Qu.: 4.042  
+ Median : 5.393   Median : 5.393   Median : 5.392   Median : 5.391  
+ Mean   : 5.293   Mean   : 5.304   Mean   : 5.233   Mean   : 5.334  
+ 3rd Qu.: 6.628   3rd Qu.: 6.580   3rd Qu.: 6.654   3rd Qu.: 6.591  
+ Max.   :14.131   Max.   :14.095   Max.   :13.184   Max.   :13.469  
+ D3_40300_0116       D3_4955        D3_4955_0116   
+ Min.   :-3.739   Min.   :-6.284   Min.   :-6.284  
+ 1st Qu.: 4.025   1st Qu.: 4.026   1st Qu.: 3.957  
+ Median : 5.413   Median : 5.418   Median : 5.380  
+ Mean   : 5.321   Mean   : 5.325   Mean   : 5.268  
+ 3rd Qu.: 6.641   3rd Qu.: 6.623   3rd Qu.: 6.635  
+ Max.   :14.095   Max.   :13.274   Max.   :14.179  </code></pre>
 <pre class="r"><code># Make plot 
 hist(cpm_in_cutoff, main = &quot;log2(CPM) values in filtered data (10,304 genes from 63 samples)&quot;, breaks = 100, ylim = c(0, 50000), xlab = &quot;log2(CPM) values&quot;)</code></pre>
 <p><img src="figure/Normalize_again.Rmd/unnamed-chunk-8-2.png" width="672" style="display: block; margin: auto;" /></p>
@@ -874,6 +819,13 @@ hist(cpm_in_cutoff, main = &quot;log2(CPM) values in filtered data (10,304 genes
 
 pca_genes &lt;- prcomp(t(cpm_in_cutoff), scale = T, retx = TRUE, center = TRUE)
 scores &lt;- pca_genes$x
+
+
+pca_for_tmm_only &lt;- scores[,1:5]
+
+#write.table(pca_for_tmm_outlier, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS3A.txt&quot;)
+
+#write.table(pca_for_tmm_only, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS3B.txt&quot;)
 
 ### PCs Plots on filtered and normalized data
 # PCs 1 and 2
@@ -1027,7 +979,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

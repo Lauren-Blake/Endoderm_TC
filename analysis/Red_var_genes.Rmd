@@ -1,0 +1,988 @@
+---
+title: "Follow_up_red_var_genes"
+author: "Lauren Blake"
+date: "January 10, 2018"
+output: html_document
+---
+
+The goal of this script is to explore the possible function(s) of genes that undergo a reduction in variance from days 0 to 1. 
+
+## Load in data 
+
+```{r chunk-options, include=FALSE}
+source("chunk-options.R")
+```
+
+
+```{r}
+library("ggplot2")
+library("qvalue")
+library("RColorBrewer")
+library("topGO")
+#library("biomaRt")
+library("clusterProfiler")
+library("org.Hs.eg.db")
+library(tidyverse)
+library(data.table)
+library(plyr)
+library("dplyr")
+
+# Load colors
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+# Functions for plots
+
+bjpm<-
+theme(
+  panel.border = element_rect(colour = "black", fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = "bold"),
+  axis.text.y =  element_text(size = 14,face = "bold",color = "black"),
+  axis.text.x =  element_text(size = 14,face = "bold",color = "black"),
+  axis.title.y = element_text(size = 14,face = "bold"),
+  axis.title.x=element_blank(),
+  legend.text = element_text(size = 14,face = "bold"),
+  legend.title = element_text(size = 14,face = "bold"),
+  strip.text.x = element_text(size = 14,face = "bold"),
+  strip.text.y = element_text(size = 14,face = "bold"),
+  strip.background = element_rect(colour = "black", size = 2))
+
+bjp<-
+theme(
+  panel.border = element_rect(colour = "black", fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = "bold"),
+  axis.text.y =  element_text(size = 14,face = "bold",color = "black"),
+  axis.text.x =  element_text(size = 14,face = "bold",color = "black"),
+  axis.title.y = element_text(size = 14,face = "bold"),
+  axis.title.x = element_text(size = 14,face = "bold"),
+  legend.text = element_text(size = 14,face = "bold"),
+  legend.title = element_text(size = 14,face = "bold"),
+  strip.text.x = element_text(size = 14,face = "bold"),
+  strip.text.y = element_text(size = 14,face = "bold"),
+  strip.background = element_rect(colour = "black", size = 2))
+
+
+# Load cyclic loess normalized data
+
+cyclicloess_norm <- read.delim("../data/cpm_cyclicloess.txt")
+
+```
+
+```{r}
+# Take the mean of the technical replicates when available
+
+  # Day 0 technical replicates
+D0_28815 <- as.data.frame(apply(cyclicloess_norm[,5:6], 1, mean))
+D0_3647 <- as.data.frame(apply(cyclicloess_norm[,8:9], 1, mean))
+D0_3649 <- as.data.frame(apply(cyclicloess_norm[,10:11], 1, mean))
+D0_40300 <- as.data.frame(apply(cyclicloess_norm[,12:13], 1, mean))
+D0_4955 <- as.data.frame(apply(cyclicloess_norm[,14:15], 1, mean))
+  # Day 1 technical replicates
+D1_20157 <- as.data.frame(apply(cyclicloess_norm[,16:17], 1, mean))
+D1_28815 <- as.data.frame(apply(cyclicloess_norm[,21:22], 1, mean))
+D1_3647 <- as.data.frame(apply(cyclicloess_norm[,24:25], 1, mean))
+D1_3649 <- as.data.frame(apply(cyclicloess_norm[,26:27], 1, mean))
+D1_40300 <- as.data.frame(apply(cyclicloess_norm[,28:29], 1, mean))
+D1_4955 <- as.data.frame(apply(cyclicloess_norm[,30:31], 1, mean))
+  # Day 2 technical replicates
+D2_20157 <- as.data.frame(apply(cyclicloess_norm[,32:33], 1, mean))
+D2_28815 <- as.data.frame(apply(cyclicloess_norm[,37:38], 1, mean))
+D2_3647 <- as.data.frame(apply(cyclicloess_norm[,40:41], 1, mean))
+D2_3649 <- as.data.frame(apply(cyclicloess_norm[,42:43], 1, mean))
+D2_40300 <- as.data.frame(apply(cyclicloess_norm[,44:45], 1, mean))
+D2_4955 <- as.data.frame(apply(cyclicloess_norm[,46:47], 1, mean))
+  # Day 3 technical replicates
+D3_20157 <- as.data.frame(apply(cyclicloess_norm[,48:49], 1, mean))
+D3_28815 <- as.data.frame(apply(cyclicloess_norm[,53:54], 1, mean))
+D3_3647 <- as.data.frame(apply(cyclicloess_norm[,56:57], 1, mean))
+D3_3649 <- as.data.frame(apply(cyclicloess_norm[,58:59], 1, mean))
+D3_40300 <- as.data.frame(apply(cyclicloess_norm[,60:61], 1, mean))
+D3_4955 <- as.data.frame(apply(cyclicloess_norm[,62:63], 1, mean))
+
+# Create a new data frame with all of the combined technical replicates
+mean_tech_reps <- cbind(cyclicloess_norm[,1:4], D0_28815, cyclicloess_norm[,7], D0_3647, D0_3649, D0_40300, D0_4955, D1_20157, cyclicloess_norm[,18:20], D1_28815, cyclicloess_norm[,23], D1_3647, D1_3649, D1_40300, D1_4955, D2_20157, cyclicloess_norm[,34:36], D2_28815, cyclicloess_norm[,39], D2_3647, D2_3649, D2_40300, D2_4955, D3_20157, cyclicloess_norm[,50:52], D3_28815, cyclicloess_norm[,55], D3_3647, D3_3649, D3_40300, D3_4955)
+
+
+colnames(mean_tech_reps) <- c("D0_20157", "D0_20961", "D0_21792", "D0_28162", "D0_28815", "D0_29089", "D0_3647", "D0_3649", "D0_40300", "D0_4955", "D1_20157", "D1_20961", "D1_21792", "D1_28162", "D1_28815", "D1_29089", "D1_3647", "D1_3649", "D1_40300", "D1_4955", "D2_20157", "D2_20961", "D2_21792", "D2_28162", "D2_28815", "D2_29089", "D2_3647", "D2_3649", "D2_40300", "D2_4955", "D3_20157", "D3_20961", "D3_21792", "D3_28162", "D3_28815", "D3_29089", "D3_3647", "D3_3649", "D3_40300", "D3_4955")
+
+dim(mean_tech_reps)
+
+# Make a column for which are averaged or not
+
+averaged_status <- c(1,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2)
+
+# Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors <- read.delim("~/Desktop/Endoderm_TC/ashlar-trial/data/samplefactors-filtered.txt", stringsAsFactors=FALSE)
+day <- bio_rep_samplefactors$Day
+species <- bio_rep_samplefactors$Species
+
+# Make arrays with all the means
+
+labels1 <- array("Chimp Day 0", dim = c(10304, 1)) 
+labels2 <- array("Chimp Day 1", dim = c(10304, 1)) 
+labels3 <- array("Chimp Day 2", dim = c(10304, 1)) 
+labels4 <- array("Chimp Day 3", dim = c(10304, 1)) 
+labels5 <- array("Human Day 0", dim = c(10304, 1)) 
+labels6 <- array("Human Day 1", dim = c(10304, 1)) 
+labels7 <- array("Human Day 2", dim = c(10304, 1)) 
+labels8 <- array("Human Day 3", dim = c(10304, 1)) 
+
+# Make species-day labels
+labels9 <- rbind(labels1, labels2, labels3, labels4, labels5, labels6, labels7, labels8)
+labels <- as.numeric(as.factor(labels9))
+# Make labels so same days from different species are the same color
+labels10 <- rbind(labels1, labels2, labels3, labels4, labels1, labels2, labels3, labels4)
+labels10 <- as.numeric(as.factor(labels10))
+
+# Make species labels
+
+labels11 <- array("Chimpanzee", dim = c(41216, 1))
+labels12 <- array("Human", dim = c(41216, 1))
+labels13 <- rbind(labels11, labels12)
+
+# Calculate the variance for each species-time pair
+
+humans_day0_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,1:6]),1, var) )
+colnames(humans_day0_var) <- c("Variance") 
+chimps_day0_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,7:10]),1, var))
+colnames(chimps_day0_var) <- c("Variance") 
+humans_day1_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,11:16]),1, var))
+colnames(humans_day1_var) <- c("Variance") 
+chimps_day1_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,17:20]),1, var))
+colnames(chimps_day1_var) <- c("Variance")
+humans_day2_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,21:26]),1, var))
+colnames(humans_day2_var) <- c("Variance") 
+chimps_day2_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,27:30]),1, var))
+colnames(chimps_day2_var) <- c("Variance")
+humans_day3_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,31:36]),1, var))
+colnames(humans_day3_var) <- c("Variance") 
+chimps_day3_var <- as.data.frame(apply(as.data.frame(mean_tech_reps[,37:40]),1, var))
+colnames(chimps_day3_var) <- c("Variance")
+
+# Take log2 of each data frame
+
+log_chimps_day0_var <- log2(chimps_day0_var)
+log_chimps_day1_var <- log2(chimps_day1_var)
+log_chimps_day2_var <- log2(chimps_day2_var)
+log_chimps_day3_var <- log2(chimps_day3_var)
+log_humans_day0_var <- log(humans_day0_var)
+log_humans_day1_var <- log2(humans_day1_var)
+log_humans_day2_var <- log2(humans_day2_var)
+log_humans_day3_var <- log2(humans_day3_var)
+
+# Boxplot of variances gives general trend
+HC_var <- rbind(as.data.frame(log_chimps_day0_var), as.data.frame(log_chimps_day1_var), as.data.frame(log_chimps_day2_var), as.data.frame(log_chimps_day3_var), as.data.frame(log_humans_day0_var), as.data.frame(log_humans_day1_var), as.data.frame(log_humans_day2_var), as.data.frame(log_humans_day3_var))
+
+
+# Make a boxplot of log2(variance of gene expression levels)
+
+HC_var_labels <- cbind(HC_var, labels, labels10)
+
+dim(HC_var_labels)
+
+p <- ggplot(HC_var_labels, aes(x = factor(labels), y = HC_var))
+p <- p + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + xlab("Species-Day Pair") + ylab("log2 variance of gene expression") +  ggtitle("Log2 variance for each gene by species and day")
+p <- p + scale_x_discrete(labels=c("1" = "C Day 0", "2" = "C Day 1", "3" = "C Day 2", "4" = "C Day 3", "5" = "H Day 0", "6" = "H Day 1", "7" = "H Day 2", "8" = "H Day 3"))
+p + bjpm
+```
+
+## Identify the genes that show a reduction in variation between days 0 and 1 (using F tests)
+
+```{r}
+## Original code for the qqplots provided by Bryce van de Geijn.
+#Output:                                                                                                                                  
+#adds a set of qq points to an existing graph                                                                                             
+
+addqqplot=function(pvals, always.plot,density, col_designated){
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+  return(res)
+}
+
+#newqqplot creates a new plot with a set of qq points                                                                                     
+#Output:                                                                                                                                  
+#creates a new qq plot                                                                                                                    
+
+newqqplot=function(pvals, always.plot,density){
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+}
+```
+
+# General functions for changes in variation
+
+```{r}
+# 1A) Reduction in variation. 
+
+# We need 4 values for each species: day t-1 start and end values and day t start and end values.
+
+find_qqplot_red_chimps <- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t, p_val_cutoff){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y <- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    chimp_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+  
+  # Test
+#  chimp_var_pval <- array(NA, dim = c(10304, 1))
+
+  # for(i in 1:10304){
+  #   x <- t(mean_tech_reps[i,7:10])
+  #   y <- t(mean_tech_reps[i,17:20])
+  #    htest <- var.test(x, y, alternative = c("greater"))
+  #   chimp_var_pval[i,1] <- htest$p.value
+# }
+# hist(chimp_var_pval)
+  #   q_chimp_var_adj_pval <- qvalue(chimp_var_pval)
+  # length(q_chimp_var_adj_pval[which(q_chimp_var_adj_pval < 0.05) , ])
+
+############## For humans
+
+  human_var_pval <- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x <- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y <- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest <- var.test(x, y, alternative = c("greater"))
+    human_var_pval[i,1] <- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+  #   human_var_pval <- array(NA, dim = c(10304, 1))
+  # for(i in 1:10304){
+  #   x <- t(mean_tech_reps[i,1:6])
+  #   y <- t(mean_tech_reps[i,11:16])
+  #   htest <- var.test(x, y, alternative = c("greater"))
+  #   human_var_pval[i,1] <- htest$p.value
+# }
+ 
+# hist(human_var_pval)
+#   q_human_var_adj_pval <- qvalue(human_var_pval)$qvalues
+#  length(q_human_var_adj_pval[which(q_human_var_adj_pval < 0.05) , ])
+# 3498
+  
+############ Find p-values of the F_statistics
+
+# Make one data frame for corrected pvalues
+  
+#  chimp_var_adj_pval <- qvalue(chimp_var_pval)
+#  human_var_adj_pval <- qvalue(human_var_pval)$qvalues
+#  human_var_pval_adj_pval <- as.data.frame(cbind(human_var_pval, human_var_adj_pval))
+#  human_var_pval_adj_pval_order <- human_var_pval_adj_pval[order(human_var_pval_adj_pval[,2]),]
+  
+# Set p-value  (for FDR)
+#  p_val <- human_var_pval_adj_pval_order[max(which(human_var_pval_adj_pval_order[,2] < 0.05)), 1] 
+
+  p_val <- p_val_cutoff
+  var_pval <- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c("Chimpanzee", "Human")
+  summary(var_pval)
+  
+  
+  
+# Make one data frame for uncorrected pvalues
+
+  var_pval <- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) <- rownames(mean_tech_reps)
+  colnames(var_pval) <- c("Chimpanzee", "Human")
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Set p-value
+
+#  p_val <- 0.05
+
+# P-val < 0.05 for chimps only
+  num_var_pval_chimps <- var_pval[ which(var_pval[,1] < p_val), ]
+
+                    
+# P-val < 0.05 for humans only
+  num_var_pval_humans <- var_pval[ which(var_pval[,2] < p_val), ]
+  
+# A data frame with the # of genes with significant p-values  
+  sig_p_val <- as.data.frame(rbind(dim(num_var_pval_chimps), dim(num_var_pval_humans)))[,1]
+  
+# Run for the chimps
+  num_var_pval_chimps_neg_log <- -log10(var_pval[,1])
+
+  res_chimp <- newqqplot(num_var_pval_chimps_neg_log, -1, 100)
+
+# Run for the shared
+  # Find the p-values of the chimps given that it was significant in the humans
+
+  subset_var <- as.data.frame(var_pval[ which(var_pval[,2] < p_val), 1:2])
+  num_var_pval_chimp_given_human_no_df <- subset_var[,1]
+  num_var_pval_chimp_given_human <- as.data.frame(subset_var[,1])
+ 
+  num_var_pval_shared_neg_log <- -log10(num_var_pval_chimp_given_human)
+
+  res_shared <- addqqplot(num_var_pval_shared_neg_log[,1], -1, 100, pal[3])
+
+  # Information for plotting
+
+  list_values = as.data.frame(var_pval)
+  
+  
+  return(list_values)
+
+}
+
+
+```
+
+## Subset genes with a reduction of variation from day 0 to 1 in both species
+
+```{r}
+unadjust_pval <- find_qqplot_red_chimps(7,10,17,20,1,6,11,16, 0.05)
+
+head(unadjust_pval)
+dim(unadjust_pval)
+
+```
+
+# Reduction in variation 
+
+## Shared reduction in variation (2 p-value cutoff, 391 genes)
+
+```{r}
+# Sharing based on 2 p-value cutoffs
+subset_pval <- unadjust_pval[which(unadjust_pval[,1] < 0.1 & unadjust_pval[,2] < 0.05),]
+subset_pval2 <- unadjust_pval[which(unadjust_pval[,1] < 0.05 & unadjust_pval[,2] < 0.1),]
+
+subset_pval3 <- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)
+
+subset_pval4 <- unique(subset_pval3)
+
+dim(subset_pval4)
+
+# Matrix for which are in the 
+
+true_false <- rownames(unadjust_pval) %in% rownames(subset_pval4)
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(unadjust_pval)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+# Make table
+
+write.table(sig.genes, "~/sig_genes_shared_red_var.txt", quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+# Developmental
+# Trophectodermal cell differentiation
+
+goresults["GO:0001829"] #CNOT3, NODAL, EOMES, SP3
+
+# Neuroepithelial cell differentiation
+goresults["GO:0060563"] #FGF8, MYCL, NODAL, CDH2
+
+# Proximal/distal pattern formation
+goresults["GO:0009954"] # NODAL, SP8, PBX2
+
+# Cell migration involved in gastrulation
+goresults["GO:0042074"] # FGF8, NODAL, MIXL1
+
+
+```
+
+
+## Human-specific (2008 genes)
+
+```{r}
+subset_humans <- unadjust_pval[which(unadjust_pval[,1] > 0.1 & unadjust_pval[,2] < 0.05),]
+
+# Matrix for which are in the 
+
+true_false <- rownames(unadjust_pval) %in% rownames(subset_humans)
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(unadjust_pval)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+
+sig.genes <- sigGenes(go_data)
+goresults["GO:0090090"] # DVL2, PSMC1, PSMA1, DACT1, CDH2
+goresults["GO:0043353"]
+```
+
+
+## Chimp-specific (962 genes)
+
+```{r}
+subset_chimps <- unadjust_pval[which(unadjust_pval[,1] < 0.1 & unadjust_pval[,2] > 0.05),]
+
+# Matrix for which are in the 
+
+true_false <- rownames(unadjust_pval) %in% rownames(subset_chimps)
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(unadjust_pval)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+```
+
+## Genes that don't show a reduction in variation in both species (2412 genes)
+
+This analysis combines genes from the human-specific and chimp-specific categories from above. 
+
+```{r}
+# Sharing based on 2 p-value cutoffs
+subset_pval <- unadjust_pval[which(unadjust_pval[,1] > 0.1 & unadjust_pval[,2] < 0.05),]
+
+
+subset_pval2 <- unadjust_pval[which(unadjust_pval[,1] < 0.05 & unadjust_pval[,2] > 0.1),]
+getwd()
+write.table(subset_pval, "/Users/laurenblake/Desktop/human_only.txt", quote = FALSE)
+write.table(subset_pval2, "/Users/laurenblake/Desktop/chimps_only.txt", quote = FALSE)
+
+subset_pval3 <- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)
+
+subset_pval4 <- unique(subset_pval3)
+
+dim(subset_pval4)
+
+# Matrix for which are in the 
+
+true_false <- rownames(unadjust_pval) %in% rownames(subset_pval4)
+
+summary(true_false)
+
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(unadjust_pval)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+```
+
+
+# Evaluating overlap in the categories (compare cluster)
+
+```{r}
+
+# Sharing based on 2 p-value cutoffs
+subset_pval <- unadjust_pval[which(unadjust_pval[,1] < 0.1 & unadjust_pval[,2] < 0.05),]
+subset_pval2 <- unadjust_pval[which(unadjust_pval[,1] < 0.05 & unadjust_pval[,2] < 0.1),]
+
+subset_pval3 <- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)
+
+subset_pval4 <- unique(subset_pval3)
+
+dim(subset_pval4)
+
+true_false_shared <- rownames(unadjust_pval) %in% rownames(subset_pval4)
+
+# Non-sharing based on 2 p-value cutoffs
+subset_pval <- unadjust_pval[which(unadjust_pval[,1] > 0.1 & unadjust_pval[,2] < 0.05),]
+subset_pval2 <- unadjust_pval[which(unadjust_pval[,1] < 0.05 & unadjust_pval[,2] > 0.1),]
+
+subset_pval3 <- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)
+
+subset_pval4 <- unique(subset_pval3)
+
+dim(subset_pval4)
+
+# Matrix for which are in the 
+
+true_false_non_shared <- rownames(unadjust_pval) %in% rownames(subset_pval4)
+
+# Use compare cluster
+
+test_df <- data.frame(ensg = rownames(unadjust_pval), group = true_false_shared, othergroup = true_false_non_shared)
+
+make_test <- test_df[which(test_df$group == "TRUE" | test_df$othergroup == "TRUE"), ]
+
+#test_df[,2] <- as.numeric(test_df[,2])
+#test_df[,3] <- as.numeric(test_df[,3])
+
+#test_df[test_df[,2] > 1.5] <- 0
+#test_df[test_df[,3] > 1.5] <- 0
+
+#xx.formula <- compareCluster(ensg~group+othergroup, data=test_df, fun="enrichGO", universe = test_df$ensg)
+
+#mydf <- data.frame(Entrez=c('1', '100', '1000', '100101467',
+#                            '100127206', '100128071'),
+#                   group = c('A', 'A', 'A', 'B', 'B', 'B'),
+#                   othergroup = c('good', 'good', 'bad', 'bad', 'good', 'bad'))
+#xx.formula <- compareCluster(Entrez~group+othergroup, data=mydf, fun='enrichGO')
+#summary(xx.formula)
+
+
+formula_res <- compareCluster(ensg~group+othergroup, data=make_test, fun="enrichGO", universe = test_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+								keyType       = 'ENSEMBL',
+                ont           = "BP",
+                pAdjustMethod = "fdr",
+                qvalueCutoff  = 0.05,
+								maxGSSize = 3000,
+								minGSSize = 3)
+
+formula_res %>%as.data.frame()%>%select(-geneID)->enrichment.res
+row.names(enrichment.res)=NULL
+
+summary(enrichment.res) 
+
+#Plot
+my_breaks = c(0.01,10^-10,10^-20, 10^-30)
+dotplot(formula_res)+bjp+theme(axis.text.x = element_text(angle = 60, hjust = 1))+
+	scale_color_gradient(low ="#f70028",high = "#0200ff",trans="log",breaks = my_breaks, labels = my_breaks)
+
+#write.table(test_df, "/Users/laurenblake/Dropbox/Endoderm TC/GO_Enrichment/test_df.txt")
+```
+
+
+
+# Evaluating robustness: Use top percentage of genes 
+
+## 10% of genes with most evidence for reduction in variation- shared (115 genes)
+```{r}
+# Find the genes that show the most evidence for reduction in variation in humans and chimpanzees 
+chimp_var <- cbind(rownames(unadjust_pval), unadjust_pval)
+make_chimps <- chimp_var[order(chimp_var[,2]), ]
+
+# Take the top 10% (1030 genes)
+
+top_chimps <- as.character(make_chimps[1:1030,1])
+
+# Repeat with humans
+human_var <- cbind(rownames(unadjust_pval), unadjust_pval[,2])
+make_humans <- human_var[order(human_var[,2]), ]
+top_humans <- as.character(make_humans[1:1030,1])
+
+# Find intersection of genes
+
+shared_red_var <- intersect(top_chimps, top_humans)
+length(shared_red_var)
+
+# Matrix for which are in the 
+
+true_false <- rownames(unadjust_pval) %in% shared_red_var
+
+summary(true_false)
+
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(unadjust_pval)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+goresults["GO:0001829"] # CNOT3, NODAL, EOMES, SP3
+```
+
+# Comparing shared to non-reduced in either species
+
+## Shared reduction in variation (2 p-value cutoff, 391 genes) versus background of no reduction
+
+```{r}
+# Sharing based on 2 p-value cutoffs
+subset_pval <- unadjust_pval[which(unadjust_pval[,1] < 0.1 & unadjust_pval[,2] < 0.05),]
+subset_pval2 <- unadjust_pval[which(unadjust_pval[,1] < 0.05 & unadjust_pval[,2] < 0.1),]
+
+subset_pval3 <- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)
+
+subset_pval4 <- unique(subset_pval3)
+
+dim(subset_pval4)
+
+# Which genes don't show a reduction in either species?
+
+background1 <- unadjust_pval[which(unadjust_pval[,1] > 0.05 & unadjust_pval[,2] > 0.05),]
+
+background2 <- rbind(background1, subset_pval4)
+
+# Matrix for which are in the 
+
+true_false <- rownames(background2) %in% rownames(subset_pval4)
+summary(true_false)
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(background2)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+# Make table
+
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+# write.table(subset_pval4, "../data/sig_genes_shared.txt", quote = FALSE)
+# write.table(background1, "../data/sig_genes_nored.txt", quote = FALSE)
+
+# Developmental
+# Trophectodermal cell differentiation
+
+goresults["GO:0001829"] # CNOT3, NODAL, EOMES, SP3
+
+# Neuroepithelial cell differentiation
+goresults["GO:0060563"] # FGF8, MYCL, NODAL, CDH2
+
+# Proximal/distal pattern formation
+goresults["GO:0009954"] # NODAL, SP8, PBX2
+
+# Cell migration involved in gastrulation
+goresults["GO:0042074"] # FGF8, NODAL, MIXL1
+
+# How many of our 391 genes are involved in GO annotated developmental pathways?
+10/391
+```
+
+## Shared reduction in variation (2 p-value cutoff, 391 genes) versus background of human/chimp specific
+
+```{r}
+# Sharing based on 2 p-value cutoffs
+subset_pval_chimp <- unadjust_pval[which(unadjust_pval[,1] > 0.1 & unadjust_pval[,2] < 0.05),]
+subset_pval_human <- unadjust_pval[which(unadjust_pval[,1] < 0.05 & unadjust_pval[,2] > 0.1),]
+
+subset_pval_species_spec <- rbind(subset_pval_chimp, subset_pval_human)
+
+dim(subset_pval_species_spec)
+
+subset_pval_species_spec <- unique(subset_pval_species_spec)
+
+dim(subset_pval_species_spec)
+
+background2 <- rbind(subset_pval_species_spec, subset_pval4)
+
+# Matrix for which are in the 
+
+true_false <- rownames(background2) %in% rownames(subset_pval4)
+summary(true_false)
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- rownames(background2)
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+write.csv(go_table, "/Users/laurenblake/Desktop/shared_GO.csv", quote = FALSE, row.names = FALSE)
+
+sig.genes <- sigGenes(go_data)
+
+# Make table
+
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+#write.table(subset_pval_species_spec, "../data/sig_genes_speciesspecred.txt", quote = FALSE)
+
+# Neuroepithelial cell differentiation
+goresults["GO:0060563"] # FGF8, MYCL, NODAL, CDH2
+
+# Trophectodermal cell differentiation
+goresults["GO:0001829"] # CNOT3, NODAL, EOMES, SP3
+
+# Regulation of epithelial cell differentiation
+goresults["GO:0030856"] # IKBKB, RHEB, MYCL, ROCK2, CLOCK, CTSV, NODAL
+
+# Positive regulation of muscle cell differentiation
+goresults["GO:0051149"] #MEF2A, TCF3, CDH2, MTOR
+
+
+
+# Run clusterProfiler
+
+
+group_shared <- rownames(unadjust_pval) %in% rownames(subset_pval4)
+
+group_non_red <- rownames(unadjust_pval) %in% rownames(background1)
+
+group_one_species <- rownames(unadjust_pval) %in% rownames(subset_pval_species_spec)
+
+test_df <- data.frame(ensg = rownames(unadjust_pval), group_shared = group_shared, group_non_red = group_non_red, group_one_species = group_one_species)
+
+make_test <- test_df[which(test_df$group_shared == "TRUE" | test_df$group_non_red == "TRUE" | test_df$group_one_species == "TRUE"), ]
+
+
+
+formula_res <- compareCluster(ensg~group_shared+group_non_red+group_one_species, data=make_test, fun="enrichGO", universe = test_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+								keyType       = 'ENSEMBL',
+                ont           = "BP",
+                pAdjustMethod = "fdr",
+                qvalueCutoff  = 0.05,
+								maxGSSize = 3000,
+								minGSSize = 3)
+
+formula_res %>%as.data.frame()%>%select(-geneID)->enrichment.res
+row.names(enrichment.res)=NULL
+
+
+make_test <- test_df[which(test_df$group_shared == "TRUE"  | test_df$group_one_species == "TRUE"), ]
+
+
+
+formula_res <- compareCluster(ensg~group_shared+group_one_species, data=make_test, fun="enrichGO", universe = test_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+								keyType       = 'ENSEMBL',
+                ont           = "BP",
+                pAdjustMethod = "fdr",
+                qvalueCutoff  = 0.05,
+								maxGSSize = 3000,
+								minGSSize = 3)
+
+formula_res %>%as.data.frame()%>%select(-geneID)->enrichment.res
+row.names(enrichment.res)=NULL
+
+```
+
+
+
+# Evaluating robustness: Shared reduction in variation (top 10%, 1030 genes) versus background of no reduction
+
+```{r}
+# Find the genes that show the most evidence for reduction in variation in humans and chimpanzees 
+chimp_var <- cbind(rownames(unadjust_pval), unadjust_pval)
+make_chimps <- chimp_var[order(chimp_var[,2]), ]
+
+# Take the top 10% (1030 genes)
+
+top_chimps <- as.character(make_chimps[1:1030,1])
+
+# Repeat with humans
+human_var <- cbind(rownames(unadjust_pval), unadjust_pval[,2])
+make_humans <- human_var[order(human_var[,2]), ]
+top_humans <- as.character(make_humans[1:1030,1])
+
+# Find intersection of genes
+
+shared_red_var <- intersect(top_chimps, top_humans)
+length(shared_red_var)
+
+# Which genes don't show a reduction in either species?
+
+non_red <- union(as.character(make_chimps[1031:10304,1]), as.character(make_humans[1031:10304,1]))
+
+background2 <- c(shared_red_var, non_red)
+
+# Matrix for which are in the 
+
+true_false <- background2 %in% shared_red_var
+summary(true_false)
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- background2
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+
+
+```

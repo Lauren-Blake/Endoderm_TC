@@ -1,0 +1,2144 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-01-10" />
+
+<title>Follow_up_red_var_genes</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Follow_up_red_var_genes</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>January 10, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#load-in-data">Load in data</a></li>
+<li><a href="#identify-the-genes-that-show-a-reduction-in-variation-between-days-0-and-1-using-f-tests">Identify the genes that show a reduction in variation between days 0 and 1 (using F tests)</a></li>
+<li><a href="#general-functions-for-changes-in-variation">General functions for changes in variation</a><ul>
+<li><a href="#subset-genes-with-a-reduction-of-variation-from-day-0-to-1-in-both-species">Subset genes with a reduction of variation from day 0 to 1 in both species</a></li>
+</ul></li>
+<li><a href="#reduction-in-variation">Reduction in variation</a><ul>
+<li><a href="#shared-reduction-in-variation-2-p-value-cutoff-391-genes">Shared reduction in variation (2 p-value cutoff, 391 genes)</a></li>
+<li><a href="#human-specific-2008-genes">Human-specific (2008 genes)</a></li>
+<li><a href="#chimp-specific-962-genes">Chimp-specific (962 genes)</a></li>
+<li><a href="#genes-that-dont-show-a-reduction-in-variation-in-both-species-2412-genes">Genes that don’t show a reduction in variation in both species (2412 genes)</a></li>
+</ul></li>
+<li><a href="#evaluating-overlap-in-the-categories-compare-cluster">Evaluating overlap in the categories (compare cluster)</a></li>
+<li><a href="#evaluating-robustness-use-top-percentage-of-genes">Evaluating robustness: Use top percentage of genes</a><ul>
+<li><a href="#of-genes-with-most-evidence-for-reduction-in-variation--shared-115-genes">10% of genes with most evidence for reduction in variation- shared (115 genes)</a></li>
+</ul></li>
+<li><a href="#comparing-shared-to-non-reduced-in-either-species">Comparing shared to non-reduced in either species</a><ul>
+<li><a href="#shared-reduction-in-variation-2-p-value-cutoff-391-genes-versus-background-of-no-reduction">Shared reduction in variation (2 p-value cutoff, 391 genes) versus background of no reduction</a></li>
+<li><a href="#shared-reduction-in-variation-2-p-value-cutoff-391-genes-versus-background-of-humanchimp-specific">Shared reduction in variation (2 p-value cutoff, 391 genes) versus background of human/chimp specific</a></li>
+</ul></li>
+<li><a href="#evaluating-robustness-shared-reduction-in-variation-top-10-1030-genes-versus-background-of-no-reduction">Evaluating robustness: Shared reduction in variation (top 10%, 1030 genes) versus background of no reduction</a></li>
+</ul>
+</div>
+
+<p>The goal of this script is to explore the possible function(s) of genes that undergo a reduction in variance from days 0 to 1.</p>
+<div id="load-in-data" class="section level2">
+<h2>Load in data</h2>
+<pre class="r"><code>library(&quot;ggplot2&quot;)
+library(&quot;qvalue&quot;)
+library(&quot;RColorBrewer&quot;)
+library(&quot;topGO&quot;)</code></pre>
+<pre><code>Loading required package: BiocGenerics</code></pre>
+<pre><code>Loading required package: parallel</code></pre>
+<pre><code>
+Attaching package: &#39;BiocGenerics&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:parallel&#39;:
+
+    clusterApply, clusterApplyLB, clusterCall, clusterEvalQ,
+    clusterExport, clusterMap, parApply, parCapply, parLapply,
+    parLapplyLB, parRapply, parSapply, parSapplyLB</code></pre>
+<pre><code>The following objects are masked from &#39;package:stats&#39;:
+
+    IQR, mad, sd, var, xtabs</code></pre>
+<pre><code>The following objects are masked from &#39;package:base&#39;:
+
+    anyDuplicated, append, as.data.frame, cbind, colMeans,
+    colnames, colSums, do.call, duplicated, eval, evalq, Filter,
+    Find, get, grep, grepl, intersect, is.unsorted, lapply,
+    lengths, Map, mapply, match, mget, order, paste, pmax,
+    pmax.int, pmin, pmin.int, Position, rank, rbind, Reduce,
+    rowMeans, rownames, rowSums, sapply, setdiff, sort, table,
+    tapply, union, unique, unsplit, which, which.max, which.min</code></pre>
+<pre><code>Loading required package: graph</code></pre>
+<pre><code>Loading required package: Biobase</code></pre>
+<pre><code>Welcome to Bioconductor
+
+    Vignettes contain introductory material; view with
+    &#39;browseVignettes()&#39;. To cite Bioconductor, see
+    &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.</code></pre>
+<pre><code>Loading required package: GO.db</code></pre>
+<pre><code>Loading required package: AnnotationDbi</code></pre>
+<pre><code>Loading required package: stats4</code></pre>
+<pre><code>Loading required package: IRanges</code></pre>
+<pre><code>Loading required package: S4Vectors</code></pre>
+<pre><code>
+Attaching package: &#39;S4Vectors&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:base&#39;:
+
+    expand.grid</code></pre>
+<pre><code></code></pre>
+<pre><code>Loading required package: SparseM</code></pre>
+<pre><code>
+Attaching package: &#39;SparseM&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:base&#39;:
+
+    backsolve</code></pre>
+<pre><code>
+groupGOTerms:   GOBPTerm, GOMFTerm, GOCCTerm environments built.</code></pre>
+<pre><code>
+Attaching package: &#39;topGO&#39;</code></pre>
+<pre><code>The following object is masked from &#39;package:IRanges&#39;:
+
+    members</code></pre>
+<pre class="r"><code>#library(&quot;biomaRt&quot;)
+library(&quot;clusterProfiler&quot;)</code></pre>
+<pre><code>Loading required package: DOSE</code></pre>
+<pre><code>DOSE v3.4.0  For help: https://guangchuangyu.github.io/DOSE
+
+If you use DOSE in published research, please cite:
+Guangchuang Yu, Li-Gen Wang, Guang-Rong Yan, Qing-Yu He. DOSE: an R/Bioconductor package for Disease Ontology Semantic and Enrichment analysis. Bioinformatics 2015, 31(4):608-609</code></pre>
+<pre><code>clusterProfiler v3.6.0  For help: https://guangchuangyu.github.io/clusterProfiler
+
+If you use clusterProfiler in published research, please cite:
+Guangchuang Yu., Li-Gen Wang, Yanyan Han, Qing-Yu He. clusterProfiler: an R package for comparing biological themes among gene clusters. OMICS: A Journal of Integrative Biology. 2012, 16(5):284-287.</code></pre>
+<pre class="r"><code>library(&quot;org.Hs.eg.db&quot;)</code></pre>
+<pre><code></code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>── Attaching packages ────────────────────────────────── tidyverse 1.2.1 ──</code></pre>
+<pre><code>✔ tibble  1.4.2     ✔ purrr   0.2.4
+✔ tidyr   0.7.2     ✔ dplyr   0.5.0
+✔ readr   1.1.1     ✔ stringr 1.3.0
+✔ tibble  1.4.2     ✔ forcats 0.2.0</code></pre>
+<pre><code>── Conflicts ───────────────────────────────────── tidyverse_conflicts() ──
+✖ stringr::boundary()      masks graph::boundary()
+✖ dplyr::collapse()        masks IRanges::collapse()
+✖ dplyr::combine()         masks Biobase::combine(), BiocGenerics::combine()
+✖ dplyr::desc()            masks IRanges::desc()
+✖ tidyr::expand()          masks S4Vectors::expand()
+✖ dplyr::filter()          masks stats::filter()
+✖ dplyr::first()           masks S4Vectors::first()
+✖ dplyr::lag()             masks stats::lag()
+✖ BiocGenerics::Position() masks ggplot2::Position(), base::Position()
+✖ purrr::reduce()          masks IRanges::reduce()
+✖ dplyr::regroup()         masks IRanges::regroup()
+✖ dplyr::rename()          masks S4Vectors::rename()
+✖ dplyr::select()          masks AnnotationDbi::select()
+✖ purrr::simplify()        masks clusterProfiler::simplify()
+✖ dplyr::slice()           masks IRanges::slice()</code></pre>
+<pre class="r"><code>library(data.table)</code></pre>
+<pre><code>-------------------------------------------------------------------------</code></pre>
+<pre><code>data.table + dplyr code now lives in dtplyr.
+Please library(dtplyr)!</code></pre>
+<pre><code>-------------------------------------------------------------------------</code></pre>
+<pre><code>
+Attaching package: &#39;data.table&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:dplyr&#39;:
+
+    between, first, last</code></pre>
+<pre><code>The following object is masked from &#39;package:purrr&#39;:
+
+    transpose</code></pre>
+<pre><code>The following object is masked from &#39;package:IRanges&#39;:
+
+    shift</code></pre>
+<pre><code>The following objects are masked from &#39;package:S4Vectors&#39;:
+
+    first, second</code></pre>
+<pre class="r"><code>library(plyr)</code></pre>
+<pre><code>-------------------------------------------------------------------------</code></pre>
+<pre><code>You have loaded plyr after dplyr - this is likely to cause problems.
+If you need functions from both plyr and dplyr, please load plyr first, then dplyr:
+library(plyr); library(dplyr)</code></pre>
+<pre><code>-------------------------------------------------------------------------</code></pre>
+<pre><code>
+Attaching package: &#39;plyr&#39;</code></pre>
+<pre><code>The following objects are masked from &#39;package:dplyr&#39;:
+
+    arrange, count, desc, failwith, id, mutate, rename, summarise,
+    summarize</code></pre>
+<pre><code>The following object is masked from &#39;package:purrr&#39;:
+
+    compact</code></pre>
+<pre><code>The following object is masked from &#39;package:IRanges&#39;:
+
+    desc</code></pre>
+<pre><code>The following object is masked from &#39;package:S4Vectors&#39;:
+
+    rename</code></pre>
+<pre><code>The following object is masked from &#39;package:graph&#39;:
+
+    join</code></pre>
+<pre class="r"><code>library(&quot;dplyr&quot;)
+
+# Load colors
+pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
+
+# Functions for plots
+
+bjpm&lt;-
+theme(
+  panel.border = element_rect(colour = &quot;black&quot;, fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = &quot;bold&quot;),
+  axis.text.y =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 14,face = &quot;bold&quot;),
+  axis.title.x=element_blank(),
+  legend.text = element_text(size = 14,face = &quot;bold&quot;),
+  legend.title = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.x = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.y = element_text(size = 14,face = &quot;bold&quot;),
+  strip.background = element_rect(colour = &quot;black&quot;, size = 2))
+
+bjp&lt;-
+theme(
+  panel.border = element_rect(colour = &quot;black&quot;, fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = &quot;bold&quot;),
+  axis.text.y =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.text.x =  element_text(size = 14,face = &quot;bold&quot;,color = &quot;black&quot;),
+  axis.title.y = element_text(size = 14,face = &quot;bold&quot;),
+  axis.title.x = element_text(size = 14,face = &quot;bold&quot;),
+  legend.text = element_text(size = 14,face = &quot;bold&quot;),
+  legend.title = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.x = element_text(size = 14,face = &quot;bold&quot;),
+  strip.text.y = element_text(size = 14,face = &quot;bold&quot;),
+  strip.background = element_rect(colour = &quot;black&quot;, size = 2))
+
+
+# Load cyclic loess normalized data
+
+cyclicloess_norm &lt;- read.delim(&quot;../data/cpm_cyclicloess.txt&quot;)</code></pre>
+<pre class="r"><code># Take the mean of the technical replicates when available
+
+  # Day 0 technical replicates
+D0_28815 &lt;- as.data.frame(apply(cyclicloess_norm[,5:6], 1, mean))
+D0_3647 &lt;- as.data.frame(apply(cyclicloess_norm[,8:9], 1, mean))
+D0_3649 &lt;- as.data.frame(apply(cyclicloess_norm[,10:11], 1, mean))
+D0_40300 &lt;- as.data.frame(apply(cyclicloess_norm[,12:13], 1, mean))
+D0_4955 &lt;- as.data.frame(apply(cyclicloess_norm[,14:15], 1, mean))
+  # Day 1 technical replicates
+D1_20157 &lt;- as.data.frame(apply(cyclicloess_norm[,16:17], 1, mean))
+D1_28815 &lt;- as.data.frame(apply(cyclicloess_norm[,21:22], 1, mean))
+D1_3647 &lt;- as.data.frame(apply(cyclicloess_norm[,24:25], 1, mean))
+D1_3649 &lt;- as.data.frame(apply(cyclicloess_norm[,26:27], 1, mean))
+D1_40300 &lt;- as.data.frame(apply(cyclicloess_norm[,28:29], 1, mean))
+D1_4955 &lt;- as.data.frame(apply(cyclicloess_norm[,30:31], 1, mean))
+  # Day 2 technical replicates
+D2_20157 &lt;- as.data.frame(apply(cyclicloess_norm[,32:33], 1, mean))
+D2_28815 &lt;- as.data.frame(apply(cyclicloess_norm[,37:38], 1, mean))
+D2_3647 &lt;- as.data.frame(apply(cyclicloess_norm[,40:41], 1, mean))
+D2_3649 &lt;- as.data.frame(apply(cyclicloess_norm[,42:43], 1, mean))
+D2_40300 &lt;- as.data.frame(apply(cyclicloess_norm[,44:45], 1, mean))
+D2_4955 &lt;- as.data.frame(apply(cyclicloess_norm[,46:47], 1, mean))
+  # Day 3 technical replicates
+D3_20157 &lt;- as.data.frame(apply(cyclicloess_norm[,48:49], 1, mean))
+D3_28815 &lt;- as.data.frame(apply(cyclicloess_norm[,53:54], 1, mean))
+D3_3647 &lt;- as.data.frame(apply(cyclicloess_norm[,56:57], 1, mean))
+D3_3649 &lt;- as.data.frame(apply(cyclicloess_norm[,58:59], 1, mean))
+D3_40300 &lt;- as.data.frame(apply(cyclicloess_norm[,60:61], 1, mean))
+D3_4955 &lt;- as.data.frame(apply(cyclicloess_norm[,62:63], 1, mean))
+
+# Create a new data frame with all of the combined technical replicates
+mean_tech_reps &lt;- cbind(cyclicloess_norm[,1:4], D0_28815, cyclicloess_norm[,7], D0_3647, D0_3649, D0_40300, D0_4955, D1_20157, cyclicloess_norm[,18:20], D1_28815, cyclicloess_norm[,23], D1_3647, D1_3649, D1_40300, D1_4955, D2_20157, cyclicloess_norm[,34:36], D2_28815, cyclicloess_norm[,39], D2_3647, D2_3649, D2_40300, D2_4955, D3_20157, cyclicloess_norm[,50:52], D3_28815, cyclicloess_norm[,55], D3_3647, D3_3649, D3_40300, D3_4955)
+
+
+colnames(mean_tech_reps) &lt;- c(&quot;D0_20157&quot;, &quot;D0_20961&quot;, &quot;D0_21792&quot;, &quot;D0_28162&quot;, &quot;D0_28815&quot;, &quot;D0_29089&quot;, &quot;D0_3647&quot;, &quot;D0_3649&quot;, &quot;D0_40300&quot;, &quot;D0_4955&quot;, &quot;D1_20157&quot;, &quot;D1_20961&quot;, &quot;D1_21792&quot;, &quot;D1_28162&quot;, &quot;D1_28815&quot;, &quot;D1_29089&quot;, &quot;D1_3647&quot;, &quot;D1_3649&quot;, &quot;D1_40300&quot;, &quot;D1_4955&quot;, &quot;D2_20157&quot;, &quot;D2_20961&quot;, &quot;D2_21792&quot;, &quot;D2_28162&quot;, &quot;D2_28815&quot;, &quot;D2_29089&quot;, &quot;D2_3647&quot;, &quot;D2_3649&quot;, &quot;D2_40300&quot;, &quot;D2_4955&quot;, &quot;D3_20157&quot;, &quot;D3_20961&quot;, &quot;D3_21792&quot;, &quot;D3_28162&quot;, &quot;D3_28815&quot;, &quot;D3_29089&quot;, &quot;D3_3647&quot;, &quot;D3_3649&quot;, &quot;D3_40300&quot;, &quot;D3_4955&quot;)
+
+dim(mean_tech_reps)</code></pre>
+<pre><code>[1] 10304    40</code></pre>
+<pre class="r"><code># Make a column for which are averaged or not
+
+averaged_status &lt;- c(1,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2,2,1,1,1,2,1,2,2,2,2)
+
+# Find the technical factors for the biological replicates (no technical replicates)
+
+bio_rep_samplefactors &lt;- read.delim(&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/samplefactors-filtered.txt&quot;, stringsAsFactors=FALSE)
+day &lt;- bio_rep_samplefactors$Day
+species &lt;- bio_rep_samplefactors$Species
+
+# Make arrays with all the means
+
+labels1 &lt;- array(&quot;Chimp Day 0&quot;, dim = c(10304, 1)) 
+labels2 &lt;- array(&quot;Chimp Day 1&quot;, dim = c(10304, 1)) 
+labels3 &lt;- array(&quot;Chimp Day 2&quot;, dim = c(10304, 1)) 
+labels4 &lt;- array(&quot;Chimp Day 3&quot;, dim = c(10304, 1)) 
+labels5 &lt;- array(&quot;Human Day 0&quot;, dim = c(10304, 1)) 
+labels6 &lt;- array(&quot;Human Day 1&quot;, dim = c(10304, 1)) 
+labels7 &lt;- array(&quot;Human Day 2&quot;, dim = c(10304, 1)) 
+labels8 &lt;- array(&quot;Human Day 3&quot;, dim = c(10304, 1)) 
+
+# Make species-day labels
+labels9 &lt;- rbind(labels1, labels2, labels3, labels4, labels5, labels6, labels7, labels8)
+labels &lt;- as.numeric(as.factor(labels9))
+# Make labels so same days from different species are the same color
+labels10 &lt;- rbind(labels1, labels2, labels3, labels4, labels1, labels2, labels3, labels4)
+labels10 &lt;- as.numeric(as.factor(labels10))
+
+# Make species labels
+
+labels11 &lt;- array(&quot;Chimpanzee&quot;, dim = c(41216, 1))
+labels12 &lt;- array(&quot;Human&quot;, dim = c(41216, 1))
+labels13 &lt;- rbind(labels11, labels12)
+
+# Calculate the variance for each species-time pair
+
+humans_day0_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,1:6]),1, var) )
+colnames(humans_day0_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day0_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,7:10]),1, var))
+colnames(chimps_day0_var) &lt;- c(&quot;Variance&quot;) 
+humans_day1_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,11:16]),1, var))
+colnames(humans_day1_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day1_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,17:20]),1, var))
+colnames(chimps_day1_var) &lt;- c(&quot;Variance&quot;)
+humans_day2_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,21:26]),1, var))
+colnames(humans_day2_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day2_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,27:30]),1, var))
+colnames(chimps_day2_var) &lt;- c(&quot;Variance&quot;)
+humans_day3_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,31:36]),1, var))
+colnames(humans_day3_var) &lt;- c(&quot;Variance&quot;) 
+chimps_day3_var &lt;- as.data.frame(apply(as.data.frame(mean_tech_reps[,37:40]),1, var))
+colnames(chimps_day3_var) &lt;- c(&quot;Variance&quot;)
+
+# Take log2 of each data frame
+
+log_chimps_day0_var &lt;- log2(chimps_day0_var)
+log_chimps_day1_var &lt;- log2(chimps_day1_var)
+log_chimps_day2_var &lt;- log2(chimps_day2_var)
+log_chimps_day3_var &lt;- log2(chimps_day3_var)
+log_humans_day0_var &lt;- log(humans_day0_var)
+log_humans_day1_var &lt;- log2(humans_day1_var)
+log_humans_day2_var &lt;- log2(humans_day2_var)
+log_humans_day3_var &lt;- log2(humans_day3_var)
+
+# Boxplot of variances gives general trend
+HC_var &lt;- rbind(as.data.frame(log_chimps_day0_var), as.data.frame(log_chimps_day1_var), as.data.frame(log_chimps_day2_var), as.data.frame(log_chimps_day3_var), as.data.frame(log_humans_day0_var), as.data.frame(log_humans_day1_var), as.data.frame(log_humans_day2_var), as.data.frame(log_humans_day3_var))
+
+
+# Make a boxplot of log2(variance of gene expression levels)
+
+HC_var_labels &lt;- cbind(HC_var, labels, labels10)
+
+dim(HC_var_labels)</code></pre>
+<pre><code>[1] 82432     3</code></pre>
+<pre class="r"><code>p &lt;- ggplot(HC_var_labels, aes(x = factor(labels), y = HC_var))
+p &lt;- p + geom_violin(aes(fill = factor(labels10)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels10)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + xlab(&quot;Species-Day Pair&quot;) + ylab(&quot;log2 variance of gene expression&quot;) +  ggtitle(&quot;Log2 variance for each gene by species and day&quot;)
+p &lt;- p + scale_x_discrete(labels=c(&quot;1&quot; = &quot;C Day 0&quot;, &quot;2&quot; = &quot;C Day 1&quot;, &quot;3&quot; = &quot;C Day 2&quot;, &quot;4&quot; = &quot;C Day 3&quot;, &quot;5&quot; = &quot;H Day 0&quot;, &quot;6&quot; = &quot;H Day 1&quot;, &quot;7&quot; = &quot;H Day 2&quot;, &quot;8&quot; = &quot;H Day 3&quot;))
+p + bjpm</code></pre>
+<pre><code>Don&#39;t know how to automatically pick scale for object of type data.frame. Defaulting to continuous.</code></pre>
+<p><img src="figure/Red_var_genes.Rmd/unnamed-chunk-2-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="identify-the-genes-that-show-a-reduction-in-variation-between-days-0-and-1-using-f-tests" class="section level2">
+<h2>Identify the genes that show a reduction in variation between days 0 and 1 (using F tests)</h2>
+<pre class="r"><code>## Original code for the qqplots provided by Bryce van de Geijn.
+#Output:                                                                                                                                  
+#adds a set of qq points to an existing graph                                                                                             
+
+addqqplot=function(pvals, always.plot,density, col_designated){
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+  return(res)
+}
+
+#newqqplot creates a new plot with a set of qq points                                                                                     
+#Output:                                                                                                                                  
+#creates a new qq plot                                                                                                                    
+
+newqqplot=function(pvals, always.plot,density){
+  len = length(pvals)
+  res=qqplot(-log10((1:len)/(1+len)),pvals,plot.it=F)
+}</code></pre>
+</div>
+<div id="general-functions-for-changes-in-variation" class="section level1">
+<h1>General functions for changes in variation</h1>
+<pre class="r"><code># 1A) Reduction in variation. 
+
+# We need 4 values for each species: day t-1 start and end values and day t start and end values.
+
+find_qqplot_red_chimps &lt;- function(chimp_begin_column_tm1, chimp_end_column_tm1, chimp_begin_column_t, chimp_end_column_t, human_begin_column_tm1, human_end_column_tm1, human_begin_column_t, human_end_column_t, p_val_cutoff){
+
+  # Make an array to store the Chimp p-values
+
+  chimp_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x &lt;- t(mean_tech_reps[i,chimp_begin_column_tm1:chimp_end_column_tm1])
+    y &lt;- t(mean_tech_reps[i,chimp_begin_column_t:chimp_end_column_t])
+    htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+    chimp_var_pval[i,1] &lt;- htest$p.value
+  }
+
+  hist(chimp_var_pval)
+  
+  # Test
+#  chimp_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+  # for(i in 1:10304){
+  #   x &lt;- t(mean_tech_reps[i,7:10])
+  #   y &lt;- t(mean_tech_reps[i,17:20])
+  #    htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+  #   chimp_var_pval[i,1] &lt;- htest$p.value
+# }
+# hist(chimp_var_pval)
+  #   q_chimp_var_adj_pval &lt;- qvalue(chimp_var_pval)
+  # length(q_chimp_var_adj_pval[which(q_chimp_var_adj_pval &lt; 0.05) , ])
+
+############## For humans
+
+  human_var_pval &lt;- array(NA, dim = c(10304, 1))
+
+  for(i in 1:10304){
+    x &lt;- t(mean_tech_reps[i,human_begin_column_tm1:human_end_column_tm1])
+    y &lt;- t(mean_tech_reps[i,human_begin_column_t:human_end_column_t])
+    htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+    human_var_pval[i,1] &lt;- htest$p.value
+  }
+
+  hist(human_var_pval)
+
+  #   human_var_pval &lt;- array(NA, dim = c(10304, 1))
+  # for(i in 1:10304){
+  #   x &lt;- t(mean_tech_reps[i,1:6])
+  #   y &lt;- t(mean_tech_reps[i,11:16])
+  #   htest &lt;- var.test(x, y, alternative = c(&quot;greater&quot;))
+  #   human_var_pval[i,1] &lt;- htest$p.value
+# }
+ 
+# hist(human_var_pval)
+#   q_human_var_adj_pval &lt;- qvalue(human_var_pval)$qvalues
+#  length(q_human_var_adj_pval[which(q_human_var_adj_pval &lt; 0.05) , ])
+# 3498
+  
+############ Find p-values of the F_statistics
+
+# Make one data frame for corrected pvalues
+  
+#  chimp_var_adj_pval &lt;- qvalue(chimp_var_pval)
+#  human_var_adj_pval &lt;- qvalue(human_var_pval)$qvalues
+#  human_var_pval_adj_pval &lt;- as.data.frame(cbind(human_var_pval, human_var_adj_pval))
+#  human_var_pval_adj_pval_order &lt;- human_var_pval_adj_pval[order(human_var_pval_adj_pval[,2]),]
+  
+# Set p-value  (for FDR)
+#  p_val &lt;- human_var_pval_adj_pval_order[max(which(human_var_pval_adj_pval_order[,2] &lt; 0.05)), 1] 
+
+  p_val &lt;- p_val_cutoff
+  var_pval &lt;- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) &lt;- rownames(mean_tech_reps)
+  colnames(var_pval) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;)
+  summary(var_pval)
+  
+  
+  
+# Make one data frame for uncorrected pvalues
+
+  var_pval &lt;- as.data.frame(cbind(chimp_var_pval, human_var_pval))
+  rownames(var_pval) &lt;- rownames(mean_tech_reps)
+  colnames(var_pval) &lt;- c(&quot;Chimpanzee&quot;, &quot;Human&quot;)
+  summary(var_pval)
+
+  dim(var_pval)
+
+# Set p-value
+
+#  p_val &lt;- 0.05
+
+# P-val &lt; 0.05 for chimps only
+  num_var_pval_chimps &lt;- var_pval[ which(var_pval[,1] &lt; p_val), ]
+
+                    
+# P-val &lt; 0.05 for humans only
+  num_var_pval_humans &lt;- var_pval[ which(var_pval[,2] &lt; p_val), ]
+  
+# A data frame with the # of genes with significant p-values  
+  sig_p_val &lt;- as.data.frame(rbind(dim(num_var_pval_chimps), dim(num_var_pval_humans)))[,1]
+  
+# Run for the chimps
+  num_var_pval_chimps_neg_log &lt;- -log10(var_pval[,1])
+
+  res_chimp &lt;- newqqplot(num_var_pval_chimps_neg_log, -1, 100)
+
+# Run for the shared
+  # Find the p-values of the chimps given that it was significant in the humans
+
+  subset_var &lt;- as.data.frame(var_pval[ which(var_pval[,2] &lt; p_val), 1:2])
+  num_var_pval_chimp_given_human_no_df &lt;- subset_var[,1]
+  num_var_pval_chimp_given_human &lt;- as.data.frame(subset_var[,1])
+ 
+  num_var_pval_shared_neg_log &lt;- -log10(num_var_pval_chimp_given_human)
+
+  res_shared &lt;- addqqplot(num_var_pval_shared_neg_log[,1], -1, 100, pal[3])
+
+  # Information for plotting
+
+  list_values = as.data.frame(var_pval)
+  
+  
+  return(list_values)
+
+}</code></pre>
+<div id="subset-genes-with-a-reduction-of-variation-from-day-0-to-1-in-both-species" class="section level2">
+<h2>Subset genes with a reduction of variation from day 0 to 1 in both species</h2>
+<pre class="r"><code>unadjust_pval &lt;- find_qqplot_red_chimps(7,10,17,20,1,6,11,16, 0.05)</code></pre>
+<p><img src="figure/Red_var_genes.Rmd/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Red_var_genes.Rmd/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>head(unadjust_pval)</code></pre>
+<pre><code>                Chimpanzee       Human
+ENSG00000000003  0.3534340 0.026268789
+ENSG00000000419  0.2500095 0.003807568
+ENSG00000000457  0.8035145 0.626871169
+ENSG00000000460  0.1262491 0.085875477
+ENSG00000001036  0.4632284 0.746323223
+ENSG00000001084  0.2029344 0.215312001</code></pre>
+<pre class="r"><code>dim(unadjust_pval)</code></pre>
+<pre><code>[1] 10304     2</code></pre>
+</div>
+</div>
+<div id="reduction-in-variation" class="section level1">
+<h1>Reduction in variation</h1>
+<div id="shared-reduction-in-variation-2-p-value-cutoff-391-genes" class="section level2">
+<h2>Shared reduction in variation (2 p-value cutoff, 391 genes)</h2>
+<pre class="r"><code># Sharing based on 2 p-value cutoffs
+subset_pval &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.1 &amp; unadjust_pval[,2] &lt; 0.05),]
+subset_pval2 &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.05 &amp; unadjust_pval[,2] &lt; 0.1),]
+
+subset_pval3 &lt;- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)</code></pre>
+<pre><code>[1] 561   2</code></pre>
+<pre class="r"><code>subset_pval4 &lt;- unique(subset_pval3)
+
+dim(subset_pval4)</code></pre>
+<pre><code>[1] 391   2</code></pre>
+<pre class="r"><code># Matrix for which are in the 
+
+true_false &lt;- rownames(unadjust_pval) %in% rownames(subset_pval4)
+true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(unadjust_pval)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 9458 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 13499 GO terms and 31272 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 9181 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 4139 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 17:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  6 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  33 nodes to be scored   (17 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  64 nodes to be scored   (130 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  117 nodes to be scored  (521 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  203 nodes to be scored  (1193 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  313 nodes to be scored  (2688 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  430 nodes to be scored  (3853 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   548 nodes to be scored  (5227 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   582 nodes to be scored  (6454 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   601 nodes to be scored  (7406 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   548 nodes to be scored  (8120 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   377 nodes to be scored  (8547 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   200 nodes to be scored  (8790 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   95 nodes to be scored   (8930 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   20 nodes to be scored   (8996 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (9070 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0032908 regulation of transforming growth factor...         5
+2  GO:0001829        trophectodermal cell differentiation        11
+3  GO:0000920           cell separation after cytokinesis        16
+4  GO:0060563        neuroepithelial cell differentiation        26
+5  GO:1904903               ESCRT III complex disassembly         9
+6  GO:0072321        chaperone-mediated protein transport         9
+7  GO:1901889 negative regulation of cell junction ass...        14
+8  GO:0039702        viral budding via host ESCRT complex        18
+9  GO:0043901 negative regulation of multi-organism pr...        83
+10 GO:0071800                           podosome assembly        12
+11 GO:0016447 somatic recombination of immunoglobulin ...        29
+12 GO:0002237    response to molecule of bacterial origin       138
+13 GO:0009954           proximal/distal pattern formation        12
+14 GO:0042074     cell migration involved in gastrulation        12
+   Significant Expected weightFisher
+1            3     0.19      0.00054
+2            4     0.43      0.00058
+3            4     0.62      0.00276
+4            4     1.01      0.00404
+5            3     0.35      0.00405
+6            3     0.35      0.00405
+7            3     0.54      0.00434
+8            4     0.70      0.00437
+9            7     3.21      0.00776
+10           3     0.46      0.00846
+11           3     1.12      0.00849
+12           4     5.34      0.00865
+13           3     0.46      0.00972
+14           3     0.46      0.00972</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
+
+# Make table
+
+write.table(sig.genes, &quot;~/sig_genes_shared_red_var.txt&quot;, quote = FALSE, row.names = FALSE, col.names = FALSE)
+
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+# Developmental
+# Trophectodermal cell differentiation
+
+goresults[&quot;GO:0001829&quot;] #CNOT3, NODAL, EOMES, SP3</code></pre>
+<pre><code>$`GO:0001829`
+[1] &quot;ENSG00000088038&quot; &quot;ENSG00000156574&quot; &quot;ENSG00000163508&quot; &quot;ENSG00000172845&quot;</code></pre>
+<pre class="r"><code># Neuroepithelial cell differentiation
+goresults[&quot;GO:0060563&quot;] #FGF8, MYCL, NODAL, CDH2</code></pre>
+<pre><code>$`GO:0060563`
+[1] &quot;ENSG00000107831&quot; &quot;ENSG00000116990&quot; &quot;ENSG00000156574&quot; &quot;ENSG00000170558&quot;</code></pre>
+<pre class="r"><code># Proximal/distal pattern formation
+goresults[&quot;GO:0009954&quot;] # NODAL, SP8, PBX2</code></pre>
+<pre><code>$`GO:0009954`
+[1] &quot;ENSG00000156574&quot; &quot;ENSG00000164651&quot; &quot;ENSG00000204304&quot;</code></pre>
+<pre class="r"><code># Cell migration involved in gastrulation
+goresults[&quot;GO:0042074&quot;] # FGF8, NODAL, MIXL1</code></pre>
+<pre><code>$`GO:0042074`
+[1] &quot;ENSG00000107831&quot; &quot;ENSG00000156574&quot; &quot;ENSG00000185155&quot;</code></pre>
+</div>
+<div id="human-specific-2008-genes" class="section level2">
+<h2>Human-specific (2008 genes)</h2>
+<pre class="r"><code>subset_humans &lt;- unadjust_pval[which(unadjust_pval[,1] &gt; 0.1 &amp; unadjust_pval[,2] &lt; 0.05),]
+
+# Matrix for which are in the 
+
+true_false &lt;- rownames(unadjust_pval) %in% rownames(subset_humans)
+true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(unadjust_pval)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 9458 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 13499 GO terms and 31272 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 9181 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 6227 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 19:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 18:  3 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 17:  9 nodes to be scored    (11 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  22 nodes to be scored   (16 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  62 nodes to be scored   (61 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  131 nodes to be scored  (225 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  217 nodes to be scored  (672 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  350 nodes to be scored  (1486 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  552 nodes to be scored  (2948 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  711 nodes to be scored  (4129 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   847 nodes to be scored  (5537 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   862 nodes to be scored  (6758 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   856 nodes to be scored  (7615 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   746 nodes to be scored  (8255 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   477 nodes to be scored  (8604 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   249 nodes to be scored  (8811 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   110 nodes to be scored  (8936 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   21 nodes to be scored   (8998 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (9072 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0006614 SRP-dependent cotranslational protein ta...        61
+2  GO:0000184 nuclear-transcribed mRNA catabolic proce...        82
+3  GO:0006413                    translational initiation       141
+4  GO:0019083                         viral transcription       133
+5  GO:0006364                             rRNA processing       200
+6  GO:0070125      mitochondrial translational elongation        70
+7  GO:0070126     mitochondrial translational termination        71
+8  GO:0006120 mitochondrial electron transport, NADH t...        33
+9  GO:1902600        hydrogen ion transmembrane transport        58
+10 GO:0042776 mitochondrial ATP synthesis coupled prot...        16
+11 GO:0038061                     NIK/NF-kappaB signaling        91
+12 GO:0010972 negative regulation of G2/M transition o...        78
+13 GO:0006368 transcription elongation from RNA polyme...        86
+14 GO:0002223 stimulatory C-type lectin receptor signa...        79
+15 GO:0006367 transcription initiation from RNA polyme...       132
+16 GO:0042407                           cristae formation        27
+17 GO:0000462 maturation of SSU-rRNA from tricistronic...        33
+18 GO:0090630               activation of GTPase activity        56
+19 GO:0033601 positive regulation of mammary gland epi...         6
+20 GO:0061418 regulation of transcription from RNA pol...        64
+21 GO:0006122 mitochondrial electron transport, ubiqui...        11
+22 GO:0050434 positive regulation of viral transcripti...        37
+23 GO:0002181                     cytoplasmic translation        50
+24 GO:1902036 regulation of hematopoietic stem cell di...        56
+25 GO:0051693                      actin filament capping        21
+26 GO:1902018      negative regulation of cilium assembly         7
+27 GO:0051436 negative regulation of ubiquitin-protein...        61
+28 GO:0031295                        T cell costimulation        25
+29 GO:0051437 positive regulation of ubiquitin-protein...        65
+30 GO:0038095       Fc-epsilon receptor signaling pathway        97
+31 GO:0019321                   pentose metabolic process        10
+32 GO:0051028                              mRNA transport       126
+33 GO:0036003 positive regulation of transcription fro...        19
+34 GO:0021915                     neural tube development       126
+35 GO:0090090 negative regulation of canonical Wnt sig...       118
+36 GO:0043353       enucleate erythrocyte differentiation         5
+37 GO:0003256 regulation of transcription from RNA pol...         5
+38 GO:0016569             covalent chromatin modification       426
+39 GO:0006744             ubiquinone biosynthetic process        13
+40 GO:0042592                         homeostatic process       879
+41 GO:0043488                regulation of mRNA stability       121
+42 GO:0006370              7-methylguanosine mRNA capping        26
+43 GO:0030521         androgen receptor signaling pathway        53
+44 GO:0031145 anaphase-promoting complex-dependent cat...        67
+45 GO:0046794                          transport of virus        49
+46 GO:0009143 nucleoside triphosphate catabolic proces...         8
+47 GO:0021692 cerebellar Purkinje cell layer morphogen...         8
+48 GO:0070997                                neuron death       192
+49 GO:0032981 mitochondrial respiratory chain complex ...        48
+50 GO:0048821                     erythrocyte development        14
+51 GO:0060315 negative regulation of ryanodine-sensiti...         8
+52 GO:1904851 positive regulation of establishment of ...         8
+53 GO:0043619 regulation of transcription from RNA pol...         8
+54 GO:0007276                           gamete generation       321
+55 GO:0099132 ATP hydrolysis coupled cation transmembr...        34
+56 GO:0042276           error-prone translesion synthesis        17
+   Significant Expected weightFisher
+1           39    12.01      5.5e-15
+2           42    16.15      1.5e-10
+3           60    27.77      2.0e-10
+4           55    26.19      3.8e-10
+5           66    39.39      9.3e-06
+6           29    13.78      2.4e-05
+7           29    13.98      3.3e-05
+8           17     6.50      4.3e-05
+9           26    11.42      0.00018
+10          10     3.15      0.00021
+11          32    17.92      0.00062
+12          25    15.36      0.00064
+13          32    16.94      0.00067
+14          28    15.56      0.00074
+15          42    25.99      0.00075
+16          13     5.32      0.00080
+17          14     6.50      0.00083
+18          21    11.03      0.00146
+19           5     1.18      0.00148
+20          23    12.60      0.00173
+21           7     2.17      0.00177
+22          14     7.29      0.00216
+23          20     9.85      0.00223
+24          20    11.03      0.00367
+25          10     4.14      0.00431
+26           5     1.38      0.00433
+27          21    12.01      0.00485
+28          11     4.92      0.00485
+29          22    12.80      0.00503
+30          30    19.10      0.00543
+31           6     1.97      0.00585
+32          37    24.81      0.00586
+33           7     3.74      0.00586
+34          33    24.81      0.00587
+35          35    23.24      0.00594
+36           4     0.98      0.00632
+37           4     0.98      0.00632
+38         119    83.89      0.00635
+39           7     2.56      0.00637
+40         172   173.10      0.00638
+41          35    23.83      0.00639
+42          11     5.12      0.00694
+43          17    10.44      0.00706
+44          22    13.19      0.00752
+45          14     9.65      0.00760
+46           5     1.58      0.00761
+47           4     1.58      0.00763
+48          33    37.81      0.00772
+49          17     9.45      0.00782
+50           7     2.76      0.00967
+51           5     1.58      0.00969
+52           5     1.58      0.00969
+53           5     1.58      0.00969
+54          64    63.21      0.00975
+55          12     6.70      0.00986
+56           8     3.35      0.00988</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
+
+
+sig.genes &lt;- sigGenes(go_data)
+goresults[&quot;GO:0090090&quot;] # DVL2, PSMC1, PSMA1, DACT1, CDH2</code></pre>
+<pre><code>$&lt;NA&gt;
+NULL</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0043353&quot;]</code></pre>
+<pre><code>$&lt;NA&gt;
+NULL</code></pre>
+</div>
+<div id="chimp-specific-962-genes" class="section level2">
+<h2>Chimp-specific (962 genes)</h2>
+<pre class="r"><code>subset_chimps &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.1 &amp; unadjust_pval[,2] &gt; 0.05),]
+
+# Matrix for which are in the 
+
+true_false &lt;- rownames(unadjust_pval) %in% rownames(subset_chimps)
+true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(unadjust_pval)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 9458 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 13499 GO terms and 31272 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 9181 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 5418 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 18:  3 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 17:  7 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  17 nodes to be scored   (16 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  46 nodes to be scored   (46 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  99 nodes to be scored   (190 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  169 nodes to be scored  (562 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  283 nodes to be scored  (1364 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  446 nodes to be scored  (2856 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  595 nodes to be scored  (4052 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   735 nodes to be scored  (5478 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   741 nodes to be scored  (6716 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   792 nodes to be scored  (7559 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   677 nodes to be scored  (8208 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   442 nodes to be scored  (8588 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   238 nodes to be scored  (8801 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   105 nodes to be scored  (8932 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   22 nodes to be scored   (8999 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (9071 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0007269                  neurotransmitter secretion        71
+2  GO:0035864                   response to potassium ion         6
+3  GO:0032049            cardiolipin biosynthetic process         7
+4  GO:0060548           negative regulation of cell death       542
+5  GO:1900182 positive regulation of protein localizat...        82
+6  GO:0071397            cellular response to cholesterol         9
+7  GO:0051646                  mitochondrion localization        25
+8  GO:2000630 positive regulation of miRNA metabolic p...         5
+9  GO:0072378    blood coagulation, fibrin clot formation         5
+10 GO:0007028                      cytoplasm organization         5
+11 GO:0010623 programmed cell death involved in cell d...         5
+12 GO:1904749 regulation of protein localization to nu...         5
+13 GO:0051126     negative regulation of actin nucleation         5
+14 GO:1904526           regulation of microtubule binding         5
+15 GO:0035627                          ceramide transport         5
+16 GO:0000963                mitochondrial RNA processing         5
+17 GO:0042780                      tRNA 3&#39;-end processing         5
+18 GO:1900087 positive regulation of G1/S transition o...        20
+19 GO:0042108 positive regulation of cytokine biosynth...        20
+20 GO:0050651 dermatan sulfate proteoglycan biosynthet...         8
+   Significant Expected weightFisher
+1            8     6.63      0.00078
+2            4     0.56      0.00097
+3            4     0.65      0.00210
+4           54    50.59      0.00392
+5           11     7.65      0.00454
+6            4     0.84      0.00648
+7            5     2.33      0.00701
+8            3     0.47      0.00702
+9            3     0.47      0.00702
+10           3     0.47      0.00702
+11           3     0.47      0.00702
+12           3     0.47      0.00702
+13           3     0.47      0.00702
+14           3     0.47      0.00702
+15           3     0.47      0.00702
+16           3     0.47      0.00702
+17           3     0.47      0.00702
+18           6     1.87      0.00803
+19           6     1.87      0.00803
+20           4     0.75      0.00867</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)</code></pre>
+</div>
+<div id="genes-that-dont-show-a-reduction-in-variation-in-both-species-2412-genes" class="section level2">
+<h2>Genes that don’t show a reduction in variation in both species (2412 genes)</h2>
+<p>This analysis combines genes from the human-specific and chimp-specific categories from above.</p>
+<pre class="r"><code># Sharing based on 2 p-value cutoffs
+subset_pval &lt;- unadjust_pval[which(unadjust_pval[,1] &gt; 0.1 &amp; unadjust_pval[,2] &lt; 0.05),]
+
+
+subset_pval2 &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.05 &amp; unadjust_pval[,2] &gt; 0.1),]
+getwd()</code></pre>
+<pre><code>[1] &quot;/Users/laurenblake/Desktop/Endoderm_TC/ashlar-trial/analysis&quot;</code></pre>
+<pre class="r"><code>write.table(subset_pval, &quot;/Users/laurenblake/Desktop/human_only.txt&quot;, quote = FALSE)
+write.table(subset_pval2, &quot;/Users/laurenblake/Desktop/chimps_only.txt&quot;, quote = FALSE)
+
+subset_pval3 &lt;- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)</code></pre>
+<pre><code>[1] 2412    2</code></pre>
+<pre class="r"><code>subset_pval4 &lt;- unique(subset_pval3)
+
+dim(subset_pval4)</code></pre>
+<pre><code>[1] 2412    2</code></pre>
+<pre class="r"><code># Matrix for which are in the 
+
+true_false &lt;- rownames(unadjust_pval) %in% rownames(subset_pval4)
+
+summary(true_false)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    7892    2412 </code></pre>
+<pre class="r"><code>true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(unadjust_pval)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 9458 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 13499 GO terms and 31272 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 9181 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 6447 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 19:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 18:  3 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 17:  9 nodes to be scored    (11 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  23 nodes to be scored   (16 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  65 nodes to be scored   (61 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  134 nodes to be scored  (229 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  223 nodes to be scored  (679 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  365 nodes to be scored  (1488 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  571 nodes to be scored  (2961 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  744 nodes to be scored  (4159 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   880 nodes to be scored  (5583 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   894 nodes to be scored  (6784 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   895 nodes to be scored  (7640 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   766 nodes to be scored  (8256 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   483 nodes to be scored  (8607 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   256 nodes to be scored  (8816 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   112 nodes to be scored  (8936 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   22 nodes to be scored   (8998 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (9072 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0006614 SRP-dependent cotranslational protein ta...        61
+2  GO:0000184 nuclear-transcribed mRNA catabolic proce...        82
+3  GO:0019083                         viral transcription       133
+4  GO:0006413                    translational initiation       141
+5  GO:0006364                             rRNA processing       200
+6  GO:0070125      mitochondrial translational elongation        70
+7  GO:0042776 mitochondrial ATP synthesis coupled prot...        16
+8  GO:0070126     mitochondrial translational termination        71
+9  GO:0006120 mitochondrial electron transport, NADH t...        33
+10 GO:0006122 mitochondrial electron transport, ubiqui...        11
+11 GO:2000394 positive regulation of lamellipodium mor...         7
+12 GO:1902600        hydrogen ion transmembrane transport        58
+13 GO:0006367 transcription initiation from RNA polyme...       132
+14 GO:0002223 stimulatory C-type lectin receptor signa...        79
+15 GO:0099132 ATP hydrolysis coupled cation transmembr...        34
+16 GO:0002181                     cytoplasmic translation        50
+17 GO:0036003 positive regulation of transcription fro...        19
+18 GO:0090630               activation of GTPase activity        56
+19 GO:0050434 positive regulation of viral transcripti...        37
+20 GO:0038061                     NIK/NF-kappaB signaling        91
+21 GO:0010972 negative regulation of G2/M transition o...        78
+22 GO:0006356 regulation of transcription from RNA pol...        25
+23 GO:0035864                   response to potassium ion         6
+24 GO:0033601 positive regulation of mammary gland epi...         6
+25 GO:0006368 transcription elongation from RNA polyme...        86
+26 GO:0000462 maturation of SSU-rRNA from tricistronic...        33
+27 GO:0042407                           cristae formation        27
+28 GO:0043488                regulation of mRNA stability       121
+29 GO:0016569             covalent chromatin modification       426
+30 GO:0016032                               viral process       560
+31 GO:0021915                     neural tube development       126
+32 GO:0031295                        T cell costimulation        25
+33 GO:0045815 positive regulation of gene expression, ...        45
+34 GO:0006283 transcription-coupled nucleotide-excisio...        63
+35 GO:0038095       Fc-epsilon receptor signaling pathway        97
+36 GO:0042276           error-prone translesion synthesis        17
+37 GO:0061418 regulation of transcription from RNA pol...        64
+38 GO:0042769 DNA damage response, detection of DNA da...        35
+39 GO:0051028                              mRNA transport       126
+40 GO:0051693                      actin filament capping        21
+41 GO:1902018      negative regulation of cilium assembly         7
+   Significant Expected weightFisher
+1           42    14.42      4.4e-14
+2           45    19.38      9.4e-10
+3           61    31.44      7.9e-09
+4           66    33.33      1.2e-08
+5           72    47.27      7.0e-06
+6           31    16.55      0.00011
+7           11     3.78      0.00016
+8           30    16.78      0.00038
+9           17     7.80      0.00046
+10           8     2.60      0.00079
+11           6     1.65      0.00097
+12          28    13.71      0.00131
+13          46    31.20      0.00133
+14          31    18.67      0.00138
+15          15     8.04      0.00195
+16          21    11.82      0.00240
+17           8     4.49      0.00247
+18          23    13.24      0.00277
+19          15     8.75      0.00279
+20          34    21.51      0.00285
+21          27    18.44      0.00292
+22          10     5.91      0.00354
+23           5     1.42      0.00354
+24           5     1.42      0.00354
+25          35    20.33      0.00401
+26          14     7.80      0.00439
+27          13     6.38      0.00462
+28          41    28.60      0.00484
+29         132   100.69      0.00519
+30         180   132.36      0.00528
+31          38    29.78      0.00573
+32          12     5.91      0.00665
+33          20    10.64      0.00672
+34          24    14.89      0.00708
+35          34    22.93      0.00713
+36           9     4.02      0.00839
+37          24    15.13      0.00884
+38          15     8.27      0.00923
+39          42    29.78      0.00945
+40          11     4.96      0.00992
+41           5     1.65      0.00998</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)</code></pre>
+</div>
+</div>
+<div id="evaluating-overlap-in-the-categories-compare-cluster" class="section level1">
+<h1>Evaluating overlap in the categories (compare cluster)</h1>
+<pre class="r"><code># Sharing based on 2 p-value cutoffs
+subset_pval &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.1 &amp; unadjust_pval[,2] &lt; 0.05),]
+subset_pval2 &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.05 &amp; unadjust_pval[,2] &lt; 0.1),]
+
+subset_pval3 &lt;- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)</code></pre>
+<pre><code>[1] 561   2</code></pre>
+<pre class="r"><code>subset_pval4 &lt;- unique(subset_pval3)
+
+dim(subset_pval4)</code></pre>
+<pre><code>[1] 391   2</code></pre>
+<pre class="r"><code>true_false_shared &lt;- rownames(unadjust_pval) %in% rownames(subset_pval4)
+
+# Non-sharing based on 2 p-value cutoffs
+subset_pval &lt;- unadjust_pval[which(unadjust_pval[,1] &gt; 0.1 &amp; unadjust_pval[,2] &lt; 0.05),]
+subset_pval2 &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.05 &amp; unadjust_pval[,2] &gt; 0.1),]
+
+subset_pval3 &lt;- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)</code></pre>
+<pre><code>[1] 2412    2</code></pre>
+<pre class="r"><code>subset_pval4 &lt;- unique(subset_pval3)
+
+dim(subset_pval4)</code></pre>
+<pre><code>[1] 2412    2</code></pre>
+<pre class="r"><code># Matrix for which are in the 
+
+true_false_non_shared &lt;- rownames(unadjust_pval) %in% rownames(subset_pval4)
+
+# Use compare cluster
+
+test_df &lt;- data.frame(ensg = rownames(unadjust_pval), group = true_false_shared, othergroup = true_false_non_shared)
+
+make_test &lt;- test_df[which(test_df$group == &quot;TRUE&quot; | test_df$othergroup == &quot;TRUE&quot;), ]
+
+#test_df[,2] &lt;- as.numeric(test_df[,2])
+#test_df[,3] &lt;- as.numeric(test_df[,3])
+
+#test_df[test_df[,2] &gt; 1.5] &lt;- 0
+#test_df[test_df[,3] &gt; 1.5] &lt;- 0
+
+#xx.formula &lt;- compareCluster(ensg~group+othergroup, data=test_df, fun=&quot;enrichGO&quot;, universe = test_df$ensg)
+
+#mydf &lt;- data.frame(Entrez=c(&#39;1&#39;, &#39;100&#39;, &#39;1000&#39;, &#39;100101467&#39;,
+#                            &#39;100127206&#39;, &#39;100128071&#39;),
+#                   group = c(&#39;A&#39;, &#39;A&#39;, &#39;A&#39;, &#39;B&#39;, &#39;B&#39;, &#39;B&#39;),
+#                   othergroup = c(&#39;good&#39;, &#39;good&#39;, &#39;bad&#39;, &#39;bad&#39;, &#39;good&#39;, &#39;bad&#39;))
+#xx.formula &lt;- compareCluster(Entrez~group+othergroup, data=mydf, fun=&#39;enrichGO&#39;)
+#summary(xx.formula)
+
+
+formula_res &lt;- compareCluster(ensg~group+othergroup, data=make_test, fun=&quot;enrichGO&quot;, universe = test_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+                                keyType       = &#39;ENSEMBL&#39;,
+                ont           = &quot;BP&quot;,
+                pAdjustMethod = &quot;fdr&quot;,
+                qvalueCutoff  = 0.05,
+                                maxGSSize = 3000,
+                                minGSSize = 3)
+
+formula_res %&gt;%as.data.frame()%&gt;%select(-geneID)-&gt;enrichment.res
+row.names(enrichment.res)=NULL
+
+summary(enrichment.res) </code></pre>
+<pre><code>       Cluster      group            othergroup             ID           
+ FALSE.TRUE:69   Length:69          Length:69          Length:69         
+ TRUE.FALSE: 0   Class :character   Class :character   Class :character  
+                 Mode  :character   Mode  :character   Mode  :character  
+                                                                         
+                                                                         
+                                                                         
+ Description         GeneRatio           BgRatio         
+ Length:69          Length:69          Length:69         
+ Class :character   Class :character   Class :character  
+ Mode  :character   Mode  :character   Mode  :character  
+                                                         
+                                                         
+                                                         
+     pvalue             p.adjust             qvalue         
+ Min.   :0.000e+00   Min.   :0.000e+00   Min.   :0.000e+00  
+ 1st Qu.:1.199e-07   1st Qu.:4.917e-05   1st Qu.:4.815e-05  
+ Median :1.400e-05   Median :2.954e-03   Median :2.892e-03  
+ Mean   :8.619e-05   Mean   :1.134e-02   Mean   :1.111e-02  
+ 3rd Qu.:1.735e-04   3rd Qu.:2.463e-02   3rd Qu.:2.412e-02  
+ Max.   :4.645e-04   Max.   :4.970e-02   Max.   :4.866e-02  
+     Count      
+ Min.   : 11.0  
+ 1st Qu.: 53.0  
+ Median :100.0  
+ Mean   :161.9  
+ 3rd Qu.:189.0  
+ Max.   :782.0  </code></pre>
+<pre class="r"><code>#Plot
+my_breaks = c(0.01,10^-10,10^-20, 10^-30)
+dotplot(formula_res)+bjp+theme(axis.text.x = element_text(angle = 60, hjust = 1))+
+    scale_color_gradient(low =&quot;#f70028&quot;,high = &quot;#0200ff&quot;,trans=&quot;log&quot;,breaks = my_breaks, labels = my_breaks)</code></pre>
+<pre><code>Scale for &#39;colour&#39; is already present. Adding another scale for
+&#39;colour&#39;, which will replace the existing scale.</code></pre>
+<p><img src="figure/Red_var_genes.Rmd/unnamed-chunk-10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#write.table(test_df, &quot;/Users/laurenblake/Dropbox/Endoderm TC/GO_Enrichment/test_df.txt&quot;)</code></pre>
+</div>
+<div id="evaluating-robustness-use-top-percentage-of-genes" class="section level1">
+<h1>Evaluating robustness: Use top percentage of genes</h1>
+<div id="of-genes-with-most-evidence-for-reduction-in-variation--shared-115-genes" class="section level2">
+<h2>10% of genes with most evidence for reduction in variation- shared (115 genes)</h2>
+<pre class="r"><code># Find the genes that show the most evidence for reduction in variation in humans and chimpanzees 
+chimp_var &lt;- cbind(rownames(unadjust_pval), unadjust_pval)
+make_chimps &lt;- chimp_var[order(chimp_var[,2]), ]
+
+# Take the top 10% (1030 genes)
+
+top_chimps &lt;- as.character(make_chimps[1:1030,1])
+
+# Repeat with humans
+human_var &lt;- cbind(rownames(unadjust_pval), unadjust_pval[,2])
+make_humans &lt;- human_var[order(human_var[,2]), ]
+top_humans &lt;- as.character(make_humans[1:1030,1])
+
+# Find intersection of genes
+
+shared_red_var &lt;- intersect(top_chimps, top_humans)
+length(shared_red_var)</code></pre>
+<pre><code>[1] 115</code></pre>
+<pre class="r"><code># Matrix for which are in the 
+
+true_false &lt;- rownames(unadjust_pval) %in% shared_red_var
+
+summary(true_false)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   10189     115 </code></pre>
+<pre class="r"><code>true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(unadjust_pval)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 9458 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 13499 GO terms and 31272 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 9181 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 2569 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 17:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  17 nodes to be scored   (17 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  38 nodes to be scored   (38 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  70 nodes to be scored   (302 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  116 nodes to be scored  (925 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  162 nodes to be scored  (2359 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  240 nodes to be scored  (3412 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   317 nodes to be scored  (4771 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   339 nodes to be scored  (6044 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   374 nodes to be scored  (6999 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   361 nodes to be scored  (7939 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   285 nodes to be scored  (8426 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   158 nodes to be scored  (8728 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   71 nodes to be scored   (8906 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   18 nodes to be scored   (8986 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (9067 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0007567                                 parturition         5
+2  GO:0045842 positive regulation of mitotic metaphase...         7
+3  GO:0072423 response to DNA damage checkpoint signal...         7
+4  GO:0009651                     response to salt stress         8
+5  GO:0000338                       protein deneddylation         8
+6  GO:0033630 positive regulation of cell adhesion med...         9
+7  GO:0019228                   neuronal action potential        10
+8  GO:0045652 regulation of megakaryocyte differentiat...        32
+9  GO:0006283 transcription-coupled nucleotide-excisio...        63
+10 GO:0001829        trophectodermal cell differentiation        11
+11 GO:0007077        mitotic nuclear envelope disassembly        38
+12 GO:0019229              regulation of vasoconstriction        13
+   Significant Expected weightFisher
+1            2     0.06       0.0013
+2            2     0.08       0.0027
+3            2     0.08       0.0027
+4            2     0.09       0.0035
+5            2     0.09       0.0035
+6            2     0.10       0.0045
+7            2     0.12       0.0056
+8            3     0.37       0.0058
+9            4     0.73       0.0059
+10           2     0.13       0.0068
+11           3     0.44       0.0094
+12           2     0.15       0.0095</code></pre>
+<pre class="r"><code>goresults[&quot;GO:0001829&quot;] # CNOT3, NODAL, EOMES, SP3</code></pre>
+<pre><code>$`GO:0001829`
+[1] &quot;ENSG00000088038&quot; &quot;ENSG00000156574&quot; &quot;ENSG00000163508&quot; &quot;ENSG00000172845&quot;</code></pre>
+</div>
+</div>
+<div id="comparing-shared-to-non-reduced-in-either-species" class="section level1">
+<h1>Comparing shared to non-reduced in either species</h1>
+<div id="shared-reduction-in-variation-2-p-value-cutoff-391-genes-versus-background-of-no-reduction" class="section level2">
+<h2>Shared reduction in variation (2 p-value cutoff, 391 genes) versus background of no reduction</h2>
+<pre class="r"><code># Sharing based on 2 p-value cutoffs
+subset_pval &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.1 &amp; unadjust_pval[,2] &lt; 0.05),]
+subset_pval2 &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.05 &amp; unadjust_pval[,2] &lt; 0.1),]
+
+subset_pval3 &lt;- rbind(subset_pval, subset_pval2)
+
+dim(subset_pval3)</code></pre>
+<pre><code>[1] 561   2</code></pre>
+<pre class="r"><code>subset_pval4 &lt;- unique(subset_pval3)
+
+dim(subset_pval4)</code></pre>
+<pre><code>[1] 391   2</code></pre>
+<pre class="r"><code># Which genes don&#39;t show a reduction in either species?
+
+background1 &lt;- unadjust_pval[which(unadjust_pval[,1] &gt; 0.05 &amp; unadjust_pval[,2] &gt; 0.05),]
+
+background2 &lt;- rbind(background1, subset_pval4)
+
+# Matrix for which are in the 
+
+true_false &lt;- rownames(background2) %in% rownames(subset_pval4)
+summary(true_false)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    7501     391 </code></pre>
+<pre class="r"><code>true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(background2)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 8673 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 12749 GO terms and 29508 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 7011 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 4005 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 17:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  6 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  27 nodes to be scored   (10 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  61 nodes to be scored   (91 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  110 nodes to be scored  (364 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  189 nodes to be scored  (878 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  292 nodes to be scored  (1973 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  418 nodes to be scored  (2858 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   523 nodes to be scored  (3923 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   563 nodes to be scored  (4883 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   586 nodes to be scored  (5608 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   543 nodes to be scored  (6177 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   374 nodes to be scored  (6520 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   197 nodes to be scored  (6716 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   94 nodes to be scored   (6825 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   20 nodes to be scored   (6876 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (6926 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0001829        trophectodermal cell differentiation         9
+2  GO:0032908 regulation of transforming growth factor...         5
+3  GO:0051418 microtubule nucleation by microtubule or...         5
+4  GO:1901889 negative regulation of cell junction ass...        10
+5  GO:0038095       Fc-epsilon receptor signaling pathway        63
+6  GO:0032008        positive regulation of TOR signaling        20
+7  GO:0039702        viral budding via host ESCRT complex        15
+8  GO:0000920           cell separation after cytokinesis        15
+9  GO:1904903               ESCRT III complex disassembly         8
+10 GO:0042074     cell migration involved in gastrulation         8
+11 GO:0060078 regulation of postsynaptic membrane pote...        35
+12 GO:0060563        neuroepithelial cell differentiation        21
+13 GO:0009954           proximal/distal pattern formation         9
+14 GO:0072321        chaperone-mediated protein transport         9
+15 GO:0007080         mitotic metaphase plate congression        26
+   Significant Expected weightFisher
+1            4     0.46      0.00066
+2            3     0.25      0.00119
+3            3     0.25      0.00119
+4            3     0.51      0.00255
+5            9     3.19      0.00414
+6            5     1.01      0.00428
+7            4     0.76      0.00565
+8            4     0.76      0.00565
+9            3     0.41      0.00596
+10           3     0.41      0.00596
+11           4     1.77      0.00740
+12           4     1.06      0.00858
+13           3     0.46      0.00860
+14           3     0.46      0.00860
+15           5     1.32      0.00882</code></pre>
+<pre class="r"><code>sig.genes &lt;- sigGenes(go_data)
+
+# Make table
+
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+# write.table(subset_pval4, &quot;../data/sig_genes_shared.txt&quot;, quote = FALSE)
+# write.table(background1, &quot;../data/sig_genes_nored.txt&quot;, quote = FALSE)
+
+# Developmental
+# Trophectodermal cell differentiation
+
+goresults[&quot;GO:0001829&quot;] # CNOT3, NODAL, EOMES, SP3</code></pre>
+<pre><code>$`GO:0001829`
+[1] &quot;ENSG00000088038&quot; &quot;ENSG00000156574&quot; &quot;ENSG00000163508&quot; &quot;ENSG00000172845&quot;</code></pre>
+<pre class="r"><code># Neuroepithelial cell differentiation
+goresults[&quot;GO:0060563&quot;] # FGF8, MYCL, NODAL, CDH2</code></pre>
+<pre><code>$`GO:0060563`
+[1] &quot;ENSG00000107831&quot; &quot;ENSG00000116990&quot; &quot;ENSG00000156574&quot; &quot;ENSG00000170558&quot;</code></pre>
+<pre class="r"><code># Proximal/distal pattern formation
+goresults[&quot;GO:0009954&quot;] # NODAL, SP8, PBX2</code></pre>
+<pre><code>$`GO:0009954`
+[1] &quot;ENSG00000156574&quot; &quot;ENSG00000164651&quot; &quot;ENSG00000204304&quot;</code></pre>
+<pre class="r"><code># Cell migration involved in gastrulation
+goresults[&quot;GO:0042074&quot;] # FGF8, NODAL, MIXL1</code></pre>
+<pre><code>$`GO:0042074`
+[1] &quot;ENSG00000107831&quot; &quot;ENSG00000156574&quot; &quot;ENSG00000185155&quot;</code></pre>
+<pre class="r"><code># How many of our 391 genes are involved in GO annotated developmental pathways?
+10/391</code></pre>
+<pre><code>[1] 0.02557545</code></pre>
+</div>
+<div id="shared-reduction-in-variation-2-p-value-cutoff-391-genes-versus-background-of-humanchimp-specific" class="section level2">
+<h2>Shared reduction in variation (2 p-value cutoff, 391 genes) versus background of human/chimp specific</h2>
+<pre class="r"><code># Sharing based on 2 p-value cutoffs
+subset_pval_chimp &lt;- unadjust_pval[which(unadjust_pval[,1] &gt; 0.1 &amp; unadjust_pval[,2] &lt; 0.05),]
+subset_pval_human &lt;- unadjust_pval[which(unadjust_pval[,1] &lt; 0.05 &amp; unadjust_pval[,2] &gt; 0.1),]
+
+subset_pval_species_spec &lt;- rbind(subset_pval_chimp, subset_pval_human)
+
+dim(subset_pval_species_spec)</code></pre>
+<pre><code>[1] 2412    2</code></pre>
+<pre class="r"><code>subset_pval_species_spec &lt;- unique(subset_pval_species_spec)
+
+dim(subset_pval_species_spec)</code></pre>
+<pre><code>[1] 2412    2</code></pre>
+<pre class="r"><code>background2 &lt;- rbind(subset_pval_species_spec, subset_pval4)
+
+# Matrix for which are in the 
+
+true_false &lt;- rownames(background2) %in% rownames(subset_pval4)
+summary(true_false)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical    2412     391 </code></pre>
+<pre class="r"><code>true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- rownames(background2)
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 5321 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 9237 GO terms and 21044 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 2525 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 3233 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 17:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  5 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  18 nodes to be scored   (8 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  42 nodes to be scored   (41 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  81 nodes to be scored   (159 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  127 nodes to be scored  (354 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  212 nodes to be scored  (805 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  313 nodes to be scored  (1130 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   415 nodes to be scored  (1501 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   440 nodes to be scored  (1827 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   491 nodes to be scored  (2081 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   463 nodes to be scored  (2258 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   336 nodes to be scored  (2357 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   181 nodes to be scored  (2419 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   87 nodes to be scored   (2453 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   20 nodes to be scored   (2471 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (2497 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:1905954 positive regulation of lipid localizatio...         5
+2  GO:0000920           cell separation after cytokinesis         5
+3  GO:0060563        neuroepithelial cell differentiation         9
+4  GO:0015031                           protein transport       408
+5  GO:0071805       potassium ion transmembrane transport        15
+6  GO:0032456                         endocytic recycling         9
+7  GO:0043901 negative regulation of multi-organism pr...        20
+8  GO:0001829        trophectodermal cell differentiation         6
+9  GO:0030856 regulation of epithelial cell differenti...        18
+10 GO:0039702        viral budding via host ESCRT complex         7
+11 GO:0007204 positive regulation of cytosolic calcium...        27
+12 GO:0051149 positive regulation of muscle cell diffe...        10
+   Significant Expected weightFisher
+1            4     0.70       0.0017
+2            4     0.70       0.0017
+3            4     1.27       0.0028
+4           66    57.36       0.0032
+5            6     2.11       0.0041
+6            5     1.27       0.0041
+7            7     2.81       0.0045
+8            4     0.84       0.0046
+9            7     2.53       0.0093
+10           4     0.98       0.0095
+11           6     3.80       0.0096
+12           4     1.41       0.0099</code></pre>
+<pre class="r"><code>write.csv(go_table, &quot;/Users/laurenblake/Desktop/shared_GO.csv&quot;, quote = FALSE, row.names = FALSE)
+
+sig.genes &lt;- sigGenes(go_data)
+
+# Make table
+
+goresults &lt;- sapply(go_table$GO.ID, function(x)
+    {
+      genes&lt;-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+#write.table(subset_pval_species_spec, &quot;../data/sig_genes_speciesspecred.txt&quot;, quote = FALSE)
+
+# Neuroepithelial cell differentiation
+goresults[&quot;GO:0060563&quot;] # FGF8, MYCL, NODAL, CDH2</code></pre>
+<pre><code>$`GO:0060563`
+[1] &quot;ENSG00000107831&quot; &quot;ENSG00000116990&quot; &quot;ENSG00000156574&quot; &quot;ENSG00000170558&quot;</code></pre>
+<pre class="r"><code># Trophectodermal cell differentiation
+goresults[&quot;GO:0001829&quot;] # CNOT3, NODAL, EOMES, SP3</code></pre>
+<pre><code>$`GO:0001829`
+[1] &quot;ENSG00000088038&quot; &quot;ENSG00000156574&quot; &quot;ENSG00000163508&quot; &quot;ENSG00000172845&quot;</code></pre>
+<pre class="r"><code># Regulation of epithelial cell differentiation
+goresults[&quot;GO:0030856&quot;] # IKBKB, RHEB, MYCL, ROCK2, CLOCK, CTSV, NODAL</code></pre>
+<pre><code>$`GO:0030856`
+[1] &quot;ENSG00000104365&quot; &quot;ENSG00000106615&quot; &quot;ENSG00000116990&quot; &quot;ENSG00000134318&quot;
+[5] &quot;ENSG00000134852&quot; &quot;ENSG00000136943&quot; &quot;ENSG00000156574&quot;</code></pre>
+<pre class="r"><code># Positive regulation of muscle cell differentiation
+goresults[&quot;GO:0051149&quot;] #MEF2A, TCF3, CDH2, MTOR</code></pre>
+<pre><code>$`GO:0051149`
+[1] &quot;ENSG00000068305&quot; &quot;ENSG00000071564&quot; &quot;ENSG00000170558&quot; &quot;ENSG00000198793&quot;</code></pre>
+<pre class="r"><code># Run clusterProfiler
+
+
+group_shared &lt;- rownames(unadjust_pval) %in% rownames(subset_pval4)
+
+group_non_red &lt;- rownames(unadjust_pval) %in% rownames(background1)
+
+group_one_species &lt;- rownames(unadjust_pval) %in% rownames(subset_pval_species_spec)
+
+test_df &lt;- data.frame(ensg = rownames(unadjust_pval), group_shared = group_shared, group_non_red = group_non_red, group_one_species = group_one_species)
+
+make_test &lt;- test_df[which(test_df$group_shared == &quot;TRUE&quot; | test_df$group_non_red == &quot;TRUE&quot; | test_df$group_one_species == &quot;TRUE&quot;), ]
+
+
+
+formula_res &lt;- compareCluster(ensg~group_shared+group_non_red+group_one_species, data=make_test, fun=&quot;enrichGO&quot;, universe = test_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+                                keyType       = &#39;ENSEMBL&#39;,
+                ont           = &quot;BP&quot;,
+                pAdjustMethod = &quot;fdr&quot;,
+                qvalueCutoff  = 0.05,
+                                maxGSSize = 3000,
+                                minGSSize = 3)
+
+formula_res %&gt;%as.data.frame()%&gt;%select(-geneID)-&gt;enrichment.res
+row.names(enrichment.res)=NULL
+
+
+make_test &lt;- test_df[which(test_df$group_shared == &quot;TRUE&quot;  | test_df$group_one_species == &quot;TRUE&quot;), ]
+
+
+
+formula_res &lt;- compareCluster(ensg~group_shared+group_one_species, data=make_test, fun=&quot;enrichGO&quot;, universe = test_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+                                keyType       = &#39;ENSEMBL&#39;,
+                ont           = &quot;BP&quot;,
+                pAdjustMethod = &quot;fdr&quot;,
+                qvalueCutoff  = 0.05,
+                                maxGSSize = 3000,
+                                minGSSize = 3)
+
+formula_res %&gt;%as.data.frame()%&gt;%select(-geneID)-&gt;enrichment.res
+row.names(enrichment.res)=NULL</code></pre>
+</div>
+</div>
+<div id="evaluating-robustness-shared-reduction-in-variation-top-10-1030-genes-versus-background-of-no-reduction" class="section level1">
+<h1>Evaluating robustness: Shared reduction in variation (top 10%, 1030 genes) versus background of no reduction</h1>
+<pre class="r"><code># Find the genes that show the most evidence for reduction in variation in humans and chimpanzees 
+chimp_var &lt;- cbind(rownames(unadjust_pval), unadjust_pval)
+make_chimps &lt;- chimp_var[order(chimp_var[,2]), ]
+
+# Take the top 10% (1030 genes)
+
+top_chimps &lt;- as.character(make_chimps[1:1030,1])
+
+# Repeat with humans
+human_var &lt;- cbind(rownames(unadjust_pval), unadjust_pval[,2])
+make_humans &lt;- human_var[order(human_var[,2]), ]
+top_humans &lt;- as.character(make_humans[1:1030,1])
+
+# Find intersection of genes
+
+shared_red_var &lt;- intersect(top_chimps, top_humans)
+length(shared_red_var)</code></pre>
+<pre><code>[1] 115</code></pre>
+<pre class="r"><code># Which genes don&#39;t show a reduction in either species?
+
+non_red &lt;- union(as.character(make_chimps[1031:10304,1]), as.character(make_humans[1031:10304,1]))
+
+background2 &lt;- c(shared_red_var, non_red)
+
+# Matrix for which are in the 
+
+true_false &lt;- background2 %in% shared_red_var
+summary(true_false)</code></pre>
+<pre><code>   Mode   FALSE    TRUE 
+logical   10189     115 </code></pre>
+<pre class="r"><code>true_false &lt;- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene &lt;- as.vector(true_false)
+names(test_gene) &lt;- background2
+
+# Run topGO
+go_data &lt;- new(&quot;topGOdata&quot;,
+                   ontology = &quot;BP&quot;,
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore &gt; 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = &quot;org.Hs.eg.db&quot;,
+                   ID = &quot;ensembl&quot;)</code></pre>
+<pre><code>
+Building most specific GOs .....</code></pre>
+<pre><code>    ( 9458 GO terms found. )</code></pre>
+<pre><code>
+Build GO DAG topology ..........</code></pre>
+<pre><code>    ( 13499 GO terms and 31272 relations. )</code></pre>
+<pre><code>
+Annotating nodes ...............</code></pre>
+<pre><code>    ( 9181 genes annotated to the GO terms. )</code></pre>
+<pre class="r"><code># Perform enrichment test
+go_test &lt;- runTest(go_data, algorithm = &quot;weight01&quot;, statistic = &quot;fisher&quot;)</code></pre>
+<pre><code>
+             -- Weight01 Algorithm -- 
+
+         the algorithm is scoring 2569 nontrivial nodes
+         parameters: 
+             test statistic: fisher</code></pre>
+<pre><code>
+     Level 17:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 16:  1 nodes to be scored    (0 eliminated genes)</code></pre>
+<pre><code>
+     Level 15:  17 nodes to be scored   (17 eliminated genes)</code></pre>
+<pre><code>
+     Level 14:  38 nodes to be scored   (38 eliminated genes)</code></pre>
+<pre><code>
+     Level 13:  70 nodes to be scored   (302 eliminated genes)</code></pre>
+<pre><code>
+     Level 12:  116 nodes to be scored  (925 eliminated genes)</code></pre>
+<pre><code>
+     Level 11:  162 nodes to be scored  (2359 eliminated genes)</code></pre>
+<pre><code>
+     Level 10:  240 nodes to be scored  (3412 eliminated genes)</code></pre>
+<pre><code>
+     Level 9:   317 nodes to be scored  (4771 eliminated genes)</code></pre>
+<pre><code>
+     Level 8:   339 nodes to be scored  (6044 eliminated genes)</code></pre>
+<pre><code>
+     Level 7:   374 nodes to be scored  (6999 eliminated genes)</code></pre>
+<pre><code>
+     Level 6:   361 nodes to be scored  (7939 eliminated genes)</code></pre>
+<pre><code>
+     Level 5:   285 nodes to be scored  (8426 eliminated genes)</code></pre>
+<pre><code>
+     Level 4:   158 nodes to be scored  (8728 eliminated genes)</code></pre>
+<pre><code>
+     Level 3:   71 nodes to be scored   (8906 eliminated genes)</code></pre>
+<pre><code>
+     Level 2:   18 nodes to be scored   (8986 eliminated genes)</code></pre>
+<pre><code>
+     Level 1:   1 nodes to be scored    (9067 eliminated genes)</code></pre>
+<pre class="r"><code>go_table &lt;- GenTable(go_data, weightFisher = go_test,
+                         orderBy = &quot;weightFisher&quot;, ranksOf = &quot;weightFisher&quot;,
+                         topNodes = sum(score(go_test) &lt; .01))
+
+go_table</code></pre>
+<pre><code>        GO.ID                                        Term Annotated
+1  GO:0007567                                 parturition         5
+2  GO:0045842 positive regulation of mitotic metaphase...         7
+3  GO:0072423 response to DNA damage checkpoint signal...         7
+4  GO:0009651                     response to salt stress         8
+5  GO:0000338                       protein deneddylation         8
+6  GO:0033630 positive regulation of cell adhesion med...         9
+7  GO:0019228                   neuronal action potential        10
+8  GO:0045652 regulation of megakaryocyte differentiat...        32
+9  GO:0006283 transcription-coupled nucleotide-excisio...        63
+10 GO:0001829        trophectodermal cell differentiation        11
+11 GO:0007077        mitotic nuclear envelope disassembly        38
+12 GO:0019229              regulation of vasoconstriction        13
+   Significant Expected weightFisher
+1            2     0.06       0.0013
+2            2     0.08       0.0027
+3            2     0.08       0.0027
+4            2     0.09       0.0035
+5            2     0.09       0.0035
+6            2     0.10       0.0045
+7            2     0.12       0.0056
+8            3     0.37       0.0058
+9            4     0.73       0.0059
+10           2     0.13       0.0068
+11           3     0.44       0.0094
+12           2     0.15       0.0095</code></pre>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

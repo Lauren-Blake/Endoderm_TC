@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Lauren Blake" />
+
+<meta name="date" content="2018-01-19" />
+
+<title>Calculating_lethality</title>
+
+<script src="libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.5/css/united.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="libs/navigation-1.1/tabsets.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">
+
+/* padding for bootstrap navbar */
+body {
+  padding-top: 50px;
+  padding-bottom: 40px;
+}
+
+
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h2 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+.section h3 {
+  padding-top: 55px;
+  margin-top: -55px;
+}
+
+
+
+/* don't use link color in navbar */
+.dropdown-menu>li>a {
+  color: black;
+}
+
+/* some padding for disqus */
+#disqus_thread {
+  margin-top: 45px;
+}
+
+</style>
+
+<link rel="stylesheet" href="libs/font-awesome-4.1.0/css/font-awesome.min.css"/>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+</head>
+
+<body>
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Endoderm_TimeCourse</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="license.html">License</a></li>
+        <li><a href="https://github.com/Lauren-Blake/Endoderm_TC">GitHub</a></li>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Calculating_lethality</h1>
+<h4 class="author"><em>Lauren Blake</em></h4>
+<h4 class="date"><em>January 19, 2018</em></h4>
+
+</div>
+
+<div id="TOC">
+<ul>
+<li><a href="#import-the-data">Import the data</a></li>
+<li><a href="#data-exploration">Data Exploration</a><ul>
+<li><a href="#how-many-genes-do-we-start-with">How many genes do we start with?</a></li>
+<li><a href="#how-many-genes-dont-have-an-associated-phenotype">How many genes don’t have an associated phenotype?</a></li>
+<li><a href="#what-terms-include-some-variant-of-embryonic-lethality">What terms include some variant of “embryonic lethality”?</a></li>
+<li><a href="#pick-out-the-terms">Pick out the terms</a></li>
+<li><a href="#assessing-significance-of-difference-in-proportions">Assessing significance of difference in proportions</a></li>
+</ul></li>
+</ul>
+</div>
+
+<p>In this script, we will evaluate the embryonic lethality of 3 categories of genes: shared reduction of variation, reduction of variation in only one species, and non-reduced genes.</p>
+<pre class="r"><code>source(&quot;chunk-options.R&quot;)</code></pre>
+<div id="import-the-data" class="section level1">
+<h1>Import the data</h1>
+<p>To obtain the data, we took the gene list of each of the 3 categories of genes and ran it through the Mammalian Phenotype database from Jackson Lab: <a href="http://www.informatics.jax.org/batch/summary" class="uri">http://www.informatics.jax.org/batch/summary</a>.</p>
+<pre class="r"><code># Load data- shared data
+
+Lethality_shared_genes &lt;- read.delim(&quot;../data/Lethality_shared_genes.txt&quot;)</code></pre>
+</div>
+<div id="data-exploration" class="section level1">
+<h1>Data Exploration</h1>
+<div id="how-many-genes-do-we-start-with" class="section level2">
+<h2>How many genes do we start with?</h2>
+<pre class="r"><code>length(unique(Lethality_shared_genes$Input))</code></pre>
+<pre><code>[1] 380</code></pre>
+<pre class="r"><code>summary(Lethality_shared_genes)</code></pre>
+<pre><code>     Input                 Input.Type     MGI.Gene.Marker.ID
+ FGF8   : 173   current symbol  :4891   MGI:99604  : 172    
+ FBN1   : 142   human synonym   : 255   MGI:95489  : 142    
+ PRKDC  : 135   old symbol      : 101   MGI:104779 : 135    
+ MTOR   : 134   zebrafish symbol:  90   MGI:1928394: 134    
+ NODAL  : 110   synonym         :  86   MGI:97359  : 110    
+ CTSL2  : 108   human symbol    :  22   MGI:88564  : 108    
+ (Other):4663   (Other)         :  20   (Other)    :4664    
+     Symbol    
+ Fgf8   : 172  
+ Fbn1   : 142  
+ Prkdc  : 135  
+ Mtor   : 134  
+ Nodal  : 110  
+ Ctsl   : 108  
+ (Other):4664  
+                                                        Name     
+ fibroblast growth factor 8                               : 172  
+ fibrillin 1                                              : 142  
+ protein kinase, DNA activated, catalytic polypeptide     : 135  
+ mechanistic target of rapamycin (serine/threonine kinase): 134  
+ nodal                                                    : 110  
+ cathepsin L                                              : 108  
+ (Other)                                                  :4664  
+              Feature.Type         MP.ID     
+ protein coding gene:5456             : 195  
+ pseudogene         :   8   MP:0002169:  56  
+ QTL                :   1   MP:0011098:  36  
+                            MP:0001262:  35  
+                            MP:0002083:  35  
+                            MP:0011100:  33  
+                            (Other)   :5075  
+                                                            Term     
+                                                              : 195  
+ no abnormal phenotype detected                               :  56  
+ embryonic lethality during organogenesis, complete penetrance:  36  
+ decreased body weight                                        :  35  
+ premature death                                              :  35  
+ preweaning lethality, complete penetrance                    :  33  
+ (Other)                                                      :5075  </code></pre>
+<pre class="r"><code># Eliminate anything that&#39;s not a protein coding gene
+
+protein_lethality &lt;- Lethality_shared_genes[which(Lethality_shared_genes$Feature.Type == &quot;protein coding gene&quot;) , ]
+
+length(unique(protein_lethality$Input))</code></pre>
+<pre><code>[1] 380</code></pre>
+</div>
+<div id="how-many-genes-dont-have-an-associated-phenotype" class="section level2">
+<h2>How many genes don’t have an associated phenotype?</h2>
+<pre class="r"><code>mp_check &lt;- grep(&quot;MP&quot;, protein_lethality$MP.ID)
+
+complete_mp &lt;- protein_lethality[mp_check, ]
+
+length(unique(complete_mp$Input))</code></pre>
+<pre><code>[1] 218</code></pre>
+</div>
+<div id="what-terms-include-some-variant-of-embryonic-lethality" class="section level2">
+<h2>What terms include some variant of “embryonic lethality”?</h2>
+<pre class="r"><code>terms_lethality &lt;- grep(&quot;lethality&quot;, complete_mp$Term)
+
+observe_lethality &lt;- complete_mp[terms_lethality, ]
+
+unique(observe_lethality$Term)</code></pre>
+<pre><code> [1] perinatal lethality, incomplete penetrance                                          
+ [2] neonatal lethality, complete penetrance                                             
+ [3] prenatal lethality, complete penetrance                                             
+ [4] embryonic lethality during organogenesis, complete penetrance                       
+ [5] lethality throughout fetal growth and development, incomplete penetrance            
+ [6] neonatal lethality, incomplete penetrance                                           
+ [7] perinatal lethality, complete penetrance                                            
+ [8] postnatal lethality, complete penetrance                                            
+ [9] lethality throughout fetal growth and development, complete penetrance              
+[10] lethality, incomplete penetrance                                                    
+[11] postnatal lethality                                                                 
+[12] postnatal lethality, incomplete penetrance                                          
+[13] preweaning lethality, complete penetrance                                           
+[14] embryonic lethality at implantation, complete penetrance                            
+[15] embryonic lethality, complete penetrance                                            
+[16] embryonic lethality during organogenesis, incomplete penetrance                     
+[17] perinatal lethality                                                                 
+[18] preweaning lethality, incomplete penetrance                                         
+[19] embryonic lethality between implantation and somite formation, complete penetrance  
+[20] embryonic lethality during organogenesis                                            
+[21] embryonic lethality before implantation, complete penetrance                        
+[22] embryonic lethality prior to tooth bud stage                                        
+[23] prenatal lethality                                                                  
+[24] prenatal lethality, incomplete penetrance                                           
+[25] embryonic lethality before implantation, incomplete penetrance                      
+[26] embryonic lethality prior to organogenesis                                          
+[27] lethality, complete penetrance                                                      
+[28] prenatal lethality prior to heart atrial septation                                  
+[29] embryonic lethality between implantation and placentation, complete penetrance      
+[30] embryonic lethality between implantation and somite formation                       
+[31] embryonic lethality                                                                 
+[32] embryonic lethality, incomplete penetrance                                          
+[33] embryonic lethality between somite formation and embryo turning, complete penetrance
+[34] embryonic lethality between implantation and placentation                           
+2440 Levels:  ... Wormian bones</code></pre>
+<p>Terms that we want to include: “embryonic lethality”, “prenatal lethality”, “lethality throughout fetal growth and development”</p>
+</div>
+<div id="pick-out-the-terms" class="section level2">
+<h2>Pick out the terms</h2>
+<pre class="r"><code>embryonic_lethality &lt;- grep(&quot;embryonic lethality&quot;, observe_lethality$Term)
+length(embryonic_lethality)</code></pre>
+<pre><code>[1] 132</code></pre>
+<pre class="r"><code>prenatal_lethality &lt;- grep(&quot;prenatal lethality&quot;, observe_lethality$Term)
+length(prenatal_lethality)</code></pre>
+<pre><code>[1] 32</code></pre>
+<pre class="r"><code>fetal_lethality &lt;- grep(&quot;lethality throughout fetal growth and development&quot;, observe_lethality$Term)
+length(fetal_lethality)</code></pre>
+<pre><code>[1] 21</code></pre>
+<pre class="r"><code>lethality1 &lt;- observe_lethality[embryonic_lethality, ]
+lethality2 &lt;- observe_lethality[prenatal_lethality, ]
+lethality3 &lt;- observe_lethality[fetal_lethality, ]
+
+lethal3 &lt;- rbind(lethality1, lethality2, lethality3)
+
+length(unique(lethal3$Input))</code></pre>
+<pre><code>[1] 89</code></pre>
+<p>Conclusion: Knockdown in 89/218 of the shared genes with at least one documented associated phenotype is embryonic lethal.</p>
+<pre class="r"><code># Write a function to run the code above so that we can run it for other classes of genes
+
+analyze_lethality &lt;- function(data_name){
+
+# Make data name to lethality
+Lethality_shared_genes &lt;- data_name  
+
+# How many genes are originally there    
+length_Lethality_shared_genes &lt;- length(unique(Lethality_shared_genes$Input))
+
+
+# Eliminate anything that&#39;s not a protein coding gene
+
+protein_lethality &lt;- Lethality_shared_genes[which(Lethality_shared_genes$Feature.Type == &quot;protein coding gene&quot;) , ]
+
+length_protein_lethality &lt;- length(unique(protein_lethality$Input))
+
+# How many genes have an associated phenotype?
+
+mp_check &lt;- grep(&quot;MP&quot;, protein_lethality$MP.ID)
+
+complete_mp &lt;- protein_lethality[mp_check, ]
+
+genes_associated_phenotype &lt;- length(unique(complete_mp$Input))
+
+# Look for lethality
+
+embryonic_lethality &lt;- grep(&quot;embryonic lethality&quot;, complete_mp$Term)
+length(embryonic_lethality)
+prenatal_lethality &lt;- grep(&quot;prenatal lethality&quot;, complete_mp$Term)
+length(prenatal_lethality)
+fetal_lethality &lt;- grep(&quot;lethality throughout fetal growth and development&quot;, complete_mp$Term)
+length(fetal_lethality)
+
+lethality1 &lt;- complete_mp[embryonic_lethality, ]
+lethality2 &lt;- complete_mp[prenatal_lethality, ]
+lethality3 &lt;- complete_mp[fetal_lethality, ]
+
+lethal3 &lt;- rbind(lethality1, lethality2, lethality3)
+
+length_lethal3 &lt;- length(unique(lethal3$Input))
+
+critical_values &lt;- cbind(length_Lethality_shared_genes, genes_associated_phenotype, length_lethal3)
+return(critical_values)
+}
+
+# Run on shared genes
+
+analyze_lethality(Lethality_shared_genes)</code></pre>
+<pre><code>     length_Lethality_shared_genes genes_associated_phenotype
+[1,]                           380                        218
+     length_lethal3
+[1,]             89</code></pre>
+<pre class="r"><code>89/218</code></pre>
+<pre><code>[1] 0.4082569</code></pre>
+<pre class="r"><code># Run on non-reduced genes
+
+Lethality_non_red_genes &lt;- read.delim(&quot;../data/Lethality_non_red_genes.txt&quot;)
+analyze_lethality(Lethality_non_red_genes)</code></pre>
+<pre><code>     length_Lethality_shared_genes genes_associated_phenotype
+[1,]                          7151                       4118
+     length_lethal3
+[1,]           1139</code></pre>
+<pre class="r"><code>1139/4118</code></pre>
+<pre><code>[1] 0.2765906</code></pre>
+<pre class="r"><code># Run on genes reduced in one species
+
+Lethality_red_one_species &lt;- read.delim(&quot;../data/Lethality_red_one_species.txt&quot;)
+analyze_lethality(Lethality_red_one_species)</code></pre>
+<pre><code>     length_Lethality_shared_genes genes_associated_phenotype
+[1,]                          2330                       1286
+     length_lethal3
+[1,]            458</code></pre>
+<pre class="r"><code>458/1286</code></pre>
+<pre><code>[1] 0.3561431</code></pre>
+</div>
+<div id="assessing-significance-of-difference-in-proportions" class="section level2">
+<h2>Assessing significance of difference in proportions</h2>
+<pre class="r"><code># Diff between shared and non reduced
+prop.test(c(89,1139),c(218,4118),correct=TRUE)</code></pre>
+<pre><code>
+    2-sample test for equality of proportions with continuity
+    correction
+
+data:  c(89, 1139) out of c(218, 4118)
+X-squared = 17.038, df = 1, p-value = 3.664e-05
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ 0.06259038 0.20074222
+sample estimates:
+   prop 1    prop 2 
+0.4082569 0.2765906 </code></pre>
+<pre class="r"><code># Diff between shared and reduced in 1 species
+prop.test(c(89,458),c(218,1286),correct=TRUE)</code></pre>
+<pre><code>
+    2-sample test for equality of proportions with continuity
+    correction
+
+data:  c(89, 458) out of c(218, 1286)
+X-squared = 1.9681, df = 1, p-value = 0.1606
+alternative hypothesis: two.sided
+95 percent confidence interval:
+ -0.02086789  0.12509549
+sample estimates:
+   prop 1    prop 2 
+0.4082569 0.3561431 </code></pre>
+</div>
+</div>
+
+
+<!-- some extra javascript for older browsers -->
+<script type="text/javascript" src="libs/polyfill.js"></script>
+
+<script>
+
+// manage active state of menu based on current page
+$(document).ready(function () {
+
+    // active menu
+    href = window.location.pathname
+    href = href.substr(href.lastIndexOf('/') + 1)
+    $('a[href="' + href + '"]').parent().addClass('active');
+
+    // manage active menu header
+    if (href.startsWith('authoring_'))
+      $('a[href="' + 'authoring' + '"]').parent().addClass('active');
+    else if (href.endsWith('_format.html'))
+      $('a[href="' + 'formats' + '"]').parent().addClass('active');
+    else if (href.startsWith('developer_'))
+      $('a[href="' + 'developer' + '"]').parent().addClass('active');
+
+});
+
+</script>
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -21,8 +21,8 @@
 <script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="libs/navigation-1.1/tabsets.js"></script>
-<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="libs/highlightjs-1.1/highlight.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">
 
@@ -66,10 +66,12 @@ body {
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -210,13 +212,14 @@ $(document).ready(function () {
 <li><a href="#estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.01">Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.01)</a></li>
 <li><a href="#changes-in-variance-in-chimp-samples-p-value-cutoff-0.01">Changes in variance in chimp samples (p-value cutoff 0.01)</a></li>
 <li><a href="#estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.01-1">Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.01)</a></li>
-<li><a href="#estimates-of-pi0-and-pi1-for-increase-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.05-1">Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.05)</a></li>
+<li><a href="#estimates-of-pi0-and-pi1-for-increase-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.01">Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.01)</a></li>
 <li><a href="#changes-of-variation-in-humans-p-0.01">Changes of variation in humans (p = 0.01)</a></li>
 <li><a href="#estimates-of-pi0-and-pi1-for-reduction-of-variation-in-humans-conditioned-on-significance-in-chimps-p-0.01">Estimates of pi0 and pi1 for reduction of variation in humans conditioned on significance in chimps (p = 0.01)</a></li>
 <li><a href="#estimates-of-pi0-and-pi1-for-increase-of-variation-in-humans-conditioned-on-significance-in-chimps-p-0.01">Estimates of pi0 and pi1 for increase of variation in humans conditioned on significance in chimps (p = 0.01)</a></li>
-<li><a href="#estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.01-2">Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.01)</a></li>
-<li><a href="#changes-in-variance-in-chimp-samples-p-value-cutoff-0.01-1">Changes in variance in chimp samples (p-value cutoff 0.01)</a></li>
-<li><a href="#estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.1">Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.1)</a></li>
+</ul></li>
+<li><a href="#estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.1">Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.1)</a><ul>
+<li><a href="#changes-in-variance-in-chimp-samples-p-value-cutoff-0.1">Changes in variance in chimp samples (p-value cutoff 0.1)</a></li>
+<li><a href="#estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.1-1">Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.1)</a></li>
 <li><a href="#estimates-of-pi0-and-pi1-for-increase-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.10">Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.10)</a></li>
 <li><a href="#changes-of-variation-in-humans-p-0.10">Changes of variation in humans (p = 0.10)</a></li>
 <li><a href="#estimates-of-pi0-and-pi1-for-reduction-of-variation-in-humans-conditioned-on-significance-in-chimps-p-0.10">Estimates of pi0 and pi1 for reduction of variation in humans conditioned on significance in chimps (p = 0.10)</a></li>
@@ -237,13 +240,10 @@ $(document).ready(function () {
 <h2>Check data</h2>
 <pre class="r"><code># Load libraries
 
-library(&quot;ggplot2&quot;)</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code>library(&quot;qvalue&quot;)</code></pre>
-<pre><code>## Warning: package &#39;qvalue&#39; was built under R version 3.2.3</code></pre>
-<pre class="r"><code>source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)</code></pre>
-<pre><code>## Warning: package &#39;knitr&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code>library(&quot;RColorBrewer&quot;)
+library(&quot;ggplot2&quot;)
+library(&quot;qvalue&quot;)
+source(&quot;~/Desktop/Endoderm_TC/ashlar-trial/analysis/chunk-options.R&quot;)
+library(&quot;RColorBrewer&quot;)
 
 # Load colors
 pal &lt;- c(brewer.pal(9, &quot;Set1&quot;), brewer.pal(8, &quot;Set2&quot;), brewer.pal(12, &quot;Set3&quot;))
@@ -1203,6 +1203,10 @@ p1</code></pre>
              
 p1s</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-8-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval &lt;- chimp_var_pval_red01[,1]
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = 10304)
+line &lt;- rep(c(&quot;0.73&quot;), times = 10304)
+figS12A &lt;- cbind(pval, resp, line)</code></pre>
 </div>
 <div id="testing-chimps-reduction-in-variance-from-days-1-to-2" class="section level4">
 <h4>Testing chimps reduction in variance from days 1 to 2</h4>
@@ -1265,6 +1269,12 @@ p2</code></pre>
              
 p2s</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-9-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval &lt;- chimp_var_pval_red12[,1]
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = 10304)
+line &lt;- rep(c(&quot;NA&quot;), times = 10304)
+figS12A_fig &lt;- cbind(pval, resp, line)
+
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 </div>
 <div id="testing-chimps-reduction-in-variance-from-days-2-to-3" class="section level4">
 <h4>Testing chimps reduction in variance from days 2 to 3</h4>
@@ -1326,6 +1336,12 @@ will replace the existing scale.</code></pre>
              
 p3s</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-10-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval &lt;- chimp_var_pval_red23[,1]
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = 10304)
+line &lt;- rep(c(&quot;NA&quot;), times = 10304)
+figS12A_fig &lt;- cbind(pval, resp, line)
+
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 </div>
 <div id="testing-chimps-reduction-in-variance-from-days-1-to-3" class="section level4">
 <h4>Testing chimps reduction in variance from days 1 to 3</h4>
@@ -1387,6 +1403,14 @@ will replace the existing scale.</code></pre>
              
 p3_13s</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-11-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval &lt;- chimp_var_pval_red13[,1]
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = 10304)
+line &lt;- rep(c(&quot;NA&quot;), times = 10304)
+figS12A_fig &lt;- cbind(pval, resp, line)
+
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+colnames(figS12A) &lt;- c(&quot;pval&quot;, &quot;days&quot;, &quot;line_value&quot;)
+write.table(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS12A.txt&quot;, quote = FALSE, row.names = FALSE)</code></pre>
 </div>
 <div id="testing-humans-reduction-in-variance-from-days-0-to-1" class="section level4">
 <h4>Testing humans reduction in variance from days 0 to 1</h4>
@@ -1409,7 +1433,7 @@ fdr_adj &lt;- p.adjust(human_var_pval, method = c(&quot;fdr&quot;) )
 
 summary(fdr_adj)</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.02558 0.23610 0.38500 0.42280 0.58440 0.99870 </code></pre>
+0.02558 0.23606 0.38498 0.42280 0.58436 0.99874 </code></pre>
 <pre class="r"><code># How many B.H. adjusted p-values &lt; 0.05?
 
 length(which(fdr_adj &lt; 0.05))</code></pre>
@@ -1449,6 +1473,10 @@ p4</code></pre>
              
 p4s</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-12-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval &lt;- human_var_pval_red01[,1]
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = 10304)
+line &lt;- rep(c(&quot;0.23&quot;), times = 10304)
+figS12A &lt;- cbind(pval, resp, line)</code></pre>
 </div>
 <div id="testing-humans-reduction-in-variance-from-days-1-to-2" class="section level4">
 <h4>Testing humans reduction in variance from days 1 to 2</h4>
@@ -1509,6 +1537,12 @@ p5</code></pre>
              
 p5s</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-13-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval &lt;- human_var_pval_red12[,1]
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = 10304)
+line &lt;- rep(c(&quot;NA&quot;), times = 10304)
+figS12A_fig &lt;- cbind(pval, resp, line)
+
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 </div>
 <div id="testing-humans-reduction-in-variance-from-days-2-to-3" class="section level4">
 <h4>Testing humans reduction in variance from days 2 to 3</h4>
@@ -1570,6 +1604,12 @@ p6</code></pre>
              
 p6s</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-14-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval &lt;- human_var_pval_red23[,1]
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = 10304)
+line &lt;- rep(c(&quot;NA&quot;), times = 10304)
+figS12A_fig &lt;- cbind(pval, resp, line)
+
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 </div>
 <div id="testing-humans-reduction-in-variance-from-days-1-to-3" class="section level4">
 <h4>Testing humans reduction in variance from days 1 to 3</h4>
@@ -1629,6 +1669,14 @@ p6_13</code></pre>
              
 p6_13s</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-15-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval &lt;- human_var_pval_red13[,1]
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = 10304)
+line &lt;- rep(c(&quot;NA&quot;), times = 10304)
+figS12A_fig &lt;- cbind(pval, resp, line)
+
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+write.table(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS12B.txt&quot;, quote = FALSE, row.names = FALSE)</code></pre>
 </div>
 <div id="plot-reduction-in-variation-pi_0-determined-by-a-bootstrap-method" class="section level4">
 <h4>Plot reduction in variation (pi_0 determined by a bootstrap method)</h4>
@@ -1989,7 +2037,7 @@ fdr_adj &lt;- p.adjust(human_var_pval, method = c(&quot;fdr&quot;) )
 
 summary(fdr_adj)</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.06298 0.29350 0.43370 0.46480 0.61330 0.99840 </code></pre>
+0.06298 0.29350 0.43367 0.46480 0.61330 0.99838 </code></pre>
 <pre class="r"><code># How many B.H. adjusted p-values &lt; 0.05?
 
 length(which(fdr_adj &lt; 0.05))</code></pre>
@@ -2110,7 +2158,7 @@ fdr_adj &lt;- p.adjust(human_var_pval, method = c(&quot;fdr&quot;) )
 
 summary(fdr_adj)</code></pre>
 <pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.03533 0.26040 0.40610 0.44130 0.59810 0.99980 </code></pre>
+0.03533 0.26036 0.40614 0.44127 0.59814 0.99985 </code></pre>
 <pre class="r"><code># How many B.H. adjusted p-values &lt; 0.05?
 
 length(which(fdr_adj &lt; 0.05))</code></pre>
@@ -2474,7 +2522,14 @@ p2_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
 
 p2_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-29-11.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 2 to 3
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Day 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+line &lt;- rep(c(&quot;NA&quot;), times = nrow(pval_c)+nrow(pval_h))
+figS12A &lt;- cbind(pval_ch, resp, line)
+
+# Day 2 to 3
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_red_day23[1])
@@ -2527,7 +2582,16 @@ p3_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
 
 p3_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-29-12.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 3
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Day 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+line &lt;- rep(c(&quot;NA&quot;), times = nrow(pval_c)+nrow(pval_h))
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+
+# Day 1 to 3
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_red_day13[1])
@@ -2580,6 +2644,15 @@ p4_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
 
 p4_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-29-13.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Day 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+line &lt;- rep(c(&quot;NA&quot;), times = nrow(pval_c)+nrow(pval_h))
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS13A.csv&quot;, quote = FALSE, row.names = FALSE)</code></pre>
 </div>
 <div id="estimates-of-pi0-and-pi1-for-increase-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.05" class="section level3">
 <h3>Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.05)</h3>
@@ -2637,7 +2710,15 @@ p1_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
 
 p1_inc_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-30-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 2
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Day 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+line &lt;- rep(c(&quot;NA&quot;), times = nrow(pval_c)+nrow(pval_h))
+figS12A &lt;- cbind(pval_ch, resp, line)
+
+
+# Day 1 to 2
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_inc_day12[1])
@@ -2741,7 +2822,24 @@ p3_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
 
 p3_inc_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-30-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 3
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Day 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.37&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.24&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+
+write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS13C.csv&quot;, quote = FALSE, row.names = FALSE)
+
+# Day 1 to 3
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_inc_day13[1])
@@ -2793,6 +2891,19 @@ p4_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
 
 p4_inc_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-30-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.51&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.39&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 </div>
 <div id="changes-of-variation-in-humans" class="section level3">
 <h3>Changes of variation in humans</h3>
@@ -3033,7 +3144,21 @@ p6_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
 
 p6_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-32-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 2 to 3
+<pre class="r"><code>pval_h &lt;- humans[,1:2]
+pval_c &lt;- chimps[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Day 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)
+
+
+# Day 2 to 3
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_red_day23[1])
@@ -3086,7 +3211,23 @@ p7_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
 
 p7_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-32-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 3
+<pre class="r"><code>pval_h &lt;- humans[,1:2]
+pval_c &lt;- chimps[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Day 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS13B.csv&quot;, quote = FALSE, row.names = FALSE)
+
+# Day 1 to 3
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_red_day13[1])
@@ -3139,7 +3280,21 @@ p8_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
 
 p8_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-32-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>multiplot(p1_05,p5_05,p2_05,p6_05,p3_05,p7_05,p4_05,p8_05,cols=4)</code></pre>
+<pre class="r"><code>pval_h &lt;- humans[,1:2]
+pval_c &lt;- chimps[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Day 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+multiplot(p1_05,p5_05,p2_05,p6_05,p3_05,p7_05,p4_05,p8_05,cols=4)</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-32-5.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="estimates-of-pi0-and-pi1-for-increase-of-variation-in-humans-conditioned-on-significance-in-chimps-p-0.05" class="section level3">
@@ -3200,7 +3355,21 @@ p5_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
 
 p5_inc_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-33-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 2
+<pre class="r"><code>pval_h &lt;- humans[,1:2]
+pval_c &lt;- chimps[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Day 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)
+
+
+# Day 1 to 2
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_inc_day12[1])
@@ -3306,7 +3475,24 @@ p7_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
 
 p7_inc_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-33-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 3
+<pre class="r"><code>pval_h &lt;- humans[,1:2]
+pval_c &lt;- chimps[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Day 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.95&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.85&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS13D.csv&quot;, quote = FALSE, row.names = FALSE)
+
+
+# Day 1 to 3
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_inc_day13[1])
@@ -3358,7 +3544,21 @@ p8_inc_05 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
 
 p8_inc_05</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-33-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>multiplot(p1_inc_05,p5_inc_05,p2_inc_05,p6_inc_05,p3_inc_05,p7_inc_05,p4_inc_05,p8_inc_05,cols=4)</code></pre>
+<pre class="r"><code>pval_h &lt;- humans[,1:2]
+pval_c &lt;- chimps[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Day 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.20&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.18&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+multiplot(p1_inc_05,p5_inc_05,p2_inc_05,p6_inc_05,p3_inc_05,p7_inc_05,p4_inc_05,p8_inc_05,cols=4)</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-33-5.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
@@ -3631,19 +3831,68 @@ pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;)
 p1_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;) + scale_y_continuous(labels=scaleFUN) +
+  theme_bw() +  labs(title = &quot;Day 0 to 1&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;)  +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = &quot;#E77642&quot;) +       
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.73&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.48&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p1_01</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-37-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 2
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.73&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.48&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)
+
+# Day 1 to 2
 
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_red_day12[1])
 shared_p_values_gen &lt;- as.data.frame(qqplot_red_day12[2])
+
+labels_c &lt;- array(&quot;Chimpanzee&quot;, dim = c(10304,1))
+labels_h &lt;- array(&quot;Shared (Chimpanzee|Significant in Humans)&quot;, dim = c(as.data.frame(qqplot_red_day12[[3]][2]),1))
+
+chimps &lt;- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) &lt;- c(&quot;Species&quot;, &quot;pval&quot;)
+humans &lt;- cbind(labels_h, shared_p_values_gen)
+colnames(humans) &lt;- c(&quot;Species&quot;, &quot;pval&quot;)
+
+# Combine the two
+
+all_pval &lt;- rbind(chimps[,1:2], humans[,1:2])
+
+pal &lt;- c(&quot;#00A4F4&quot;, &quot;#E77642&quot;, &quot;white&quot;) 
+
+p1_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 1) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_bw() +  labs(title = &quot;Days 1 to 2&quot;) + theme(plot.title = element_text(face = &quot;bold&quot;)) +  labs(x = &quot;Unadjusted p-values&quot;) + labs(y = &quot;Density&quot;)
+
+p1_01</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-37-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
 
 
 # Pi_0 estimate for the chimps
@@ -3661,6 +3910,7 @@ pi1est_chimps</code></pre>
 # pi0est_chimps_given_humans &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
 
 # Note: There&#39;s an issue with estimating pi_0 from only 15 points. 
+
 
 # Day 2 to 3
 
@@ -3714,8 +3964,22 @@ p3_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.9&quot;)&#39;, parse=TRUE, x=0.8, y=(pi0est_chimps-0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.8, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-37-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 3
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-37-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+# Day 1 to 3
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_red_day13[1])
@@ -3767,10 +4031,25 @@ p4_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.2), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p4_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-37-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-37-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14E_with_days12.csv&quot;, quote = FALSE, row.names = FALSE)</code></pre>
 </div>
-<div id="estimates-of-pi0-and-pi1-for-increase-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.05-1" class="section level3">
-<h3>Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.05)</h3>
+<div id="estimates-of-pi0-and-pi1-for-increase-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.01" class="section level3">
+<h3>Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.01)</h3>
 <pre class="r"><code>############### Increase in Variation ############
 
 # Day 0 to 1
@@ -3781,25 +4060,25 @@ shared_p_values_gen &lt;- as.data.frame(qqplot_inc_day01[2])
 
 # Pi_0 estimate for the chimps
 
-pi0est_chimps &lt;- qvalue(p=chimp_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_chimps</code></pre>
-<pre><code>[1] 1</code></pre>
-<pre class="r"><code># Pi_1 estimate for the chimps
+#pi0est_chimps &lt;- qvalue(p=chimp_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_chimps
 
-pi1est_chimps &lt;- 1 - pi0est_chimps
-pi1est_chimps</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code># Pi_0 estimate for the chimps given significant in the humans
+# Pi_1 estimate for the chimps
 
-pi0est_chimps_given_humans &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_chimps_given_humans</code></pre>
-<pre><code>[1] 0.7998508</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi1est_chimps &lt;- 1 - pi0est_chimps
+#pi1est_chimps
 
-pi1est_chimps_given_humans &lt;- 1 - pi0est_chimps_given_humans
-pi1est_chimps_given_humans</code></pre>
-<pre><code>[1] 0.2001492</code></pre>
-<pre class="r"><code># Let&#39;s overlap the two histograms
+# Pi_0 estimate for the chimps given significant in the humans
+
+#pi0est_chimps_given_humans &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_chimps_given_humans
+
+# Pi_1 estimate for the humans
+
+#pi1est_chimps_given_humans &lt;- 1 - pi0est_chimps_given_humans
+#pi1est_chimps_given_humans
+
+# Let&#39;s overlap the two histograms
 
 labels_c &lt;- array(&quot;Chimpanzee&quot;, dim = c(10304,1))
 labels_h &lt;- array(&quot;Shared (Chimpanzee|Significant in Humans)&quot;, dim = c(nrow(shared_p_values_gen[1]),1))
@@ -3825,6 +4104,18 @@ p1_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
 
 p1_inc_01</code></pre>
 <p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-38-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)</code></pre>
 <pre class="r"><code># Day 1 to 2
 
 # Obtain pvalues
@@ -3876,7 +4167,20 @@ p2_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.52&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.45&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
 
 p2_inc_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-38-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.52&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.45&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 <pre class="r"><code># Day 2 to 3
 
 # Obtain pvalues
@@ -3928,7 +4232,20 @@ p3_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.37&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.15), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.36&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_inc_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-38-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.37&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.36&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 <pre class="r"><code># Day 1 to 3
 
 # Obtain pvalues
@@ -3980,50 +4297,65 @@ p4_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.51&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.08), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.24&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.08), size = 6)
 
 p4_inc_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-38-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-41-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.51&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.24&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14I.csv&quot;, quote = FALSE, row.names = FALSE)</code></pre>
 </div>
 <div id="changes-of-variation-in-humans-p-0.01" class="section level3">
 <h3>Changes of variation in humans (p = 0.01)</h3>
 <pre class="r"><code># Reduction in variance from day 0 to day 1 humans
 
 qqplot_red_day01 &lt;- find_qqplot_red_humans(7,10,17,20,1,6,11,16, 0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 1 to day 2 humans
 
 qqplot_red_day12 &lt;- find_qqplot_red_humans(17,20,27,30,11,16,21,26,0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 2 to day 3 humans
 
 qqplot_red_day23 &lt;- find_qqplot_red_humans(27,30,37,40,21,26,31,36,0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-6.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 1 to day 3 humans
 
 qqplot_red_day13 &lt;- find_qqplot_red_humans(17,20,37,40,11,16,31,36,0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-8.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 0 to day 2 humans
 
 qqplot_red_day02 &lt;- find_qqplot_red_humans(7,10,27,30,1,6,21,26,0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-10.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 0 to day 1 humans
 
 qqplot_inc_day01 &lt;- find_qqplot_inc_humans(7,10,17,20,1,6,11,16,0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-12.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 1 to day 2 humans
 
 qqplot_inc_day12 &lt;- find_qqplot_inc_humans(17,20,27,30,11,16,21,26,0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-14.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 2 to day 3 humans
 
 qqplot_inc_day23 &lt;- find_qqplot_inc_humans(27,30,37,40,21,26,31,36,0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-16.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 0 to day 2
 
 qqplot_inc_day02 &lt;- find_qqplot_inc_humans(7,10,27,30,1,6,21,26,0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-18.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day ` to day 3 humans
 
 qqplot_inc_day13 &lt;- find_qqplot_inc_humans(17,20,37,40,11,16,31,36,0.01)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-39-20.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-20.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="estimates-of-pi0-and-pi1-for-reduction-of-variation-in-humans-conditioned-on-significance-in-chimps-p-0.01" class="section level3">
 <h3>Estimates of pi0 and pi1 for reduction of variation in humans conditioned on significance in chimps (p = 0.01)</h3>
@@ -4082,7 +4414,19 @@ p5_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.17&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.15&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-40-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-43-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.17&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.15&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)</code></pre>
 <pre class="r"><code># Day 1 to 2
 
 # Obtain pvalues
@@ -4092,25 +4436,28 @@ shared_p_values_gen &lt;- as.data.frame(qqplot_red_day12[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans</code></pre>
-<pre><code>[1] 1</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
-pi1est_humans &lt;- 1 - pi0est_humans
-pi1est_humans</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code># Pi_0 estimate for the chimps given significant in the humans
+# Pi_1 estimate for the humans
 
-pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps</code></pre>
-<pre><code>[1] 1</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi1est_humans &lt;- 1 - pi0est_humans
+#pi1est_humans
 
-pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code># Let&#39;s overlap the two histograms
+# Pi_0 estimate for the chimps given significant in the humans
+
+#pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, #fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+#pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
+
+# Note: There&#39;s an issue with estimating pi_0 from only 15 points. 
+
+
+# Let&#39;s overlap the two histograms
 
 labels_h &lt;- array(&quot;Human&quot;, dim = c(10304,1))
 labels_c &lt;- array(&quot;Shared (Human|Significant in Chimps)&quot;, dim = c(as.data.frame(qqplot_red_day12[[3]][1]),1))
@@ -4135,7 +4482,20 @@ p6_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p6_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-40-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-44-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 <pre class="r"><code># Day 2 to 3
 
 # Obtain pvalues
@@ -4145,25 +4505,25 @@ shared_p_values_gen &lt;- as.data.frame(qqplot_red_day23[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans</code></pre>
-<pre><code>[1] 0.8664877</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
-pi1est_humans &lt;- 1 - pi0est_humans
-pi1est_humans</code></pre>
-<pre><code>[1] 0.1335123</code></pre>
-<pre class="r"><code># Pi_0 estimate for the chimps given significant in the humans
+# Pi_1 estimate for the humans
 
-pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps</code></pre>
-<pre><code>[1] 0.3595233</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi1est_humans &lt;- 1 - pi0est_humans
+#pi1est_humans
 
-pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps</code></pre>
-<pre><code>[1] 0.6404767</code></pre>
-<pre class="r"><code># Let&#39;s overlap the two histograms
+# Pi_0 estimate for the chimps given significant in the humans
+
+#pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+#pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
+
+# Let&#39;s overlap the two histograms
 
 labels_h &lt;- array(&quot;Human&quot;, dim = c(10304,1))
 labels_c &lt;- array(&quot;Shared (Human|Significant in Chimps)&quot;, dim = c(as.data.frame(qqplot_red_day23[[3]][1]),1))
@@ -4188,7 +4548,20 @@ p7_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.87&quot;)&#39;, parse=TRUE, x=0.6, y=(pi0est_humans+0.07), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.36&quot;)&#39;, parse=TRUE, x=0.6, y=(pi0est_humans_given_chimps+0.07), size = 6)
 
 p7_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-40-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 <pre class="r"><code># Day 1 to 3
 
 # Obtain pvalues
@@ -4198,25 +4571,25 @@ shared_p_values_gen &lt;- as.data.frame(qqplot_red_day13[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans</code></pre>
-<pre><code>[1] 1</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
-pi1est_humans &lt;- 1 - pi0est_humans
-pi1est_humans</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code># Pi_0 estimate for the chimps given significant in the humans
+# Pi_1 estimate for the humans
 
-pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps</code></pre>
-<pre><code>[1] 1</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi1est_humans &lt;- 1 - pi0est_humans
+#pi1est_humans
 
-pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code># Let&#39;s overlap the two histograms
+# Pi_0 estimate for the chimps given significant in the humans
+
+#pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+#pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
+
+# Let&#39;s overlap the two histograms
 
 labels_h &lt;- array(&quot;Human&quot;, dim = c(10304,1))
 labels_c &lt;- array(&quot;Shared (Human|Significant in Chimps)&quot;, dim = c(as.data.frame(qqplot_red_day13[[3]][1]),1))
@@ -4241,9 +4614,25 @@ p8_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p8_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-40-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>multiplot(p1_01,p5_01,p3_01,p6_01, p4_01,p7_01,p8_01,cols=4)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-40-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14G.csv&quot;, quote = FALSE, row.names = FALSE)
+
+multiplot(p1_01,p5_01,p3_01,p6_01, p4_01,p7_01,p8_01,cols=4)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>#multiplot(p1_01,p3_01,p4_01,p5_01,p6_01,p7_01,p8_01,cols=2)</code></pre>
 </div>
 <div id="estimates-of-pi0-and-pi1-for-increase-of-variation-in-humans-conditioned-on-significance-in-chimps-p-0.01" class="section level3">
@@ -4260,25 +4649,25 @@ shared_p_values_gen &lt;- as.data.frame(qqplot_inc_day01[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans</code></pre>
-<pre><code>[1] 1</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
-pi1est_humans &lt;- 1 - pi0est_humans
-pi1est_humans</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code># Pi_0 estimate for the chimps given significant in the humans
+# Pi_1 estimate for the humans
 
-pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps</code></pre>
-<pre><code>[1] 1</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi1est_humans &lt;- 1 - pi0est_humans
+#pi1est_humans
 
-pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code># Let&#39;s overlap the two histograms
+# Pi_0 estimate for the chimps given significant in the humans
+
+#pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+#pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
+
+# Let&#39;s overlap the two histograms
 
 labels_h &lt;- array(&quot;Human&quot;, dim = c(10304,1))
 labels_c &lt;- array(&quot;Shared (Human|Significant in Chimps)&quot;, dim = c(as.data.frame(qqplot_inc_day01[[3]][1]),1))
@@ -4303,7 +4692,19 @@ p5_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_inc_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-41-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-47-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)</code></pre>
 <pre class="r"><code># Day 1 to 2
 
 # Obtain pvalues
@@ -4313,25 +4714,25 @@ shared_p_values_gen &lt;- as.data.frame(qqplot_inc_day12[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans</code></pre>
-<pre><code>[1] 0.2141993</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
-pi1est_humans &lt;- 1 - pi0est_humans
-pi1est_humans</code></pre>
-<pre><code>[1] 0.7858007</code></pre>
-<pre class="r"><code># Pi_0 estimate for the chimps given significant in the humans
+# Pi_1 estimate for the humans
 
-pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps</code></pre>
-<pre><code>[1] 0.07238243</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi1est_humans &lt;- 1 - pi0est_humans
+#pi1est_humans
 
-pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps</code></pre>
-<pre><code>[1] 0.9276176</code></pre>
-<pre class="r"><code># Let&#39;s overlap the two histograms
+# Pi_0 estimate for the chimps given significant in the humans
+
+#pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+#pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
+
+# Let&#39;s overlap the two histograms
 
 labels_h &lt;- array(&quot;Human&quot;, dim = c(10304,1))
 labels_c &lt;- array(&quot;Shared (Human|Significant in Chimps)&quot;, dim = c(as.data.frame(qqplot_inc_day12[[3]][1]),1))
@@ -4356,7 +4757,20 @@ p6_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.21&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.07&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.27), size = 6)
 
 p6_inc_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-41-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-48-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.21&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.07&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 <pre class="r"><code># Day 2 to 3
 
 # Obtain pvalues
@@ -4366,25 +4780,25 @@ shared_p_values_gen &lt;- as.data.frame(qqplot_inc_day23[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans</code></pre>
-<pre><code>[1] 0.8477893</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi0est_humans &lt;- qvalue(p= human_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
-pi1est_humans &lt;- 1 - pi0est_humans
-pi1est_humans</code></pre>
-<pre><code>[1] 0.1522107</code></pre>
-<pre class="r"><code># Pi_0 estimate for the chimps given significant in the humans
+# Pi_1 estimate for the humans
 
-pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps</code></pre>
-<pre><code>[1] 1</code></pre>
-<pre class="r"><code># Pi_1 estimate for the humans
+#pi1est_humans &lt;- 1 - pi0est_humans
+#pi1est_humans
 
-pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps</code></pre>
-<pre><code>[1] 0</code></pre>
-<pre class="r"><code># Let&#39;s overlap the two histograms
+# Pi_0 estimate for the chimps given significant in the humans
+
+#pi0est_humans_given_chimps &lt;- qvalue(p=shared_p_values_gen, pi0.method=&quot;smoother&quot;, fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
+
+# Pi_1 estimate for the humans
+
+#pi1est_humans_given_chimps &lt;- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
+
+# Let&#39;s overlap the two histograms
 
 labels_h &lt;- array(&quot;Human&quot;, dim = c(10304,1))
 labels_c &lt;- array(&quot;Shared (Human|Significant in Chimps)&quot;, dim = c(as.data.frame(qqplot_inc_day23[[3]][1]),1))
@@ -4409,7 +4823,20 @@ p7_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.85&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.05), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.07), size = 6)
 
 p7_inc_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-41-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;1&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.85&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)</code></pre>
 <pre class="r"><code># Day 1 to 3
 
 # Obtain pvalues
@@ -4461,57 +4888,73 @@ p8_inc_01 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.20&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.35), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.13&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.2), size = 6)
 
 p8_inc_01</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-41-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>multiplot(p1_inc_01,p5_inc_01,p2_inc_01,p6_inc_01,p3_inc_01,p7_inc_01,p4_inc_01,p8_inc_01,cols=4)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-41-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.20&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.13&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14K.csv&quot;, quote = FALSE, row.names = FALSE)
+
+multiplot(p1_inc_01,p5_inc_01,p2_inc_01,p6_inc_01,p3_inc_01,p7_inc_01,p4_inc_01,p8_inc_01,cols=4)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.01-2" class="section level3">
-<h3>Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.01)</h3>
 </div>
-<div id="changes-in-variance-in-chimp-samples-p-value-cutoff-0.01-1" class="section level3">
-<h3>Changes in variance in chimp samples (p-value cutoff 0.01)</h3>
+<div id="estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.1" class="section level2">
+<h2>Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.1)</h2>
+<div id="changes-in-variance-in-chimp-samples-p-value-cutoff-0.1" class="section level3">
+<h3>Changes in variance in chimp samples (p-value cutoff 0.1)</h3>
 <pre class="r"><code># Reduction in variance from day 0 to day 1 chimps
 
 qqplot_red_day01 &lt;- find_qqplot_red_chimps(7,10,17,20,1,6,11,16, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 1 to day 2 chimps
 
 qqplot_red_day12 &lt;- find_qqplot_red_chimps(17,20,27,30,11,16,21,26, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 2 to day 3 chimps
 
 qqplot_red_day23 &lt;- find_qqplot_red_chimps(27,30,37,40,21,26,31,36, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-6.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 0 to day 2 chimps
 
 qqplot_red_day02 &lt;- find_qqplot_red_chimps(7,10,27,30,1,6,21,26, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-8.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 1 to day 3 chimps
 
 qqplot_red_day13 &lt;- find_qqplot_red_chimps(17,20,37,40,11,16,31,36, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-10.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 0 to day 1
 
 qqplot_inc_day01 &lt;- find_qqplot_inc_chimps(7,10,17,20,1,6,11,16, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-12.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 1 to day 2
 
 qqplot_inc_day12 &lt;- find_qqplot_inc_chimps(17,20,27,30,11,16,21,26, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-14.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 2 to day 3
 
 qqplot_inc_day23 &lt;- find_qqplot_inc_chimps(27,30,37,40,21,26,31,36, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-16.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 0 to day 2
 
 qqplot_inc_day02 &lt;- find_qqplot_inc_chimps(7,10,27,30,1,6,21,26, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-18.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 1 to day 3
 
 qqplot_inc_day13 &lt;- find_qqplot_inc_chimps(17,20,37,40,11,16,31,36, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-42-20.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-51-20.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.1" class="section level3">
+<div id="estimates-of-pi0-and-pi1-for-reduction-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.1-1" class="section level3">
 <h3>Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.1)</h3>
 <pre class="r"><code>library(&quot;qvalue&quot;)
 ################ REDUCTION IN VARIATION FOR CHIMPS (p = 0.1) ################
@@ -4569,8 +5012,22 @@ p1_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.73&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.52&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p1_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-43-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 2
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-52-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.73&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.52&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)
+   
+
+# Day 1 to 2
 
 
 # Obtain pvalues
@@ -4623,8 +5080,22 @@ p2_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.72&quot;)&#39;, parse=TRUE, x=0.5, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p2_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-43-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 2 to 3
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-52-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+# Day 2 to 3
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_red_day23[1])
@@ -4676,8 +5147,22 @@ p3_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.9&quot;)&#39;, parse=TRUE, x=0.8, y=(pi0est_chimps-0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.8, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-43-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 3
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-52-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+# Day 1 to 3
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_red_day13[1])
@@ -4729,7 +5214,22 @@ p4_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.17), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p4_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-43-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-52-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14F.csv&quot;, quote = FALSE, row.names = FALSE)</code></pre>
 </div>
 <div id="estimates-of-pi0-and-pi1-for-increase-of-variation-in-chimps-conditioned-on-significance-in-humans-p-0.10" class="section level3">
 <h3>Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.10)</h3>
@@ -4786,8 +5286,21 @@ p1_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.92&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.07), size = 6)
 
 p1_inc_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-44-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 2
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-53-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)
+
+# Day 1 to 2
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_inc_day12[1])
@@ -4838,8 +5351,22 @@ p2_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.52&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.33&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p2_inc_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-44-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 2 to 3
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-53-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.52&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.33&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+# Day 2 to 3
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_inc_day23[1])
@@ -4890,8 +5417,23 @@ p3_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.37&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.13), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.35&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_inc_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-44-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 3
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-53-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.37&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.35&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+
+# Day 1 to 3
 
 # Obtain pvalues
 chimp_p_values_gen &lt;- as.data.frame(qqplot_inc_day13[1])
@@ -4942,50 +5484,65 @@ p4_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, chimps&quot;])==&quot;0.51&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps+0.08), colour = &quot;#E77642&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.42&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.08), size = 6)
 
 p4_inc_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-44-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-53-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_c, pval_h)
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.51&quot;), times = nrow(pval_c)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.42&quot;), times = nrow(pval_h)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14J.csv&quot;, quote = FALSE, row.names = FALSE)</code></pre>
 </div>
 <div id="changes-of-variation-in-humans-p-0.10" class="section level3">
 <h3>Changes of variation in humans (p = 0.10)</h3>
 <pre class="r"><code># Reduction in variance from day 0 to day 1 humans
 
 qqplot_red_day01 &lt;- find_qqplot_red_humans(7,10,17,20,1,6,11,16, 0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 1 to day 2 humans
 
 qqplot_red_day12 &lt;- find_qqplot_red_humans(17,20,27,30,11,16,21,26,0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 2 to day 3 humans
 
 qqplot_red_day23 &lt;- find_qqplot_red_humans(27,30,37,40,21,26,31,36,0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-6.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 1 to day 3 humans
 
 qqplot_red_day13 &lt;- find_qqplot_red_humans(17,20,37,40,11,16,31,36,0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-8.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Reduction in variance from day 0 to day 2 humans
 
 qqplot_red_day02 &lt;- find_qqplot_red_humans(7,10,27,30,1,6,21,26,0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-10.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 0 to day 1 humans
 
 qqplot_inc_day01 &lt;- find_qqplot_inc_humans(7,10,17,20,1,6,11,16,0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-12.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 1 to day 2 humans
 
 qqplot_inc_day12 &lt;- find_qqplot_inc_humans(17,20,27,30,11,16,21,26,0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-14.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 2 to day 3 humans
 
 qqplot_inc_day23 &lt;- find_qqplot_inc_humans(27,30,37,40,21,26,31,36,0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-16.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day 0 to day 2
 
 qqplot_inc_day02 &lt;- find_qqplot_inc_humans(7,10,27,30,1,6,21,26,0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-18.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-18.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># Inc. in variance from day ` to day 3 humans
 
 qqplot_inc_day13 &lt;- find_qqplot_inc_humans(17,20,37,40,11,16,31,36,0.1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-45-20.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-54-20.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="estimates-of-pi0-and-pi1-for-reduction-of-variation-in-humans-conditioned-on-significance-in-chimps-p-0.10" class="section level3">
 <h3>Estimates of pi0 and pi1 for reduction of variation in humans conditioned on significance in chimps (p = 0.10)</h3>
@@ -5044,8 +5601,22 @@ p5_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.17&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.15&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 2
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-55-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.17&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.15&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)
+
+
+# Day 1 to 2
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_red_day12[1])
@@ -5097,8 +5668,22 @@ p6_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p6_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 2 to 3
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-55-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+# Day 2 to 3
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_red_day23[1])
@@ -5150,8 +5735,22 @@ p7_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.87&quot;)&#39;, parse=TRUE, x=0.7, y=(pi0est_humans+0.06), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.76&quot;)&#39;, parse=TRUE, x=0.7, y=(pi0est_humans_given_chimps+0.06), size = 6)
 
 p7_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 3
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-55-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+# Day 1 to 3
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_red_day13[1])
@@ -5203,9 +5802,25 @@ p8_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(valu
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p8_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>multiplot(p1_10,p5_10,p2_10,p6_10,p3_10,p7_10,p4_10,p8_10,cols=4)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-46-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-55-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14H.csv&quot;, quote = FALSE, row.names = FALSE)
+
+multiplot(p1_10,p5_10,p2_10,p6_10,p3_10,p7_10,p4_10,p8_10,cols=4)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-55-5.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="estimates-of-pi0-and-pi1-for-increase-of-variation-in-humans-conditioned-on-significance-in-chimps-p-0.10" class="section level3">
 <h3>Estimates of pi0 and pi1 for increase of variation in humans conditioned on significance in chimps (p = 0.10)</h3>
@@ -5264,8 +5879,22 @@ p5_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_inc_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-47-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 2
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-56-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 0 to 1&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;NA&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A &lt;- cbind(pval_ch, resp, line)
+
+
+# Day 1 to 2
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_inc_day12[1])
@@ -5317,8 +5946,22 @@ p6_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.21&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.28), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.10&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.25), size = 6)
 
 p6_inc_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-47-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 2 to 3
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-56-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 1 to 2&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.21&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.10&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+# Day 2 to 3
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_inc_day23[1])
@@ -5370,8 +6013,22 @@ p7_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.85&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.07), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;1&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.07), size = 6)
 
 p7_inc_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-47-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Day 1 to 3
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-56-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 2 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;1&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.85&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+# Day 1 to 3
 
 # Obtain pvalues
 human_p_values_gen &lt;- as.data.frame(qqplot_inc_day13[1])
@@ -5422,9 +6079,25 @@ p8_inc_10 &lt;- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(
   annotate(&quot;text&quot;, label= &#39;bold(bolditalic(hat(pi)[0][&quot;, humans&quot;])==&quot;0.20&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = &quot;#00A4F4&quot;, size = 6) +  annotate(&quot;text&quot;, label = &#39;bold(bolditalic(hat(pi)[0][&quot;, shared&quot;])==&quot;0.16&quot;)&#39;, parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.17), size = 6)
 
 p8_inc_10</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-47-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>multiplot(p1_inc_10,p5_inc_10,p2_inc_10,p6_inc_10,p3_inc_10,p7_inc_10,p4_inc_10,p8_inc_10,cols=4)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-47-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-56-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pval_c &lt;- chimps[,1:2]
+pval_h &lt;- humans[,1:2]
+pval_ch &lt;- rbind(pval_h, pval_c)
+resp &lt;- rep(c(&quot;Days 1 to 3&quot;), times = nrow(pval_c)+nrow(pval_h))
+
+line1 &lt;- as.data.frame(rep(c(&quot;0.20&quot;), times = nrow(pval_h)))
+colnames(line1) &lt;- c(&quot;line&quot;)
+line2 &lt;- as.data.frame(rep(c(&quot;0.16&quot;), times = nrow(pval_c)))
+colnames(line2) &lt;- c(&quot;line&quot;)
+line &lt;- rbind(line1, line2)
+
+figS12A_fig &lt;- cbind(pval_ch, resp, line)
+figS12A &lt;- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14L.csv&quot;, quote = FALSE, row.names = FALSE)
+
+multiplot(p1_inc_10,p5_inc_10,p2_inc_10,p6_inc_10,p3_inc_10,p7_inc_10,p4_inc_10,p8_inc_10,cols=4)</code></pre>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-56-5.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="sharing-estimates-chimps-conditioned-on-humans-for-x-number-of-significant-genes-p-0.05-cutoff" class="section level3">
 <h3>Sharing estimates (chimps conditioned on humans) for x number of significant genes (p = 0.05 cutoff)</h3>
@@ -5568,91 +6241,122 @@ find_qqplot_inc_top_all_sharing_chimps &lt;- function(chimp_begin_column_tm1, ch
 
 # Reduction in variance from day 0 to day 1
 
-qqplot_red_top_all_day01 &lt;- find_qqplot_red_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
+#qqplot_red_top_all_day01 &lt;- find_qqplot_red_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
 
 # Reduction in variance from day 1 to day 2
 
-qqplot_red_top_all_day12 &lt;- find_qqplot_red_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
+#qqplot_red_top_all_day12 &lt;- find_qqplot_red_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
 
 # Reduction in variance from day 2 to day 3
 
-qqplot_red_top_all_day23 &lt;- find_qqplot_red_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
+#qqplot_red_top_all_day23 &lt;- find_qqplot_red_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
 
 # Reduction in variance from day 0 to day 2
 
-qqplot_red_top_all_day02 &lt;- find_qqplot_red_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
+#qqplot_red_top_all_day02 &lt;- find_qqplot_red_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
 
 # Reduction in variance from day 1 to day 3
 
-qqplot_red_top_all_day13 &lt;- find_qqplot_red_top_all_sharing_chimps(17,20,37,40,11,16,31,36)
+#qqplot_red_top_all_day13 &lt;- find_qqplot_red_top_all_sharing_chimps(17,20,37,40,11,16,31,36)
 
 # Inc. in variance from day 0 to day 1
 
-qqplot_inc_top_all_day01 &lt;- find_qqplot_inc_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
+#qqplot_inc_top_all_day01 &lt;- find_qqplot_inc_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
 
 # Inc. in variance from day 1 to day 2
 
-qqplot_inc_top_all_day12 &lt;- find_qqplot_inc_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
+#qqplot_inc_top_all_day12 &lt;- find_qqplot_inc_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
 
 # Inc. in variance from day 2 to day 3
 
-qqplot_inc_top_all_day23 &lt;- find_qqplot_inc_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
+#qqplot_inc_top_all_day23 &lt;- find_qqplot_inc_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
 
 # Inc. in variance from day 0 to day 2
 
-qqplot_inc_top_all_day02 &lt;- find_qqplot_inc_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
+#qqplot_inc_top_all_day02 &lt;- find_qqplot_inc_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
 
 # Inc. in variance from day 1 to day 3
 
-qqplot_inc_top_all_day13 &lt;- find_qqplot_inc_top_all_sharing_chimps(17,20,37,40,11,16,31,36)
+#qqplot_inc_top_all_day13 &lt;- find_qqplot_inc_top_all_sharing_chimps(17,20,37,40,11,16,31,36)
 
 # Make everything a data frame
-qqplot_red_top_all_day01 &lt;- as.data.frame(qqplot_red_top_all_day01)
-qqplot_red_top_all_day12 &lt;- as.data.frame(qqplot_red_top_all_day12)
-qqplot_red_top_all_day23 &lt;- as.data.frame(qqplot_red_top_all_day23)
-qqplot_red_top_all_day02 &lt;- as.data.frame(qqplot_red_top_all_day02)
-qqplot_red_top_all_day13 &lt;- as.data.frame(qqplot_red_top_all_day13)
-qqplot_inc_top_all_day01 &lt;- as.data.frame(qqplot_inc_top_all_day01)
-qqplot_inc_top_all_day12 &lt;- as.data.frame(qqplot_inc_top_all_day12)
-qqplot_inc_top_all_day23 &lt;- as.data.frame(qqplot_inc_top_all_day23)
-qqplot_inc_top_all_day02 &lt;- as.data.frame(qqplot_inc_top_all_day02)
-qqplot_inc_top_all_day13 &lt;- as.data.frame(qqplot_inc_top_all_day13)
+#qqplot_red_top_all_day01 &lt;- as.data.frame(qqplot_red_top_all_day01)
+#qqplot_red_top_all_day12 &lt;- as.data.frame(qqplot_red_top_all_day12)
+#qqplot_red_top_all_day23 &lt;- as.data.frame(qqplot_red_top_all_day23)
+#qqplot_red_top_all_day02 &lt;- as.data.frame(qqplot_red_top_all_day02)
+#qqplot_red_top_all_day13 &lt;- as.data.frame(qqplot_red_top_all_day13)
+#qqplot_inc_top_all_day01 &lt;- as.data.frame(qqplot_inc_top_all_day01)
+#qqplot_inc_top_all_day12 &lt;- as.data.frame(qqplot_inc_top_all_day12)
+#qqplot_inc_top_all_day23 &lt;- as.data.frame(qqplot_inc_top_all_day23)
+#qqplot_inc_top_all_day02 &lt;- as.data.frame(qqplot_inc_top_all_day02)
+#qqplot_inc_top_all_day13 &lt;- as.data.frame(qqplot_inc_top_all_day13)
 
 # Plots of pi_0
 
-qqplot_red_top_all_day01_pi0 &lt;- abs(1- qqplot_red_top_all_day01)
-qqplot_red_top_all_day12_pi0 &lt;- abs(1- qqplot_red_top_all_day12)
-qqplot_red_top_all_day23_pi0 &lt;- abs(1- qqplot_red_top_all_day23)
-qqplot_red_top_all_day02_pi0 &lt;- abs(1- qqplot_red_top_all_day02)
-qqplot_red_top_all_day13_pi0 &lt;- abs(1- qqplot_red_top_all_day13)
-qqplot_inc_top_all_day01_pi0 &lt;- abs(1- qqplot_inc_top_all_day01)
-qqplot_inc_top_all_day12_pi0 &lt;- abs(1- qqplot_inc_top_all_day12)
-qqplot_inc_top_all_day23_pi0 &lt;- abs(1- qqplot_inc_top_all_day23)
-qqplot_inc_top_all_day02_pi0 &lt;- abs(1- qqplot_inc_top_all_day02)
-qqplot_inc_top_all_day13_pi0 &lt;- abs(1- qqplot_inc_top_all_day13)
+#qqplot_red_top_all_day01_pi0 &lt;- abs(1- qqplot_red_top_all_day01)
+#qqplot_red_top_all_day12_pi0 &lt;- abs(1- qqplot_red_top_all_day12)
+#qqplot_red_top_all_day23_pi0 &lt;- abs(1- qqplot_red_top_all_day23)
+#qqplot_red_top_all_day02_pi0 &lt;- abs(1- qqplot_red_top_all_day02)
+#qqplot_red_top_all_day13_pi0 &lt;- abs(1- qqplot_red_top_all_day13)
+
+#pi_0_across_genes &lt;- rbind(qqplot_red_top_all_day01_pi0, qqplot_red_top_all_day12_pi0, qqplot_red_top_all_day23_pi0, qqplot_red_top_all_day13_pi0)
+
+#resp01 &lt;- t(t(rep(c(&quot;Day 0 to 1&quot;), times = 10205)))
+#resp12 &lt;- t(t(rep(c(&quot;Day 1 to 2&quot;), times = 10205)))
+#resp23 &lt;- t(t(rep(c(&quot;Day 2 to 3&quot;), times = 10205)))
+#resp13 &lt;- t(t(rep(c(&quot;Day 1 to 3&quot;), times = 10205)))
+
+#labels &lt;- rbind(resp01, resp12, resp23, resp13)
+
+#figS14A &lt;- cbind(pi_0_across_genes, labels)
+#colnames(figS14A) &lt;- c(&quot;N Most Significant Genes&quot;, &quot;pi_0&quot;, &quot;Day label&quot;)
+
+#write.table(figS14A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14A.txt&quot;, quote = FALSE, row.names = FALSE)
+
+#qqplot_inc_top_all_day01_pi0 &lt;- abs(1- qqplot_inc_top_all_day01)
+#qqplot_inc_top_all_day12_pi0 &lt;- abs(1- qqplot_inc_top_all_day12)
+#qqplot_inc_top_all_day23_pi0 &lt;- abs(1- qqplot_inc_top_all_day23)
+#qqplot_inc_top_all_day02_pi0 &lt;- abs(1- qqplot_inc_top_all_day02)
+#qqplot_inc_top_all_day13_pi0 &lt;- abs(1- qqplot_inc_top_all_day13)
+
+
+#pi_0_across_genes &lt;- rbind(qqplot_inc_top_all_day01_pi0, qqplot_inc_top_all_day12_pi0, qqplot_inc_top_all_day23_pi0, qqplot_inc_top_all_day13_pi0)
+
+#resp01 &lt;- t(t(rep(c(&quot;Day 0 to 1&quot;), times = 10205)))
+#resp12 &lt;- t(t(rep(c(&quot;Day 1 to 2&quot;), times = 10205)))
+#resp23 &lt;- t(t(rep(c(&quot;Day 2 to 3&quot;), times = 10205)))
+#resp13 &lt;- t(t(rep(c(&quot;Day 1 to 3&quot;), times = 10205)))
+
+#labels &lt;- rbind(resp01, resp12, resp23, resp13)
+
+#figS14A &lt;- cbind(pi_0_across_genes, labels)
+#colnames(figS14A) &lt;- c(&quot;N Most Significant Genes&quot;, &quot;pi_0&quot;, &quot;Day label&quot;)
+
+#write.table(figS14A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14C.txt&quot;, quote = FALSE, row.names = FALSE)
+
 
 # Plot reduction in variation
-p_top_genes_red_var_chimps &lt;- ggplot(qqplot_red_top_all_day01_pi0, aes(x = qqplot_red_top_all_day01_pi0[,1], y = qqplot_red_top_all_day01_pi0[,2])) + geom_line(colour=&quot;#00B451&quot;) + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12_pi0[,1], y = qqplot_red_top_all_day12_pi0[,2]-0.001), colour =  &quot;#00B1DB&quot;) + geom_line(aes(x = qqplot_red_top_all_day23_pi0[,1], y = qqplot_red_top_all_day23_pi0[,2]), colour =  &quot;#C77CFF&quot;) + geom_line(aes(x = qqplot_red_top_all_day13_pi0[,1], y = qqplot_red_top_all_day13_pi0[,2]+0.001), colour = &quot;#000000&quot;) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ &quot;For Reduction in Variance (Chimpanzees|Sign. in Humans)&quot; )) + xlab(&quot;N Most Significant Genes in Humans&quot;) + ylab(expression( italic(hat(pi)[0]) ~ &quot;(Chimps|Sign. in Humans)&quot;)) 
+#p_top_genes_red_var_chimps &lt;- ggplot(qqplot_red_top_all_day01_pi0, aes(x = qqplot_red_top_all_day01_pi0[,1], y = qqplot_red_top_all_day01_pi0[,2])) + geom_line(colour=&quot;#00B451&quot;) + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12_pi0[,1], y = qqplot_red_top_all_day12_pi0[,2]-0.001), colour =  &quot;#00B1DB&quot;) + geom_line(aes(x = qqplot_red_top_all_day23_pi0[,1], y = qqplot_red_top_all_day23_pi0[,2]), colour =  &quot;#C77CFF&quot;) + geom_line(aes(x = qqplot_red_top_all_day13_pi0[,1], y = qqplot_red_top_all_day13_pi0[,2]+0.001), colour = &quot;#000000&quot;) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ &quot;For Reduction in Variance (Chimpanzees|Sign. in Humans)&quot; )) + xlab(&quot;N Most Significant Genes in Humans&quot;) + ylab(expression( italic(hat(pi)[0]) ~ &quot;(Chimps|Sign. in Humans)&quot;)) 
 
-p_top_genes_red_var_chimps</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-48-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)</code></pre>
-<pre><code>Warning in par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, :
-calling par(new=TRUE) with no plot</code></pre>
-<pre class="r"><code>plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
-legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-48-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Plot of Increase in Variation
+#p_top_genes_red_var_chimps
 
-p_top_genes_inc_var_chimps &lt;- ggplot(qqplot_inc_top_all_day01_pi0, aes(x = qqplot_inc_top_all_day01_pi0[,1], y = qqplot_inc_top_all_day01_pi0[,2]+0.001)) + geom_line(colour=&quot;#00B451&quot;) + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12_pi0[,1], y = qqplot_inc_top_all_day12_pi0[,2]), colour = &quot;#00B1DB&quot;) + geom_line(aes(x = qqplot_inc_top_all_day23_pi0[,1], y = qqplot_inc_top_all_day23_pi0[,2]-0.001), colour =  &quot;#C77CFF&quot;) + geom_line(aes(x = qqplot_inc_top_all_day13_pi0[,1], y = qqplot_inc_top_all_day13_pi0[,2]), colour = &quot;#000000&quot;) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ &quot;For Increase in Variance (Chimpanzees|Sign. in Humans)&quot; )) + xlab(&quot;N Most Significant Genes in Humans&quot;) + ylab(expression( italic(hat(pi)[0]) ~ &quot;(Chimps|Sign. in Humans)&quot;)) 
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+#legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)
 
-p_top_genes_inc_var_chimps
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
-legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-48-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Plots of pi_1
+
+# Plot of Increase in Variation
+
+#p_top_genes_inc_var_chimps &lt;- ggplot(qqplot_inc_top_all_day01_pi0, aes(x = qqplot_inc_top_all_day01_pi0[,1], y = qqplot_inc_top_all_day01_pi0[,2]+0.001)) + geom_line(colour=&quot;#00B451&quot;) + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12_pi0[,1], y = qqplot_inc_top_all_day12_pi0[,2]), colour = &quot;#00B1DB&quot;) + geom_line(aes(x = qqplot_inc_top_all_day23_pi0[,1], y = qqplot_inc_top_all_day23_pi0[,2]-0.001), colour =  &quot;#C77CFF&quot;) + geom_line(aes(x = qqplot_inc_top_all_day13_pi0[,1], y = qqplot_inc_top_all_day13_pi0[,2]), colour = &quot;#000000&quot;) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ &quot;For Increase in Variance (Chimpanzees|Sign. in Humans)&quot; )) + xlab(&quot;N Most Significant Genes in Humans&quot;) + ylab(expression( italic(hat(pi)[0]) ~ &quot;(Chimps|Sign. in Humans)&quot;)) 
+
+#p_top_genes_inc_var_chimps
+
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+#legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)
+
+# Plots of pi_1
 
 #dev.off()
 # Plot reduction in variation
@@ -5811,104 +6515,119 @@ find_qqplot_inc_top_all_humans &lt;- function(chimp_begin_column_tm1, chimp_end_
 
 # Reduction in variance from day 0 to day 1
 
-qqplot_red_top_all_day01_humans &lt;- find_qqplot_red_top_all_humans(7,10,17,20,1,6,11,16)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Reduction in variance from day 1 to day 2
+#qqplot_red_top_all_day01_humans &lt;- find_qqplot_red_top_all_humans(7,10,17,20,1,6,11,16)
 
-qqplot_red_top_all_day12_humans &lt;- find_qqplot_red_top_all_humans(17,20,27,30,11,16,21,26)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-3.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Reduction in variance from day 2 to day 3
+# Reduction in variance from day 1 to day 2
 
-qqplot_red_top_all_day23_humans  &lt;- find_qqplot_red_top_all_humans(27,30,37,40,21,26,31,36)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-5.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-6.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Reduction in variance from day 0 to day 2
+#qqplot_red_top_all_day12_humans &lt;- find_qqplot_red_top_all_humans(17,20,27,30,11,16,21,26)
 
-qqplot_red_top_all_day02_humans  &lt;- find_qqplot_red_top_all_humans(7,10,27,30,1,6,21,26)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-7.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-8.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Reduction in variance from day 1 to day 3
+# Reduction in variance from day 2 to day 3
 
-qqplot_red_top_all_day13_humans  &lt;- find_qqplot_red_top_all_humans(17,20,37,40,11,16,31,36)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-9.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-10.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Inc. in variance from day 0 to day 1
+#qqplot_red_top_all_day23_humans  &lt;- find_qqplot_red_top_all_humans(27,30,37,40,21,26,31,36)
 
-qqplot_inc_top_all_day01_humans  &lt;- find_qqplot_inc_top_all_humans(7,10,17,20,1,6,11,16)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-11.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-12.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Inc. in variance from day 1 to day 2
+# Reduction in variance from day 0 to day 2
 
-qqplot_inc_top_all_day12_humans  &lt;- find_qqplot_inc_top_all_humans(17,20,27,30,11,16,21,26)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-13.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-14.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Inc. in variance from day 2 to day 3
+#qqplot_red_top_all_day02_humans  &lt;- find_qqplot_red_top_all_humans(7,10,27,30,1,6,21,26)
 
-qqplot_inc_top_all_day23_humans  &lt;- find_qqplot_inc_top_all_humans(27,30,37,40,21,26,31,36)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-15.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-16.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Inc. in variance from day 0 to day 2
+# Reduction in variance from day 1 to day 3
 
-qqplot_inc_top_all_day02_humans  &lt;- find_qqplot_inc_top_all_humans(7,10,27,30,1,6,21,26)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-17.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-18.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Inc. in variance from day 1 to day 3
+#qqplot_red_top_all_day13_humans  &lt;- find_qqplot_red_top_all_humans(17,20,37,40,11,16,31,36)
 
-qqplot_inc_top_all_day13_humans  &lt;- find_qqplot_inc_top_all_humans(17,20,37,40,11,16,31,36)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-19.png" width="672" style="display: block; margin: auto;" /><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-20.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Make everything a data frame
-qqplot_red_top_all_day01_humans  &lt;- as.data.frame(qqplot_red_top_all_day01_humans)
-qqplot_red_top_all_day12_humans  &lt;- as.data.frame(qqplot_red_top_all_day12_humans)
-qqplot_red_top_all_day23_humans  &lt;- as.data.frame(qqplot_red_top_all_day23_humans)
-qqplot_red_top_all_day02_humans  &lt;- as.data.frame(qqplot_red_top_all_day02_humans)
-qqplot_red_top_all_day13_humans  &lt;- as.data.frame(qqplot_red_top_all_day13_humans)
-qqplot_inc_top_all_day01_humans  &lt;- as.data.frame(qqplot_inc_top_all_day01_humans)
-qqplot_inc_top_all_day12_humans  &lt;- as.data.frame(qqplot_inc_top_all_day12_humans)
-qqplot_inc_top_all_day23_humans  &lt;- as.data.frame(qqplot_inc_top_all_day23_humans)
-qqplot_inc_top_all_day02_humans  &lt;- as.data.frame(qqplot_inc_top_all_day02_humans)
-qqplot_inc_top_all_day13_humans  &lt;- as.data.frame(qqplot_inc_top_all_day13_humans)
+# Inc. in variance from day 0 to day 1
 
-# Plots of pi_0
+#qqplot_inc_top_all_day01_humans  &lt;- find_qqplot_inc_top_all_humans(7,10,17,20,1,6,11,16)
 
-qqplot_red_top_all_day01_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day01_humans)
-qqplot_red_top_all_day12_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day12_humans)
-qqplot_red_top_all_day23_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day23_humans)
-qqplot_red_top_all_day02_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day02_humans)
-qqplot_red_top_all_day13_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day13_humans)
-qqplot_inc_top_all_day01_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day01_humans)
-qqplot_inc_top_all_day12_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day12_humans)
-qqplot_inc_top_all_day23_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day23_humans)
-qqplot_inc_top_all_day02_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day02_humans)
-qqplot_inc_top_all_day13_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day13_humans)
+# Inc. in variance from day 1 to day 2
+
+#qqplot_inc_top_all_day12_humans  &lt;- find_qqplot_inc_top_all_humans(17,20,27,30,11,16,21,26)
+
+# Inc. in variance from day 2 to day 3
+
+#qqplot_inc_top_all_day23_humans  &lt;- find_qqplot_inc_top_all_humans(27,30,37,40,21,26,31,36)
+
+# Inc. in variance from day 0 to day 2
+
+#qqplot_inc_top_all_day02_humans  &lt;- find_qqplot_inc_top_all_humans(7,10,27,30,1,6,21,26)
+
+# Inc. in variance from day 1 to day 3
+
+#qqplot_inc_top_all_day13_humans  &lt;- find_qqplot_inc_top_all_humans(17,20,37,40,11,16,31,36)
+
+
+# Make everything a data frame
+#qqplot_red_top_all_day01_humans  &lt;- as.data.frame(qqplot_red_top_all_day01_humans)
+#qqplot_red_top_all_day12_humans  &lt;- as.data.frame(qqplot_red_top_all_day12_humans)
+#qqplot_red_top_all_day23_humans  &lt;- as.data.frame(qqplot_red_top_all_day23_humans)
+#qqplot_red_top_all_day02_humans  &lt;- as.data.frame(qqplot_red_top_all_day02_humans)
+#qqplot_red_top_all_day13_humans  &lt;- as.data.frame(qqplot_red_top_all_day13_humans)
+#qqplot_inc_top_all_day01_humans  &lt;- as.data.frame(qqplot_inc_top_all_day01_humans)
+#qqplot_inc_top_all_day12_humans  &lt;- as.data.frame(qqplot_inc_top_all_day12_humans)
+#qqplot_inc_top_all_day23_humans  &lt;- as.data.frame(qqplot_inc_top_all_day23_humans)
+#qqplot_inc_top_all_day02_humans  &lt;- as.data.frame(qqplot_inc_top_all_day02_humans)
+#qqplot_inc_top_all_day13_humans  &lt;- as.data.frame(qqplot_inc_top_all_day13_humans)
+
+
 
 # Plots of pi_0
 
-p_top_genes_red_var_humans &lt;- ggplot(qqplot_red_top_all_day01_pi0_humans, aes(x = qqplot_red_top_all_day01_pi0_humans[,1], y = qqplot_red_top_all_day01_pi0_humans[,2])) + geom_line(colour=&quot;#00B451&quot;) + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12_pi0_humans[,1], y = qqplot_red_top_all_day12_pi0_humans[,2]+0.001), colour = &quot;#00B1DB&quot;) + geom_line(aes(x = qqplot_red_top_all_day23_pi0_humans[,1], y = qqplot_red_top_all_day23_pi0_humans[,2]), colour =  &quot;#C77CFF&quot;) + geom_line(aes(x = qqplot_red_top_all_day13_pi0_humans[,1], y = qqplot_red_top_all_day13_pi0_humans[,2]-0.001), colour =  &quot;#000000&quot;) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ &quot;For Reduction in Variance Between Days (Humans|Sign. Chimps)&quot; )) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(expression( italic(hat(pi)[0]) ~ &quot;(Humans|Sign. in Chimps)&quot;)) 
-p_top_genes_red_var_humans
+#qqplot_red_top_all_day01_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day01_humans)
+#qqplot_red_top_all_day12_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day12_humans)
+#qqplot_red_top_all_day23_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day23_humans)
+#qqplot_red_top_all_day02_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day02_humans)
+#qqplot_red_top_all_day13_pi0_humans  &lt;- abs(1- qqplot_red_top_all_day13_humans)
+#qqplot_inc_top_all_day01_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day01_humans)
+#qqplot_inc_top_all_day12_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day12_humans)
+#qqplot_inc_top_all_day23_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day23_humans)
+#qqplot_inc_top_all_day02_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day02_humans)
+#qqplot_inc_top_all_day13_pi0_humans  &lt;- abs(1- qqplot_inc_top_all_day13_humans)
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
-legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-21.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>p_top_genes_inc_var_humans &lt;- ggplot(qqplot_inc_top_all_day01_pi0_humans, aes(x = qqplot_inc_top_all_day01_pi0_humans[,1], y = qqplot_inc_top_all_day01_pi0_humans[,2]+0.001)) + geom_line(colour=&quot;#00B451&quot;) + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12_pi0_humans[,1], y = qqplot_inc_top_all_day12_pi0_humans[,2]), colour = &quot;#00B1DB&quot;) + geom_line(aes(x = qqplot_inc_top_all_day23_pi0_humans[,1], y = qqplot_inc_top_all_day23_pi0_humans[,2]-0.001), colour =  &quot;#C77CFF&quot;) + geom_line(aes(x = qqplot_inc_top_all_day13_pi0_humans[,1], y = qqplot_inc_top_all_day13_pi0_humans[,2]), colour =  &quot;#000000&quot; ) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ &quot;For Increase in Variance Between Days (Humans|Significant in Chimpanzees)&quot; )) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(expression( italic(hat(pi)[0]) ~ &quot;(Humans|Significant in Chimpanzees)&quot;)) 
-p_top_genes_inc_var_humans
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
-legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-22.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Export plots
+#pi_0_across_genes &lt;- rbind(qqplot_red_top_all_day01_pi0_humans, qqplot_red_top_all_day12_pi0_humans, qqplot_red_top_all_day23_pi0_humans, qqplot_red_top_all_day13_pi0_humans)
 
-multiplot(p_top_genes_red_var_chimps,p_top_genes_red_var_humans,cols=1)
+#resp01 &lt;- t(t(rep(c(&quot;Day 0 to 1&quot;), times = 10205)))
+#resp12 &lt;- t(t(rep(c(&quot;Day 1 to 2&quot;), times = 10205)))
+#resp23 &lt;- t(t(rep(c(&quot;Day 2 to 3&quot;), times = 10205)))
+#resp13 &lt;- t(t(rep(c(&quot;Day 1 to 3&quot;), times = 10205)))
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
-legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-23.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>multiplot(p_top_genes_inc_var_chimps,p_top_genes_inc_var_humans,cols=1)
+#labels &lt;- rbind(resp01, resp12, resp23, resp13)
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
-legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-49-24.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code># Plots of pi_1
+#figS14A &lt;- cbind(pi_0_across_genes, labels)
+#colnames(figS14A) &lt;- c(&quot;N Most Significant Genes&quot;, &quot;pi_0&quot;, &quot;Day label&quot;)
+
+#write.table(figS14A, &quot;/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14A.txt&quot;, quote = FALSE, row.names = FALSE)
+
+# Plots of pi_0
+
+#p_top_genes_red_var_humans &lt;- ggplot(qqplot_red_top_all_day01_pi0_humans, aes(x = qqplot_red_top_all_day01_pi0_humans[,1], y = qqplot_red_top_all_day01_pi0_humans[,2])) + geom_line(colour=&quot;#00B451&quot;) + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12_pi0_humans[,1], y = qqplot_red_top_all_day12_pi0_humans[,2]+0.001), colour = &quot;#00B1DB&quot;) + geom_line(aes(x = qqplot_red_top_all_day23_pi0_humans[,1], y = qqplot_red_top_all_day23_pi0_humans[,2]), colour =  &quot;#C77CFF&quot;) + geom_line(aes(x = qqplot_red_top_all_day13_pi0_humans[,1], y = qqplot_red_top_all_day13_pi0_humans[,2]-0.001), colour =  &quot;#000000&quot;) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ &quot;For Reduction in Variance Between Days (Humans|Sign. Chimps)&quot; )) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(expression( italic(hat(pi)[0]) ~ &quot;(Humans|Sign. in Chimps)&quot;)) 
+#p_top_genes_red_var_humans
+
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+#legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)
+
+#p_top_genes_inc_var_humans &lt;- ggplot(qqplot_inc_top_all_day01_pi0_humans, aes(x = qqplot_inc_top_all_day01_pi0_humans[,1], y = qqplot_inc_top_all_day01_pi0_humans[,2]+0.001)) + geom_line(colour=&quot;#00B451&quot;) + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12_pi0_humans[,1], y = qqplot_inc_top_all_day12_pi0_humans[,2]), colour = &quot;#00B1DB&quot;) + geom_line(aes(x = qqplot_inc_top_all_day23_pi0_humans[,1], y = qqplot_inc_top_all_day23_pi0_humans[,2]-0.001), colour =  &quot;#C77CFF&quot;) + geom_line(aes(x = qqplot_inc_top_all_day13_pi0_humans[,1], y = qqplot_inc_top_all_day13_pi0_humans[,2]), colour =  &quot;#000000&quot; ) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ &quot;For Increase in Variance Between Days (Humans|Significant in Chimpanzees)&quot; )) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(expression( italic(hat(pi)[0]) ~ &quot;(Humans|Significant in Chimpanzees)&quot;)) 
+#p_top_genes_inc_var_humans
+
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+#legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)
+
+
+# Export plots
+
+#multiplot(p_top_genes_red_var_chimps,p_top_genes_red_var_humans,cols=1)
+
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+#legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0,    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)
+
+#multiplot(p_top_genes_inc_var_chimps,p_top_genes_inc_var_humans,cols=1)
+
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = &quot;n&quot;, bty = &quot;n&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+#legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quot;Day 2 to 3&quot;, &quot;Day 1 to 3&quot;), xpd = TRUE, horiz = FALSE, inset = c(0,    0), bty = &quot;n&quot;, pch = c(15, 15, 15, 15), col = c(&quot;#00B451&quot;, &quot;#00B1DB&quot;,  &quot;#C77CFF&quot;,&quot;#000000&quot; ), cex = 1)
+
+# Plots of pi_1
 
 # Plot reduction in variation
 #ggplot(qqplot_red_top_all_day01, aes(x = qqplot_red_top_all_day01[,1], y = qqplot_red_top_all_day01[,2])) + geom_line(colour=&quot;#E69F00&quot;) + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12[,1], y = qqplot_red_top_all_day12[,2]), colour = &quot;#000000&quot;) + geom_line(aes(x = qqplot_red_top_all_day23[,1], y = qqplot_red_top_all_day23[,2]), colour =  &quot;#009E73&quot;) + geom_line(aes(x = qqplot_red_top_all_day13[,1], y = qqplot_red_top_all_day13[,2]), colour =  &quot;#0072B2&quot;) + ggtitle(expression( italic(hat(pi)[1]) ~ &quot;For Reduction in Variance Between Days (Humans|Significant in Chimpanzees)&quot; )) + xlab(&quot;N Most Significant Genes in Chimpanzees&quot;) + ylab(expression( italic(hat(pi)[1]) ~ &quot;(Humans|Significant in Chimpanzees)&quot;)) 
@@ -5929,56 +6648,56 @@ legend(&quot;right&quot;, c(&quot;Day 0 to 1&quot;, &quot;Day 1 to 2&quot;, &quo
 <h3>Note: code to make other figures</h3>
 <pre class="r"><code># 6A) 
 multiplot(p1s,p3s,p2s,p3_13s, cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-1.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># 6B)
 multiplot(p1s,p3s,p2s,p3_13s, cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-2.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># 6C-F)
 
 multiplot(p1_05, p2_inc_05, p5_05,  p6_inc_05, cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-3.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF 12A) 
 multiplot(p1,p2,p3,p3_13, cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-4.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF12 B)
 multiplot(p4,p5,p6,p6_13, cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-5.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF13 A)
 multiplot(p2_05, p3_05,p4_05,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-6.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF13 B)
 multiplot(p6_05, p7_05,p8_05,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-7.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF13 C)
 multiplot(p1_inc_05, p3_inc_05,p4_inc_05,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-8.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF13 D)
 multiplot(p5_inc_05, p7_inc_05,p8_inc_05,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-9.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF14 E)
 multiplot(p1_01, p3_01,p4_01,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-10.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-10.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF14 F)
 multiplot(p5_01, p6_01, p7_01,p8_01,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-11.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-11.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF14 G)
 multiplot(p1_inc_01, p2_inc_01, p3_inc_01,p4_inc_01,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-12.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-12.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF14 H)
 multiplot(p5_inc_01, p6_inc_01, p7_inc_01,p8_inc_01,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-13.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-13.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF14 I)
 multiplot(p1_10, p2_10, p3_10,p4_10,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-14.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-14.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF14 J)
 multiplot(p5_10, p6_10, p7_10,p8_10,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-15.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-15.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF14 K)
 multiplot(p1_inc_10, p2_inc_10, p3_inc_10,p4_inc_10,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-16.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-16.png" width="672" style="display: block; margin: auto;" /></p>
 <pre class="r"><code># SF14 L)
 multiplot(p5_inc_10, p6_inc_10, p7_inc_10,p8_inc_10,cols=2)</code></pre>
-<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-50-17.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/Temporal_changes_variation_cyclicloess.Rmd/unnamed-chunk-59-17.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="gene-names-showing-reduction-increase-in-variance-from-days-0-to-1-days-1-to-2" class="section level3">
 <h3>Gene names showing reduction (increase) in variance from days 0 to 1 (days 1 to 2)</h3>
@@ -5998,7 +6717,7 @@ length(which(chimp_var_pval &lt; 0.05))</code></pre>
 <pre class="r"><code>chimp_red_01 &lt;- as.data.frame(chimp_var_pval[which(chimp_var_pval &lt; 0.05), ])
 dim(chimp_red_01)</code></pre>
 <pre><code>[1] 664   1</code></pre>
-<pre class="r"><code>write.table(chimp_red_01,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/red_chimps_day0_1.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)
+<pre class="r"><code>#write.table(chimp_red_01,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/red_chimps_day0_1.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)
 
 
 # Reduction Day 0 to 1 humans
@@ -6016,7 +6735,7 @@ length(which(human_var_pval &lt; 0.05))</code></pre>
 <pre class="r"><code>human_red_01 &lt;- as.data.frame(human_var_pval[which(human_var_pval &lt; 0.05), ])
 dim(human_red_01)</code></pre>
 <pre><code>[1] 2309    1</code></pre>
-<pre class="r"><code>write.table(human_red_01,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/red_human_day0_1.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)
+<pre class="r"><code>#write.table(human_red_01,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/red_human_day0_1.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)
 
 
 # Increase Day 1 to 2 chimps
@@ -6052,7 +6771,7 @@ length(which(human_var_pval &lt; 0.05))</code></pre>
 <pre class="r"><code>human_inc_12 &lt;- as.data.frame(human_var_pval[which(human_var_pval &lt; 0.05), ])
 dim(human_inc_12)</code></pre>
 <pre><code>[1] 1968    1</code></pre>
-<pre class="r"><code>write.table(human_inc_12,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/inc_human_day1_2.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)</code></pre>
+<pre class="r"><code>#write.table(human_inc_12,file=&quot;~/Desktop/Endoderm_TC/ashlar-trial/data/inc_human_day1_2.txt&quot;,sep=&quot;\t&quot;, col.names = T, row.names = T)</code></pre>
 </div>
 </div>
 </div>

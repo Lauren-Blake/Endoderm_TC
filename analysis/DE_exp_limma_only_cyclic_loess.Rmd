@@ -1732,7 +1732,7 @@ Now, we can subset and compare 3 humans to 3 chimps that have the lowest high co
 
 FDR_level <- 0.05
 
-purity_info <- c(4, 6:7, 9, 13, 15, 20, 22, 23, 25, 27, 29, 36,38, 39, 43,45, 47, 49,54, 55, 57,61,63)
+purity_info <- c(4, 6:7, 9, 13, 15, 17, 20, 22, 25, 27, 29, 36,38, 39, 43,45, 47, 49,54, 55, 57,61,63)
 
 purity_samples <- After_removal_sample_info[purity_info, ]
 
@@ -1810,10 +1810,10 @@ HvCday3 =topTable(fit2, coef=4, adjust="BH", number=Inf, sort.by="none")
 dim(HvCday3[which(HvCday3$adj.P.Val < 0.05), important_columns])                  
 HvCday3_adj_pval <- HvCday3[, important_columns]    
 
-# 2787
-# 2214
-# 2724
-# 3013
+# 2894
+# 2375
+# 2838
+# 3034
 
 
 ##################### VENN DIAGRAMS ############################

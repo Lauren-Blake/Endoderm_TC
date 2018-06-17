@@ -871,6 +871,11 @@ p1s <- ggplot(chimp_var_pval_red01, aes(chimp_var_pval_red01[,1])) + geom_histog
              
 p1s
 
+pval <- chimp_var_pval_red01[,1]
+resp <- rep(c("Days 0 to 1"), times = 10304)
+line <- rep(c("0.73"), times = 10304)
+figS12A <- cbind(pval, resp, line)
+
 ```
 
 
@@ -936,6 +941,12 @@ p2s <- ggplot(chimp_var_pval_red12, aes(chimp_var_pval_red12[,1])) + geom_histog
              
 p2s
 
+pval <- chimp_var_pval_red12[,1]
+resp <- rep(c("Days 1 to 2"), times = 10304)
+line <- rep(c("NA"), times = 10304)
+figS12A_fig <- cbind(pval, resp, line)
+
+figS12A <- rbind(figS12A, figS12A_fig)
 ```
 
 #### Testing chimps reduction in variance from days 2 to 3
@@ -997,6 +1008,13 @@ p3s <- ggplot(chimp_var_pval_red23, aes(chimp_var_pval_red23[,1])) + geom_histog
   scale_x_continuous(limits = c(0,1)) + ggtitle("Days 2 to 3") + theme_bw() +  labs(x = "Unadjusted p-values") + labs(y = "Density")   + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold")) + bjp
              
 p3s
+
+pval <- chimp_var_pval_red23[,1]
+resp <- rep(c("Days 2 to 3"), times = 10304)
+line <- rep(c("NA"), times = 10304)
+figS12A_fig <- cbind(pval, resp, line)
+
+figS12A <- rbind(figS12A, figS12A_fig)
 ```
 
 #### Testing chimps reduction in variance from days 1 to 3
@@ -1057,6 +1075,15 @@ p3_13s <- ggplot(chimp_var_pval_red13, aes(chimp_var_pval_red13[,1])) + geom_his
   labs(x = "Unadjusted p-values") + labs(y = "Density") + ggtitle("Days 1 to 3")  + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold")) + bjp
              
 p3_13s
+
+pval <- chimp_var_pval_red13[,1]
+resp <- rep(c("Days 1 to 3"), times = 10304)
+line <- rep(c("NA"), times = 10304)
+figS12A_fig <- cbind(pval, resp, line)
+
+figS12A <- rbind(figS12A, figS12A_fig)
+colnames(figS12A) <- c("pval", "days", "line_value")
+write.table(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS12A.txt", quote = FALSE, row.names = FALSE)
 ```
 
 
@@ -1119,6 +1146,12 @@ p4s <- ggplot(human_var_pval_red01, aes(human_var_pval_red01[,1])) + geom_histog
   annotate("text", label='bold(bolditalic(hat(pi)[0][", human"])=="0.17")', parse=TRUE, x=0.80, y=(2), size = 6, colour = "#00A4F4") + bjp
              
 p4s
+
+pval <- human_var_pval_red01[,1]
+resp <- rep(c("Days 0 to 1"), times = 10304)
+line <- rep(c("0.23"), times = 10304)
+figS12A <- cbind(pval, resp, line)
+
 ```
 
 
@@ -1179,6 +1212,14 @@ p5s <- ggplot(human_var_pval_red12, aes(human_var_pval_red12[,1])) + geom_histog
   scale_x_continuous(limits = c(0,1)) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  + scale_y_continuous(labels=scaleFUN) + theme(plot.title = element_text(face = "bold")) + bjp
              
 p5s
+
+pval <- human_var_pval_red12[,1]
+resp <- rep(c("Days 1 to 2"), times = 10304)
+line <- rep(c("NA"), times = 10304)
+figS12A_fig <- cbind(pval, resp, line)
+
+figS12A <- rbind(figS12A, figS12A_fig)
+
 ```
 
 
@@ -1241,6 +1282,13 @@ p6s <- ggplot(human_var_pval_red23, aes(human_var_pval_red23[,1])) + geom_histog
              
 p6s
 
+pval <- human_var_pval_red23[,1]
+resp <- rep(c("Days 2 to 3"), times = 10304)
+line <- rep(c("NA"), times = 10304)
+figS12A_fig <- cbind(pval, resp, line)
+
+figS12A <- rbind(figS12A, figS12A_fig)
+
 ```
 
 #### Testing humans reduction in variance from days 1 to 3
@@ -1301,6 +1349,15 @@ p6_13s <- ggplot(human_var_pval_red13, aes(human_var_pval_red13[,1])) + geom_his
 
              
 p6_13s
+
+pval <- human_var_pval_red13[,1]
+resp <- rep(c("Days 1 to 3"), times = 10304)
+line <- rep(c("NA"), times = 10304)
+figS12A_fig <- cbind(pval, resp, line)
+
+figS12A <- rbind(figS12A, figS12A_fig)
+
+write.table(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS12B.txt", quote = FALSE, row.names = FALSE)
 ```
 
 #### Plot reduction in variation (pi_0 determined by a bootstrap method)
@@ -2162,6 +2219,13 @@ p2_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p2_05
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Day 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+line <- rep(c("NA"), times = nrow(pval_c)+nrow(pval_h))
+figS12A <- cbind(pval_ch, resp, line)
+
 # Day 2 to 3
 
 # Obtain pvalues
@@ -2214,6 +2278,15 @@ p3_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.9")', parse=TRUE, x=0.8, y=(pi0est_chimps-0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.8, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_05
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Day 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+line <- rep(c("NA"), times = nrow(pval_c)+nrow(pval_h))
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
 
 # Day 1 to 3
 
@@ -2268,6 +2341,16 @@ p4_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p4_05
 
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Day 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+line <- rep(c("NA"), times = nrow(pval_c)+nrow(pval_h))
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS13A.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ### Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.05)
@@ -2326,6 +2409,14 @@ p1_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.3), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.15), size = 6)
 
 p1_inc_05
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Day 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
+line <- rep(c("NA"), times = nrow(pval_c)+nrow(pval_h))
+figS12A <- cbind(pval_ch, resp, line)
+
 
 # Day 1 to 2
 
@@ -2431,6 +2522,23 @@ p3_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p3_inc_05
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Day 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.37"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.24"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+
+write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS13C.csv", quote = FALSE, row.names = FALSE)
+
 # Day 1 to 3
 
 # Obtain pvalues
@@ -2482,6 +2590,20 @@ p4_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.51")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.08), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.39")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.08), size = 6)
 
 p4_inc_05
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.51"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.39"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
 ```
 
 
@@ -2731,6 +2853,20 @@ p6_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p6_05
 
+pval_h <- humans[,1:2]
+pval_c <- chimps[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Day 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
+
+
 # Day 2 to 3
 
 # Obtain pvalues
@@ -2784,6 +2920,21 @@ p7_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p7_05
 
+pval_h <- humans[,1:2]
+pval_c <- chimps[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Day 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS13B.csv", quote = FALSE, row.names = FALSE)
 
 # Day 1 to 3
 
@@ -2837,6 +2988,20 @@ p8_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.30), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.12), size = 6)
 
 p8_05
+
+pval_h <- humans[,1:2]
+pval_c <- chimps[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Day 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
 
 multiplot(p1_05,p5_05,p2_05,p6_05,p3_05,p7_05,p4_05,p8_05,cols=4)
 
@@ -2900,6 +3065,19 @@ p5_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.32), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p5_inc_05
+
+pval_h <- humans[,1:2]
+pval_c <- chimps[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Day 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
 
 
 # Day 1 to 2
@@ -3008,6 +3186,22 @@ p7_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p7_inc_05
 
+pval_h <- humans[,1:2]
+pval_c <- chimps[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Day 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.95"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.85"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS13D.csv", quote = FALSE, row.names = FALSE)
+
 
 # Day 1 to 3
 
@@ -3060,6 +3254,20 @@ p8_inc_05 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.20")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.18")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.16), size = 6)
 
 p8_inc_05
+
+pval_h <- humans[,1:2]
+pval_c <- chimps[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Day 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.20"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.18"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
 
 multiplot(p1_inc_05,p5_inc_05,p2_inc_05,p6_inc_05,p3_inc_05,p7_inc_05,p4_inc_05,p8_inc_05,cols=4)
 
@@ -3344,14 +3552,25 @@ pal <- c("#00A4F4", "#E77642", "white")
 p1_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
   geom_density(show.legend = F, alpha = 1) +
   scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
-  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density") + scale_y_continuous(labels=scaleFUN) +
+  theme_bw() +  labs(title = "Day 0 to 1") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density")  +
   geom_hline(yintercept = pi0est_chimps_given_humans, size = 2.5) + 
   geom_hline(yintercept = pi0est_chimps, size = 2.5, color = "#E77642") +       
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.73")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.48")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p1_01
 
-   
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.73"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.48"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
 
 # Day 1 to 2
 
@@ -3359,6 +3578,42 @@ p1_01
 # Obtain pvalues
 chimp_p_values_gen <- as.data.frame(qqplot_red_day12[1])
 shared_p_values_gen <- as.data.frame(qqplot_red_day12[2])
+
+labels_c <- array("Chimpanzee", dim = c(10304,1))
+labels_h <- array("Shared (Chimpanzee|Significant in Humans)", dim = c(as.data.frame(qqplot_red_day12[[3]][2]),1))
+
+chimps <- cbind(labels_c, chimp_p_values_gen)
+colnames(chimps) <- c("Species", "pval")
+humans <- cbind(labels_h, shared_p_values_gen)
+colnames(humans) <- c("Species", "pval")
+
+# Combine the two
+
+all_pval <- rbind(chimps[,1:2], humans[,1:2])
+
+pal <- c("#00A4F4", "#E77642", "white") 
+
+p1_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=pal[2:3]) +
+  geom_density(show.legend = F, alpha = 1) +
+  scale_x_continuous(limits = c(0,1), breaks = seq(0,1,0.25)) +
+  theme_bw() +  labs(title = "Days 1 to 2") + theme(plot.title = element_text(face = "bold")) +  labs(x = "Unadjusted p-values") + labs(y = "Density")
+
+p1_01
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
 
 
 # Pi_0 estimate for the chimps
@@ -3376,6 +3631,7 @@ pi1est_chimps
 # pi0est_chimps_given_humans <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
 
 # Note: There's an issue with estimating pi_0 from only 15 points. 
+
 
 # Day 2 to 3
 
@@ -3430,6 +3686,21 @@ p3_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p3_01
 
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
 # Day 1 to 3
 
 # Obtain pvalues
@@ -3483,9 +3754,25 @@ p4_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p4_01
 
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14E_with_days12.csv", quote = FALSE, row.names = FALSE)
 ```
 
-### Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.05)
+### Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.01)
 
 ```{r}
 ############### Increase in Variation ############
@@ -3498,23 +3785,23 @@ shared_p_values_gen <- as.data.frame(qqplot_inc_day01[2])
 
 # Pi_0 estimate for the chimps
 
-pi0est_chimps <- qvalue(p=chimp_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_chimps
+#pi0est_chimps <- qvalue(p=chimp_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_chimps
 
 # Pi_1 estimate for the chimps
 
-pi1est_chimps <- 1 - pi0est_chimps
-pi1est_chimps
+#pi1est_chimps <- 1 - pi0est_chimps
+#pi1est_chimps
 
 # Pi_0 estimate for the chimps given significant in the humans
 
-pi0est_chimps_given_humans <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_chimps_given_humans
+#pi0est_chimps_given_humans <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_chimps_given_humans
 
 # Pi_1 estimate for the humans
 
-pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
-pi1est_chimps_given_humans
+#pi1est_chimps_given_humans <- 1 - pi0est_chimps_given_humans
+#pi1est_chimps_given_humans
 
 # Let's overlap the two histograms
 
@@ -3542,6 +3829,23 @@ p1_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p1_inc_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
+
+
+```
+
+```{r}
 # Day 1 to 2
 
 # Obtain pvalues
@@ -3594,6 +3898,24 @@ p2_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p2_inc_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.52"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.45"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+
+```
+
+```{r}
 # Day 2 to 3
 
 # Obtain pvalues
@@ -3646,6 +3968,25 @@ p3_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p3_inc_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.37"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.36"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+
+```
+
+```{r}
+
 # Day 1 to 3
 
 # Obtain pvalues
@@ -3697,6 +4038,23 @@ p4_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.51")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.08), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.24")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.08), size = 6)
 
 p4_inc_01
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.51"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.24"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14I.csv", quote = FALSE, row.names = FALSE)
+
 ```
 
 
@@ -3806,7 +4164,24 @@ p5_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p5_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
 
+line1 <- as.data.frame(rep(c("0.17"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.15"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
+
+
+
+```
+
+```{r}
 # Day 1 to 2
 
 # Obtain pvalues
@@ -3816,23 +4191,26 @@ shared_p_values_gen <- as.data.frame(qqplot_red_day12[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans
+#pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
 # Pi_1 estimate for the humans
 
-pi1est_humans <- 1 - pi0est_humans
-pi1est_humans
+#pi1est_humans <- 1 - pi0est_humans
+#pi1est_humans
 
 # Pi_0 estimate for the chimps given significant in the humans
 
-pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps
+#pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", #fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
 
 # Pi_1 estimate for the humans
 
-pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps
+#pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
+
+# Note: There's an issue with estimating pi_0 from only 15 points. 
+
 
 # Let's overlap the two histograms
 
@@ -3860,6 +4238,25 @@ p6_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p6_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+
+
+```
+
+```{r}
 # Day 2 to 3
 
 # Obtain pvalues
@@ -3869,23 +4266,23 @@ shared_p_values_gen <- as.data.frame(qqplot_red_day23[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans
+#pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
 # Pi_1 estimate for the humans
 
-pi1est_humans <- 1 - pi0est_humans
-pi1est_humans
+#pi1est_humans <- 1 - pi0est_humans
+#pi1est_humans
 
 # Pi_0 estimate for the chimps given significant in the humans
 
-pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps
+#pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
 
 # Pi_1 estimate for the humans
 
-pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps
+#pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
 
 # Let's overlap the two histograms
 
@@ -3913,6 +4310,24 @@ p7_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p7_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+
+```
+
+```{r}
 
 # Day 1 to 3
 
@@ -3923,23 +4338,23 @@ shared_p_values_gen <- as.data.frame(qqplot_red_day13[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans
+#pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
 # Pi_1 estimate for the humans
 
-pi1est_humans <- 1 - pi0est_humans
-pi1est_humans
+#pi1est_humans <- 1 - pi0est_humans
+#pi1est_humans
 
 # Pi_0 estimate for the chimps given significant in the humans
 
-pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps
+#pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
 
 # Pi_1 estimate for the humans
 
-pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps
+#pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
 
 # Let's overlap the two histograms
 
@@ -3967,10 +4382,27 @@ p8_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p8_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14G.csv", quote = FALSE, row.names = FALSE)
+
 multiplot(p1_01,p5_01,p3_01,p6_01, p4_01,p7_01,p8_01,cols=4)
 #multiplot(p1_01,p3_01,p4_01,p5_01,p6_01,p7_01,p8_01,cols=2)
 
 ```
+
 
 ### Estimates of pi0 and pi1 for increase of variation in humans conditioned on significance in chimps (p = 0.01)
 
@@ -3987,23 +4419,23 @@ shared_p_values_gen <- as.data.frame(qqplot_inc_day01[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans
+#pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
 # Pi_1 estimate for the humans
 
-pi1est_humans <- 1 - pi0est_humans
-pi1est_humans
+#pi1est_humans <- 1 - pi0est_humans
+#pi1est_humans
 
 # Pi_0 estimate for the chimps given significant in the humans
 
-pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps
+#pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
 
 # Pi_1 estimate for the humans
 
-pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps
+#pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
 
 # Let's overlap the two histograms
 
@@ -4031,7 +4463,23 @@ p5_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p5_inc_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
 
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
+
+
+```
+
+```{r}
 # Day 1 to 2
 
 # Obtain pvalues
@@ -4041,23 +4489,23 @@ shared_p_values_gen <- as.data.frame(qqplot_inc_day12[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans
+#pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
 # Pi_1 estimate for the humans
 
-pi1est_humans <- 1 - pi0est_humans
-pi1est_humans
+#pi1est_humans <- 1 - pi0est_humans
+#pi1est_humans
 
 # Pi_0 estimate for the chimps given significant in the humans
 
-pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps
+#pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
 
 # Pi_1 estimate for the humans
 
-pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps
+#pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
 
 # Let's overlap the two histograms
 
@@ -4085,6 +4533,25 @@ p6_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p6_inc_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.21"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.07"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+
+
+```
+
+```{r}
 # Day 2 to 3
 
 # Obtain pvalues
@@ -4094,23 +4561,23 @@ shared_p_values_gen <- as.data.frame(qqplot_inc_day23[2])
 
 # Pi_0 estimate for the humans
 
-pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans
+#pi0est_humans <- qvalue(p= human_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans
 
 # Pi_1 estimate for the humans
 
-pi1est_humans <- 1 - pi0est_humans
-pi1est_humans
+#pi1est_humans <- 1 - pi0est_humans
+#pi1est_humans
 
 # Pi_0 estimate for the chimps given significant in the humans
 
-pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
-pi0est_humans_given_chimps
+#pi0est_humans_given_chimps <- qvalue(p=shared_p_values_gen, pi0.method="smoother", fdr.level=NULL, robust=TRUE)$pi0
+#pi0est_humans_given_chimps
 
 # Pi_1 estimate for the humans
 
-pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
-pi1est_humans_given_chimps
+#pi1est_humans_given_chimps <- 1 - pi0est_humans_given_chimps
+#pi1est_humans_given_chimps
 
 # Let's overlap the two histograms
 
@@ -4139,6 +4606,25 @@ p7_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 p7_inc_01
 
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("1"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.85"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+
+
+```
+
+```{r}
 # Day 1 to 3
 
 # Obtain pvalues
@@ -4191,14 +4677,30 @@ p8_inc_01 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p8_inc_01
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.20"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.13"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14K.csv", quote = FALSE, row.names = FALSE)
+
 multiplot(p1_inc_01,p5_inc_01,p2_inc_01,p6_inc_01,p3_inc_01,p7_inc_01,p4_inc_01,p8_inc_01,cols=4)
 
 ```
 
 
-### Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.01)
+## Estimates of pi0 and pi1 for reduction of variation in chimps conditioned on significance in humans (p = 0.1)
 
-### Changes in variance in chimp samples (p-value cutoff 0.01)
+### Changes in variance in chimp samples (p-value cutoff 0.1)
 
 ```{r}
 # Reduction in variance from day 0 to day 1 chimps
@@ -4304,6 +4806,18 @@ p1_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p1_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.73"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.52"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
    
 
 # Day 1 to 2
@@ -4360,6 +4874,20 @@ p2_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p2_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
 # Day 2 to 3
 
 # Obtain pvalues
@@ -4412,6 +4940,20 @@ p3_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.9")', parse=TRUE, x=0.8, y=(pi0est_chimps-0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.8, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p3_10
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
 
 # Day 1 to 3
 
@@ -4466,6 +5008,21 @@ p4_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p4_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14F.csv", quote = FALSE, row.names = FALSE)
 ```
 
 ### Estimates of pi0 and pi1 for increase of variation in chimps conditioned on significance in humans (p = 0.10)
@@ -4525,6 +5082,19 @@ p1_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p1_inc_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
+
 # Day 1 to 2
 
 # Obtain pvalues
@@ -4576,6 +5146,20 @@ p2_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.52")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.07), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.33")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans+0.07), size = 6)
 
 p2_inc_10
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.52"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.33"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
 
 # Day 2 to 3
 
@@ -4629,6 +5213,21 @@ p3_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p3_inc_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.37"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.35"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+
 # Day 1 to 3
 
 # Obtain pvalues
@@ -4680,6 +5279,22 @@ p4_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", chimps"])=="0.51")', parse=TRUE, x=0.2, y=(pi0est_chimps+0.08), colour = "#E77642", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.42")', parse=TRUE, x=0.2, y=(pi0est_chimps_given_humans-0.08), size = 6)
 
 p4_inc_10
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_c, pval_h)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.51"), times = nrow(pval_c)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.42"), times = nrow(pval_h)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14J.csv", quote = FALSE, row.names = FALSE)
 ```
 
 
@@ -4789,6 +5404,19 @@ p5_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p5_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.17"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.15"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
+
 
 # Day 1 to 2
 
@@ -4843,6 +5471,20 @@ p6_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p6_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
 # Day 2 to 3
 
 # Obtain pvalues
@@ -4896,6 +5538,19 @@ p7_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
 
 p7_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
 
 # Day 1 to 3
 
@@ -4949,6 +5604,22 @@ p8_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(values=
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="1")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.15), size = 6)
 
 p8_10
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14H.csv", quote = FALSE, row.names = FALSE)
 
 multiplot(p1_10,p5_10,p2_10,p6_10,p3_10,p7_10,p4_10,p8_10,cols=4)
 
@@ -5013,6 +5684,19 @@ p5_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p5_inc_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 0 to 1"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("NA"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("NA"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A <- cbind(pval_ch, resp, line)
+
 
 # Day 1 to 2
 
@@ -5067,6 +5751,20 @@ p6_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p6_inc_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 1 to 2"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.21"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.10"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
 # Day 2 to 3
 
 # Obtain pvalues
@@ -5120,6 +5818,19 @@ p7_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
 
 p7_inc_10
 
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 2 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("1"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.85"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
 
 # Day 1 to 3
 
@@ -5172,6 +5883,22 @@ p8_inc_10 <- ggplot(all_pval, aes(pval, fill = Species)) + scale_fill_manual(val
   annotate("text", label= 'bold(bolditalic(hat(pi)[0][", humans"])=="0.20")', parse=TRUE, x=0.2, y=(pi0est_humans+0.3), colour = "#00A4F4", size = 6) +  annotate("text", label = 'bold(bolditalic(hat(pi)[0][", shared"])=="0.16")', parse=TRUE, x=0.2, y=(pi0est_humans_given_chimps+0.17), size = 6)
 
 p8_inc_10
+
+pval_c <- chimps[,1:2]
+pval_h <- humans[,1:2]
+pval_ch <- rbind(pval_h, pval_c)
+resp <- rep(c("Days 1 to 3"), times = nrow(pval_c)+nrow(pval_h))
+
+line1 <- as.data.frame(rep(c("0.20"), times = nrow(pval_h)))
+colnames(line1) <- c("line")
+line2 <- as.data.frame(rep(c("0.16"), times = nrow(pval_c)))
+colnames(line2) <- c("line")
+line <- rbind(line1, line2)
+
+figS12A_fig <- cbind(pval_ch, resp, line)
+figS12A <- rbind(figS12A, figS12A_fig)
+
+#write.csv(figS12A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14L.csv", quote = FALSE, row.names = FALSE)
 
 multiplot(p1_inc_10,p5_inc_10,p2_inc_10,p6_inc_10,p3_inc_10,p7_inc_10,p4_inc_10,p8_inc_10,cols=4)
 
@@ -5324,89 +6051,120 @@ find_qqplot_inc_top_all_sharing_chimps <- function(chimp_begin_column_tm1, chimp
 
 # Reduction in variance from day 0 to day 1
 
-qqplot_red_top_all_day01 <- find_qqplot_red_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
+#qqplot_red_top_all_day01 <- find_qqplot_red_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
 
 # Reduction in variance from day 1 to day 2
 
-qqplot_red_top_all_day12 <- find_qqplot_red_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
+#qqplot_red_top_all_day12 <- find_qqplot_red_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
 
 # Reduction in variance from day 2 to day 3
 
-qqplot_red_top_all_day23 <- find_qqplot_red_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
+#qqplot_red_top_all_day23 <- find_qqplot_red_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
 
 # Reduction in variance from day 0 to day 2
 
-qqplot_red_top_all_day02 <- find_qqplot_red_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
+#qqplot_red_top_all_day02 <- find_qqplot_red_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
 
 # Reduction in variance from day 1 to day 3
 
-qqplot_red_top_all_day13 <- find_qqplot_red_top_all_sharing_chimps(17,20,37,40,11,16,31,36)
+#qqplot_red_top_all_day13 <- find_qqplot_red_top_all_sharing_chimps(17,20,37,40,11,16,31,36)
 
 # Inc. in variance from day 0 to day 1
 
-qqplot_inc_top_all_day01 <- find_qqplot_inc_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
+#qqplot_inc_top_all_day01 <- find_qqplot_inc_top_all_sharing_chimps(7,10,17,20,1,6,11,16)
 
 # Inc. in variance from day 1 to day 2
 
-qqplot_inc_top_all_day12 <- find_qqplot_inc_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
+#qqplot_inc_top_all_day12 <- find_qqplot_inc_top_all_sharing_chimps(17,20,27,30,11,16,21,26)
 
 # Inc. in variance from day 2 to day 3
 
-qqplot_inc_top_all_day23 <- find_qqplot_inc_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
+#qqplot_inc_top_all_day23 <- find_qqplot_inc_top_all_sharing_chimps(27,30,37,40,21,26,31,36)
 
 # Inc. in variance from day 0 to day 2
 
-qqplot_inc_top_all_day02 <- find_qqplot_inc_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
+#qqplot_inc_top_all_day02 <- find_qqplot_inc_top_all_sharing_chimps(7,10,27,30,1,6,21,26)
 
 # Inc. in variance from day 1 to day 3
 
-qqplot_inc_top_all_day13 <- find_qqplot_inc_top_all_sharing_chimps(17,20,37,40,11,16,31,36)
+#qqplot_inc_top_all_day13 <- find_qqplot_inc_top_all_sharing_chimps(17,20,37,40,11,16,31,36)
 
 # Make everything a data frame
-qqplot_red_top_all_day01 <- as.data.frame(qqplot_red_top_all_day01)
-qqplot_red_top_all_day12 <- as.data.frame(qqplot_red_top_all_day12)
-qqplot_red_top_all_day23 <- as.data.frame(qqplot_red_top_all_day23)
-qqplot_red_top_all_day02 <- as.data.frame(qqplot_red_top_all_day02)
-qqplot_red_top_all_day13 <- as.data.frame(qqplot_red_top_all_day13)
-qqplot_inc_top_all_day01 <- as.data.frame(qqplot_inc_top_all_day01)
-qqplot_inc_top_all_day12 <- as.data.frame(qqplot_inc_top_all_day12)
-qqplot_inc_top_all_day23 <- as.data.frame(qqplot_inc_top_all_day23)
-qqplot_inc_top_all_day02 <- as.data.frame(qqplot_inc_top_all_day02)
-qqplot_inc_top_all_day13 <- as.data.frame(qqplot_inc_top_all_day13)
+#qqplot_red_top_all_day01 <- as.data.frame(qqplot_red_top_all_day01)
+#qqplot_red_top_all_day12 <- as.data.frame(qqplot_red_top_all_day12)
+#qqplot_red_top_all_day23 <- as.data.frame(qqplot_red_top_all_day23)
+#qqplot_red_top_all_day02 <- as.data.frame(qqplot_red_top_all_day02)
+#qqplot_red_top_all_day13 <- as.data.frame(qqplot_red_top_all_day13)
+#qqplot_inc_top_all_day01 <- as.data.frame(qqplot_inc_top_all_day01)
+#qqplot_inc_top_all_day12 <- as.data.frame(qqplot_inc_top_all_day12)
+#qqplot_inc_top_all_day23 <- as.data.frame(qqplot_inc_top_all_day23)
+#qqplot_inc_top_all_day02 <- as.data.frame(qqplot_inc_top_all_day02)
+#qqplot_inc_top_all_day13 <- as.data.frame(qqplot_inc_top_all_day13)
 
 # Plots of pi_0
 
-qqplot_red_top_all_day01_pi0 <- abs(1- qqplot_red_top_all_day01)
-qqplot_red_top_all_day12_pi0 <- abs(1- qqplot_red_top_all_day12)
-qqplot_red_top_all_day23_pi0 <- abs(1- qqplot_red_top_all_day23)
-qqplot_red_top_all_day02_pi0 <- abs(1- qqplot_red_top_all_day02)
-qqplot_red_top_all_day13_pi0 <- abs(1- qqplot_red_top_all_day13)
-qqplot_inc_top_all_day01_pi0 <- abs(1- qqplot_inc_top_all_day01)
-qqplot_inc_top_all_day12_pi0 <- abs(1- qqplot_inc_top_all_day12)
-qqplot_inc_top_all_day23_pi0 <- abs(1- qqplot_inc_top_all_day23)
-qqplot_inc_top_all_day02_pi0 <- abs(1- qqplot_inc_top_all_day02)
-qqplot_inc_top_all_day13_pi0 <- abs(1- qqplot_inc_top_all_day13)
+#qqplot_red_top_all_day01_pi0 <- abs(1- qqplot_red_top_all_day01)
+#qqplot_red_top_all_day12_pi0 <- abs(1- qqplot_red_top_all_day12)
+#qqplot_red_top_all_day23_pi0 <- abs(1- qqplot_red_top_all_day23)
+#qqplot_red_top_all_day02_pi0 <- abs(1- qqplot_red_top_all_day02)
+#qqplot_red_top_all_day13_pi0 <- abs(1- qqplot_red_top_all_day13)
+
+#pi_0_across_genes <- rbind(qqplot_red_top_all_day01_pi0, qqplot_red_top_all_day12_pi0, qqplot_red_top_all_day23_pi0, qqplot_red_top_all_day13_pi0)
+
+#resp01 <- t(t(rep(c("Day 0 to 1"), times = 10205)))
+#resp12 <- t(t(rep(c("Day 1 to 2"), times = 10205)))
+#resp23 <- t(t(rep(c("Day 2 to 3"), times = 10205)))
+#resp13 <- t(t(rep(c("Day 1 to 3"), times = 10205)))
+
+#labels <- rbind(resp01, resp12, resp23, resp13)
+
+#figS14A <- cbind(pi_0_across_genes, labels)
+#colnames(figS14A) <- c("N Most Significant Genes", "pi_0", "Day label")
+
+#write.table(figS14A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14A.txt", quote = FALSE, row.names = FALSE)
+
+#qqplot_inc_top_all_day01_pi0 <- abs(1- qqplot_inc_top_all_day01)
+#qqplot_inc_top_all_day12_pi0 <- abs(1- qqplot_inc_top_all_day12)
+#qqplot_inc_top_all_day23_pi0 <- abs(1- qqplot_inc_top_all_day23)
+#qqplot_inc_top_all_day02_pi0 <- abs(1- qqplot_inc_top_all_day02)
+#qqplot_inc_top_all_day13_pi0 <- abs(1- qqplot_inc_top_all_day13)
+
+
+#pi_0_across_genes <- rbind(qqplot_inc_top_all_day01_pi0, qqplot_inc_top_all_day12_pi0, qqplot_inc_top_all_day23_pi0, qqplot_inc_top_all_day13_pi0)
+
+#resp01 <- t(t(rep(c("Day 0 to 1"), times = 10205)))
+#resp12 <- t(t(rep(c("Day 1 to 2"), times = 10205)))
+#resp23 <- t(t(rep(c("Day 2 to 3"), times = 10205)))
+#resp13 <- t(t(rep(c("Day 1 to 3"), times = 10205)))
+
+#labels <- rbind(resp01, resp12, resp23, resp13)
+
+#figS14A <- cbind(pi_0_across_genes, labels)
+#colnames(figS14A) <- c("N Most Significant Genes", "pi_0", "Day label")
+
+#write.table(figS14A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14C.txt", quote = FALSE, row.names = FALSE)
+
 
 # Plot reduction in variation
-p_top_genes_red_var_chimps <- ggplot(qqplot_red_top_all_day01_pi0, aes(x = qqplot_red_top_all_day01_pi0[,1], y = qqplot_red_top_all_day01_pi0[,2])) + geom_line(colour="#00B451") + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12_pi0[,1], y = qqplot_red_top_all_day12_pi0[,2]-0.001), colour =  "#00B1DB") + geom_line(aes(x = qqplot_red_top_all_day23_pi0[,1], y = qqplot_red_top_all_day23_pi0[,2]), colour =  "#C77CFF") + geom_line(aes(x = qqplot_red_top_all_day13_pi0[,1], y = qqplot_red_top_all_day13_pi0[,2]+0.001), colour = "#000000") + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ "For Reduction in Variance (Chimpanzees|Sign. in Humans)" )) + xlab("N Most Significant Genes in Humans") + ylab(expression( italic(hat(pi)[0]) ~ "(Chimps|Sign. in Humans)")) 
+#p_top_genes_red_var_chimps <- ggplot(qqplot_red_top_all_day01_pi0, aes(x = qqplot_red_top_all_day01_pi0[,1], y = qqplot_red_top_all_day01_pi0[,2])) + geom_line(colour="#00B451") + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12_pi0[,1], y = qqplot_red_top_all_day12_pi0[,2]-0.001), colour =  "#00B1DB") + geom_line(aes(x = qqplot_red_top_all_day23_pi0[,1], y = qqplot_red_top_all_day23_pi0[,2]), colour =  "#C77CFF") + geom_line(aes(x = qqplot_red_top_all_day13_pi0[,1], y = qqplot_red_top_all_day13_pi0[,2]+0.001), colour = "#000000") + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ "For Reduction in Variance (Chimpanzees|Sign. in Humans)" )) + xlab("N Most Significant Genes in Humans") + ylab(expression( italic(hat(pi)[0]) ~ "(Chimps|Sign. in Humans)")) 
 
-p_top_genes_red_var_chimps
+#p_top_genes_red_var_chimps
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+#legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
 
 
 
 # Plot of Increase in Variation
 
-p_top_genes_inc_var_chimps <- ggplot(qqplot_inc_top_all_day01_pi0, aes(x = qqplot_inc_top_all_day01_pi0[,1], y = qqplot_inc_top_all_day01_pi0[,2]+0.001)) + geom_line(colour="#00B451") + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12_pi0[,1], y = qqplot_inc_top_all_day12_pi0[,2]), colour = "#00B1DB") + geom_line(aes(x = qqplot_inc_top_all_day23_pi0[,1], y = qqplot_inc_top_all_day23_pi0[,2]-0.001), colour =  "#C77CFF") + geom_line(aes(x = qqplot_inc_top_all_day13_pi0[,1], y = qqplot_inc_top_all_day13_pi0[,2]), colour = "#000000") + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ "For Increase in Variance (Chimpanzees|Sign. in Humans)" )) + xlab("N Most Significant Genes in Humans") + ylab(expression( italic(hat(pi)[0]) ~ "(Chimps|Sign. in Humans)")) 
+#p_top_genes_inc_var_chimps <- ggplot(qqplot_inc_top_all_day01_pi0, aes(x = qqplot_inc_top_all_day01_pi0[,1], y = qqplot_inc_top_all_day01_pi0[,2]+0.001)) + geom_line(colour="#00B451") + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12_pi0[,1], y = qqplot_inc_top_all_day12_pi0[,2]), colour = "#00B1DB") + geom_line(aes(x = qqplot_inc_top_all_day23_pi0[,1], y = qqplot_inc_top_all_day23_pi0[,2]-0.001), colour =  "#C77CFF") + geom_line(aes(x = qqplot_inc_top_all_day13_pi0[,1], y = qqplot_inc_top_all_day13_pi0[,2]), colour = "#000000") + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ "For Increase in Variance (Chimpanzees|Sign. in Humans)" )) + xlab("N Most Significant Genes in Humans") + ylab(expression( italic(hat(pi)[0]) ~ "(Chimps|Sign. in Humans)")) 
 
-p_top_genes_inc_var_chimps
+#p_top_genes_inc_var_chimps
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+#legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
 
 # Plots of pi_1
 
@@ -5570,104 +6328,117 @@ find_qqplot_inc_top_all_humans <- function(chimp_begin_column_tm1, chimp_end_col
 
 # Reduction in variance from day 0 to day 1
 
-qqplot_red_top_all_day01_humans <- find_qqplot_red_top_all_humans(7,10,17,20,1,6,11,16)
+#qqplot_red_top_all_day01_humans <- find_qqplot_red_top_all_humans(7,10,17,20,1,6,11,16)
 
 # Reduction in variance from day 1 to day 2
 
-qqplot_red_top_all_day12_humans <- find_qqplot_red_top_all_humans(17,20,27,30,11,16,21,26)
+#qqplot_red_top_all_day12_humans <- find_qqplot_red_top_all_humans(17,20,27,30,11,16,21,26)
 
 # Reduction in variance from day 2 to day 3
 
-qqplot_red_top_all_day23_humans  <- find_qqplot_red_top_all_humans(27,30,37,40,21,26,31,36)
+#qqplot_red_top_all_day23_humans  <- find_qqplot_red_top_all_humans(27,30,37,40,21,26,31,36)
 
 # Reduction in variance from day 0 to day 2
 
-qqplot_red_top_all_day02_humans  <- find_qqplot_red_top_all_humans(7,10,27,30,1,6,21,26)
+#qqplot_red_top_all_day02_humans  <- find_qqplot_red_top_all_humans(7,10,27,30,1,6,21,26)
 
 # Reduction in variance from day 1 to day 3
 
-qqplot_red_top_all_day13_humans  <- find_qqplot_red_top_all_humans(17,20,37,40,11,16,31,36)
+#qqplot_red_top_all_day13_humans  <- find_qqplot_red_top_all_humans(17,20,37,40,11,16,31,36)
 
 # Inc. in variance from day 0 to day 1
 
-qqplot_inc_top_all_day01_humans  <- find_qqplot_inc_top_all_humans(7,10,17,20,1,6,11,16)
+#qqplot_inc_top_all_day01_humans  <- find_qqplot_inc_top_all_humans(7,10,17,20,1,6,11,16)
 
 # Inc. in variance from day 1 to day 2
 
-qqplot_inc_top_all_day12_humans  <- find_qqplot_inc_top_all_humans(17,20,27,30,11,16,21,26)
+#qqplot_inc_top_all_day12_humans  <- find_qqplot_inc_top_all_humans(17,20,27,30,11,16,21,26)
 
 # Inc. in variance from day 2 to day 3
 
-qqplot_inc_top_all_day23_humans  <- find_qqplot_inc_top_all_humans(27,30,37,40,21,26,31,36)
+#qqplot_inc_top_all_day23_humans  <- find_qqplot_inc_top_all_humans(27,30,37,40,21,26,31,36)
 
 # Inc. in variance from day 0 to day 2
 
-qqplot_inc_top_all_day02_humans  <- find_qqplot_inc_top_all_humans(7,10,27,30,1,6,21,26)
+#qqplot_inc_top_all_day02_humans  <- find_qqplot_inc_top_all_humans(7,10,27,30,1,6,21,26)
 
 # Inc. in variance from day 1 to day 3
 
-qqplot_inc_top_all_day13_humans  <- find_qqplot_inc_top_all_humans(17,20,37,40,11,16,31,36)
+#qqplot_inc_top_all_day13_humans  <- find_qqplot_inc_top_all_humans(17,20,37,40,11,16,31,36)
 
 
 # Make everything a data frame
-qqplot_red_top_all_day01_humans  <- as.data.frame(qqplot_red_top_all_day01_humans)
-qqplot_red_top_all_day12_humans  <- as.data.frame(qqplot_red_top_all_day12_humans)
-qqplot_red_top_all_day23_humans  <- as.data.frame(qqplot_red_top_all_day23_humans)
-qqplot_red_top_all_day02_humans  <- as.data.frame(qqplot_red_top_all_day02_humans)
-qqplot_red_top_all_day13_humans  <- as.data.frame(qqplot_red_top_all_day13_humans)
-qqplot_inc_top_all_day01_humans  <- as.data.frame(qqplot_inc_top_all_day01_humans)
-qqplot_inc_top_all_day12_humans  <- as.data.frame(qqplot_inc_top_all_day12_humans)
-qqplot_inc_top_all_day23_humans  <- as.data.frame(qqplot_inc_top_all_day23_humans)
-qqplot_inc_top_all_day02_humans  <- as.data.frame(qqplot_inc_top_all_day02_humans)
-qqplot_inc_top_all_day13_humans  <- as.data.frame(qqplot_inc_top_all_day13_humans)
+#qqplot_red_top_all_day01_humans  <- as.data.frame(qqplot_red_top_all_day01_humans)
+#qqplot_red_top_all_day12_humans  <- as.data.frame(qqplot_red_top_all_day12_humans)
+#qqplot_red_top_all_day23_humans  <- as.data.frame(qqplot_red_top_all_day23_humans)
+#qqplot_red_top_all_day02_humans  <- as.data.frame(qqplot_red_top_all_day02_humans)
+#qqplot_red_top_all_day13_humans  <- as.data.frame(qqplot_red_top_all_day13_humans)
+#qqplot_inc_top_all_day01_humans  <- as.data.frame(qqplot_inc_top_all_day01_humans)
+#qqplot_inc_top_all_day12_humans  <- as.data.frame(qqplot_inc_top_all_day12_humans)
+#qqplot_inc_top_all_day23_humans  <- as.data.frame(qqplot_inc_top_all_day23_humans)
+#qqplot_inc_top_all_day02_humans  <- as.data.frame(qqplot_inc_top_all_day02_humans)
+#qqplot_inc_top_all_day13_humans  <- as.data.frame(qqplot_inc_top_all_day13_humans)
+
+
 
 # Plots of pi_0
 
-qqplot_red_top_all_day01_pi0_humans  <- abs(1- qqplot_red_top_all_day01_humans)
-qqplot_red_top_all_day12_pi0_humans  <- abs(1- qqplot_red_top_all_day12_humans)
-qqplot_red_top_all_day23_pi0_humans  <- abs(1- qqplot_red_top_all_day23_humans)
-qqplot_red_top_all_day02_pi0_humans  <- abs(1- qqplot_red_top_all_day02_humans)
-qqplot_red_top_all_day13_pi0_humans  <- abs(1- qqplot_red_top_all_day13_humans)
-qqplot_inc_top_all_day01_pi0_humans  <- abs(1- qqplot_inc_top_all_day01_humans)
-qqplot_inc_top_all_day12_pi0_humans  <- abs(1- qqplot_inc_top_all_day12_humans)
-qqplot_inc_top_all_day23_pi0_humans  <- abs(1- qqplot_inc_top_all_day23_humans)
-qqplot_inc_top_all_day02_pi0_humans  <- abs(1- qqplot_inc_top_all_day02_humans)
-qqplot_inc_top_all_day13_pi0_humans  <- abs(1- qqplot_inc_top_all_day13_humans)
+#qqplot_red_top_all_day01_pi0_humans  <- abs(1- qqplot_red_top_all_day01_humans)
+#qqplot_red_top_all_day12_pi0_humans  <- abs(1- qqplot_red_top_all_day12_humans)
+#qqplot_red_top_all_day23_pi0_humans  <- abs(1- qqplot_red_top_all_day23_humans)
+#qqplot_red_top_all_day02_pi0_humans  <- abs(1- qqplot_red_top_all_day02_humans)
+#qqplot_red_top_all_day13_pi0_humans  <- abs(1- qqplot_red_top_all_day13_humans)
+#qqplot_inc_top_all_day01_pi0_humans  <- abs(1- qqplot_inc_top_all_day01_humans)
+#qqplot_inc_top_all_day12_pi0_humans  <- abs(1- qqplot_inc_top_all_day12_humans)
+#qqplot_inc_top_all_day23_pi0_humans  <- abs(1- qqplot_inc_top_all_day23_humans)
+#qqplot_inc_top_all_day02_pi0_humans  <- abs(1- qqplot_inc_top_all_day02_humans)
+#qqplot_inc_top_all_day13_pi0_humans  <- abs(1- qqplot_inc_top_all_day13_humans)
+
+
+#pi_0_across_genes <- rbind(qqplot_red_top_all_day01_pi0_humans, qqplot_red_top_all_day12_pi0_humans, qqplot_red_top_all_day23_pi0_humans, qqplot_red_top_all_day13_pi0_humans)
+
+#resp01 <- t(t(rep(c("Day 0 to 1"), times = 10205)))
+#resp12 <- t(t(rep(c("Day 1 to 2"), times = 10205)))
+#resp23 <- t(t(rep(c("Day 2 to 3"), times = 10205)))
+#resp13 <- t(t(rep(c("Day 1 to 3"), times = 10205)))
+
+#labels <- rbind(resp01, resp12, resp23, resp13)
+
+#figS14A <- cbind(pi_0_across_genes, labels)
+#colnames(figS14A) <- c("N Most Significant Genes", "pi_0", "Day label")
+
+#write.table(figS14A, "/Users/laurenblake/Dropbox/Endoderm TC/Draft versions/Resubmit1_Genome Biology/Supplemental/Data_figS14A.txt", quote = FALSE, row.names = FALSE)
 
 # Plots of pi_0
 
-p_top_genes_red_var_humans <- ggplot(qqplot_red_top_all_day01_pi0_humans, aes(x = qqplot_red_top_all_day01_pi0_humans[,1], y = qqplot_red_top_all_day01_pi0_humans[,2])) + geom_line(colour="#00B451") + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12_pi0_humans[,1], y = qqplot_red_top_all_day12_pi0_humans[,2]+0.001), colour = "#00B1DB") + geom_line(aes(x = qqplot_red_top_all_day23_pi0_humans[,1], y = qqplot_red_top_all_day23_pi0_humans[,2]), colour =  "#C77CFF") + geom_line(aes(x = qqplot_red_top_all_day13_pi0_humans[,1], y = qqplot_red_top_all_day13_pi0_humans[,2]-0.001), colour =  "#000000") + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ "For Reduction in Variance Between Days (Humans|Sign. Chimps)" )) + xlab("N Most Significant Genes in Chimpanzees") + ylab(expression( italic(hat(pi)[0]) ~ "(Humans|Sign. in Chimps)")) 
-p_top_genes_red_var_humans
+#p_top_genes_red_var_humans <- ggplot(qqplot_red_top_all_day01_pi0_humans, aes(x = qqplot_red_top_all_day01_pi0_humans[,1], y = qqplot_red_top_all_day01_pi0_humans[,2])) + geom_line(colour="#00B451") + theme_bw() + geom_line(aes(x = qqplot_red_top_all_day12_pi0_humans[,1], y = qqplot_red_top_all_day12_pi0_humans[,2]+0.001), colour = "#00B1DB") + geom_line(aes(x = qqplot_red_top_all_day23_pi0_humans[,1], y = qqplot_red_top_all_day23_pi0_humans[,2]), colour =  "#C77CFF") + geom_line(aes(x = qqplot_red_top_all_day13_pi0_humans[,1], y = qqplot_red_top_all_day13_pi0_humans[,2]-0.001), colour =  "#000000") + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ "For Reduction in Variance Between Days (Humans|Sign. Chimps)" )) + xlab("N Most Significant Genes in Chimpanzees") + ylab(expression( italic(hat(pi)[0]) ~ "(Humans|Sign. in Chimps)")) 
+#p_top_genes_red_var_humans
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+#legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
 
-p_top_genes_inc_var_humans <- ggplot(qqplot_inc_top_all_day01_pi0_humans, aes(x = qqplot_inc_top_all_day01_pi0_humans[,1], y = qqplot_inc_top_all_day01_pi0_humans[,2]+0.001)) + geom_line(colour="#00B451") + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12_pi0_humans[,1], y = qqplot_inc_top_all_day12_pi0_humans[,2]), colour = "#00B1DB") + geom_line(aes(x = qqplot_inc_top_all_day23_pi0_humans[,1], y = qqplot_inc_top_all_day23_pi0_humans[,2]-0.001), colour =  "#C77CFF") + geom_line(aes(x = qqplot_inc_top_all_day13_pi0_humans[,1], y = qqplot_inc_top_all_day13_pi0_humans[,2]), colour =  "#000000" ) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ "For Increase in Variance Between Days (Humans|Significant in Chimpanzees)" )) + xlab("N Most Significant Genes in Chimpanzees") + ylab(expression( italic(hat(pi)[0]) ~ "(Humans|Significant in Chimpanzees)")) 
-p_top_genes_inc_var_humans
+#p_top_genes_inc_var_humans <- ggplot(qqplot_inc_top_all_day01_pi0_humans, aes(x = qqplot_inc_top_all_day01_pi0_humans[,1], y = qqplot_inc_top_all_day01_pi0_humans[,2]+0.001)) + geom_line(colour="#00B451") + theme_bw() + geom_line(aes(x = qqplot_inc_top_all_day12_pi0_humans[,1], y = qqplot_inc_top_all_day12_pi0_humans[,2]), colour = "#00B1DB") + geom_line(aes(x = qqplot_inc_top_all_day23_pi0_humans[,1], y = qqplot_inc_top_all_day23_pi0_humans[,2]-0.001), colour =  "#C77CFF") + geom_line(aes(x = qqplot_inc_top_all_day13_pi0_humans[,1], y = qqplot_inc_top_all_day13_pi0_humans[,2]), colour =  "#000000" ) + ylim(0,1.01) + ggtitle(expression( italic(hat(pi)[0]) ~ "For Increase in Variance Between Days (Humans|Significant in Chimpanzees)" )) + xlab("N Most Significant Genes in Chimpanzees") + ylab(expression( italic(hat(pi)[0]) ~ "(Humans|Significant in Chimpanzees)")) 
+#p_top_genes_inc_var_humans
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+#legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
 
 
 # Export plots
 
-multiplot(p_top_genes_red_var_chimps,p_top_genes_red_var_humans,cols=1)
+#multiplot(p_top_genes_red_var_chimps,p_top_genes_red_var_humans,cols=1)
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+#legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0,    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
 
-multiplot(p_top_genes_inc_var_chimps,p_top_genes_inc_var_humans,cols=1)
+#multiplot(p_top_genes_inc_var_chimps,p_top_genes_inc_var_humans,cols=1)
 
-par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
-plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0, 
-    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
+#par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
+#plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
+#legend("right", c("Day 0 to 1", "Day 1 to 2", "Day 2 to 3", "Day 1 to 3"), xpd = TRUE, horiz = FALSE, inset = c(0,    0), bty = "n", pch = c(15, 15, 15, 15), col = c("#00B451", "#00B1DB",  "#C77CFF","#000000" ), cex = 1)
 
 # Plots of pi_1
 
@@ -5760,7 +6531,7 @@ length(which(chimp_var_pval < 0.05))
 
 chimp_red_01 <- as.data.frame(chimp_var_pval[which(chimp_var_pval < 0.05), ])
 dim(chimp_red_01)
-write.table(chimp_red_01,file="~/Desktop/Endoderm_TC/ashlar-trial/data/red_chimps_day0_1.txt",sep="\t", col.names = T, row.names = T)
+#write.table(chimp_red_01,file="~/Desktop/Endoderm_TC/ashlar-trial/data/red_chimps_day0_1.txt",sep="\t", col.names = T, row.names = T)
 
 
 # Reduction Day 0 to 1 humans
@@ -5777,7 +6548,7 @@ length(which(human_var_pval < 0.05))
 
 human_red_01 <- as.data.frame(human_var_pval[which(human_var_pval < 0.05), ])
 dim(human_red_01)
-write.table(human_red_01,file="~/Desktop/Endoderm_TC/ashlar-trial/data/red_human_day0_1.txt",sep="\t", col.names = T, row.names = T)
+#write.table(human_red_01,file="~/Desktop/Endoderm_TC/ashlar-trial/data/red_human_day0_1.txt",sep="\t", col.names = T, row.names = T)
 
 
 # Increase Day 1 to 2 chimps
@@ -5811,7 +6582,7 @@ length(which(human_var_pval < 0.05))
 
 human_inc_12 <- as.data.frame(human_var_pval[which(human_var_pval < 0.05), ])
 dim(human_inc_12)
-write.table(human_inc_12,file="~/Desktop/Endoderm_TC/ashlar-trial/data/inc_human_day1_2.txt",sep="\t", col.names = T, row.names = T)
+#write.table(human_inc_12,file="~/Desktop/Endoderm_TC/ashlar-trial/data/inc_human_day1_2.txt",sep="\t", col.names = T, row.names = T)
 
 ```
 

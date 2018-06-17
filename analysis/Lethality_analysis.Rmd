@@ -1,0 +1,162 @@
+---
+title: "Calculating_lethality"
+author: "Lauren Blake"
+date: "January 19, 2018"
+output: html_document
+---
+
+In this script, we will evaluate the embryonic lethality of 3 categories of genes: shared reduction of variation, reduction of variation in only one species, and non-reduced genes. 
+
+```{r}
+source("chunk-options.R")
+```
+
+# Import the data
+
+To obtain the data, we took the gene list of each of the 3 categories of genes and ran it through the Mammalian Phenotype database from Jackson Lab: http://www.informatics.jax.org/batch/summary. 
+
+
+```{r}
+# Load data- shared data
+
+Lethality_shared_genes <- read.delim("../data/Lethality_shared_genes.txt")
+```
+
+# Data Exploration
+
+## How many genes do we start with?
+
+```{r}
+length(unique(Lethality_shared_genes$Input))
+summary(Lethality_shared_genes)
+
+# Eliminate anything that's not a protein coding gene
+
+protein_lethality <- Lethality_shared_genes[which(Lethality_shared_genes$Feature.Type == "protein coding gene") , ]
+
+length(unique(protein_lethality$Input))
+```
+
+## How many genes don't have an associated phenotype?
+
+```{r}
+mp_check <- grep("MP", protein_lethality$MP.ID)
+
+complete_mp <- protein_lethality[mp_check, ]
+
+length(unique(complete_mp$Input))
+```
+
+## What terms include some variant of "embryonic lethality"?
+
+```{r}
+terms_lethality <- grep("lethality", complete_mp$Term)
+
+observe_lethality <- complete_mp[terms_lethality, ]
+
+unique(observe_lethality$Term)
+```
+
+Terms that we want to include: "embryonic lethality", "prenatal lethality", "lethality throughout fetal growth and development"
+
+## Pick out the terms
+
+```{r}
+embryonic_lethality <- grep("embryonic lethality", observe_lethality$Term)
+length(embryonic_lethality)
+prenatal_lethality <- grep("prenatal lethality", observe_lethality$Term)
+length(prenatal_lethality)
+fetal_lethality <- grep("lethality throughout fetal growth and development", observe_lethality$Term)
+length(fetal_lethality)
+
+lethality1 <- observe_lethality[embryonic_lethality, ]
+lethality2 <- observe_lethality[prenatal_lethality, ]
+lethality3 <- observe_lethality[fetal_lethality, ]
+
+lethal3 <- rbind(lethality1, lethality2, lethality3)
+
+length(unique(lethal3$Input))
+
+```
+
+Conclusion: Knockdown in 89/218 of the shared genes with at least one documented associated phenotype is embryonic lethal. 
+
+```{r}
+# Write a function to run the code above so that we can run it for other classes of genes
+
+analyze_lethality <- function(data_name){
+
+# Make data name to lethality
+Lethality_shared_genes <- data_name  
+
+# How many genes are originally there    
+length_Lethality_shared_genes <- length(unique(Lethality_shared_genes$Input))
+
+
+# Eliminate anything that's not a protein coding gene
+
+protein_lethality <- Lethality_shared_genes[which(Lethality_shared_genes$Feature.Type == "protein coding gene") , ]
+
+length_protein_lethality <- length(unique(protein_lethality$Input))
+
+# How many genes have an associated phenotype?
+
+mp_check <- grep("MP", protein_lethality$MP.ID)
+
+complete_mp <- protein_lethality[mp_check, ]
+
+genes_associated_phenotype <- length(unique(complete_mp$Input))
+
+# Look for lethality
+
+embryonic_lethality <- grep("embryonic lethality", complete_mp$Term)
+length(embryonic_lethality)
+prenatal_lethality <- grep("prenatal lethality", complete_mp$Term)
+length(prenatal_lethality)
+fetal_lethality <- grep("lethality throughout fetal growth and development", complete_mp$Term)
+length(fetal_lethality)
+
+lethality1 <- complete_mp[embryonic_lethality, ]
+lethality2 <- complete_mp[prenatal_lethality, ]
+lethality3 <- complete_mp[fetal_lethality, ]
+
+lethal3 <- rbind(lethality1, lethality2, lethality3)
+
+length_lethal3 <- length(unique(lethal3$Input))
+
+critical_values <- cbind(length_Lethality_shared_genes, genes_associated_phenotype, length_lethal3)
+return(critical_values)
+}
+
+# Run on shared genes
+
+analyze_lethality(Lethality_shared_genes)
+
+89/218
+
+# Run on non-reduced genes
+
+Lethality_non_red_genes <- read.delim("../data/Lethality_non_red_genes.txt")
+analyze_lethality(Lethality_non_red_genes)
+
+1139/4118
+
+# Run on genes reduced in one species
+
+Lethality_red_one_species <- read.delim("../data/Lethality_red_one_species.txt")
+analyze_lethality(Lethality_red_one_species)
+
+458/1286
+```
+
+## Assessing significance of difference in proportions
+
+```{r}
+# Diff between shared and non reduced
+prop.test(c(89,1139),c(218,4118),correct=TRUE)
+
+# Diff between shared and reduced in 1 species
+prop.test(c(89,458),c(218,1286),correct=TRUE)
+```
+
+
