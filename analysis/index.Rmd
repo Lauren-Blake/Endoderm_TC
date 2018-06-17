@@ -24,4 +24,4 @@ title: "Home"
 *  [Make Cormotif clusters](../analysis/GO_enrichment_cyclic_loess.html)
 *  [Gene Ontology information- Cormotif clusters](../analysis/GO_motif_analysis.html)
 *  [Gene Ontology information- genes with shared reduction in variation](../analysis/Red_var_genes.html)
-*  [Lethality information](../Lethality_analysis.html)
+*  [Lethality information](../analysis/Lethality_analysis.html)
