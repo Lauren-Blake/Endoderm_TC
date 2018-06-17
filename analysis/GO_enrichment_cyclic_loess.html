@@ -4,7 +4,7 @@
 
 <head>
 
-<meta charset="utf-8">
+<meta charset="utf-8" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
@@ -22,8 +22,8 @@
 <script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="libs/navigation-1.1/tabsets.js"></script>
-<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="libs/highlightjs-1.1/highlight.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">
 
@@ -67,10 +67,12 @@ body {
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -246,7 +248,7 @@ B &lt;- as.data.frame(motif5[,2])
 colnames(B) &lt;- c(&quot;Gene name&quot;)
 motif35 &lt;- rbind(A, B)
 
-write.table(motif35, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif35.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)
+#write.table(motif35, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif35.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)
 
 # Let&#39;s compare to one motif (rather than a combination of motifs; motif 2, 1017)
 
@@ -255,7 +257,7 @@ motif2 &lt;- as.data.frame(motif2[ ,2])
 colnames(motif2) &lt;- c(&quot;Gene name&quot;)
 
 
-write.table(motif2, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif2_only.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)
+#write.table(motif2, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif2_only.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)
 
 # Let&#39;s look at all the other motifs individually
 
@@ -264,7 +266,7 @@ motif1 &lt;- data.frame(lapply(motif1, as.character), stringsAsFactors=FALSE)
 A &lt;- as.data.frame(motif1[ ,2])
 colnames(A) &lt;- c(&quot;Gene name&quot;)
 
-write.table(A, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif1.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)</code></pre>
+#write.table(A, &quot;~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif1.txt&quot;, sep=&quot;\t&quot;,  quote = F, col.names = F, row.names = F)</code></pre>
 
 
 <!-- some extra javascript for older browsers -->
@@ -314,7 +316,7 @@ $(document).ready(function () {
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

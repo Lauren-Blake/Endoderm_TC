@@ -1,0 +1,327 @@
+---
+title: "Species_specific_genes"
+author: "Lauren Blake"
+date: "January 17, 2018"
+output: html_document
+---
+
+The goal of this script is to explore the categories of genes enriched in the different groups from Cormotif. 
+
+## Load in data 
+
+```{r chunk-options, include=FALSE}
+source("chunk-options.R")
+```
+
+
+```{r}
+library("ggplot2")
+library("qvalue")
+library("RColorBrewer")
+library("topGO")
+#library("biomaRt")
+library("clusterProfiler")
+library("org.Hs.eg.db")
+library(tidyverse)
+library(data.table)
+library(plyr)
+library("dplyr")
+
+# Load colors
+pal <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"), brewer.pal(12, "Set3"))
+
+# Functions for plots
+
+bjpm<-
+theme(
+  panel.border = element_rect(colour = "black", fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = "bold"),
+  axis.text.y =  element_text(size = 14,face = "bold",color = "black"),
+  axis.text.x =  element_text(size = 14,face = "bold",color = "black"),
+  axis.title.y = element_text(size = 14,face = "bold"),
+  axis.title.x=element_blank(),
+  legend.text = element_text(size = 14,face = "bold"),
+  legend.title = element_text(size = 14,face = "bold"),
+  strip.text.x = element_text(size = 14,face = "bold"),
+  strip.text.y = element_text(size = 14,face = "bold"),
+  strip.background = element_rect(colour = "black", size = 2))
+
+bjp<-
+theme(
+  panel.border = element_rect(colour = "black", fill = NA, size = 2),
+  plot.title = element_text(size = 16, face = "bold"),
+  axis.text.y =  element_text(size = 14,face = "bold",color = "black"),
+  axis.text.x =  element_text(size = 14,face = "bold",color = "black"),
+  axis.title.y = element_text(size = 14,face = "bold"),
+  axis.title.x = element_text(size = 14,face = "bold"),
+  legend.text = element_text(size = 14,face = "bold"),
+  legend.title = element_text(size = 14,face = "bold"),
+  strip.text.x = element_text(size = 14,face = "bold"),
+  strip.text.y = element_text(size = 14,face = "bold"),
+  strip.background = element_rect(colour = "black", size = 2))
+
+
+# Load motif data
+
+Table_Motif <- read.csv("/Users/laurenblake/Desktop/Endoderm_TC/ashlar-trial/data/Table_Motif.csv")
+
+dim(Table_Motif)
+
+```
+
+# Motif 4
+
+```{r}
+true_false <- Table_Motif[,2] == 4
+summary(true_false)
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- Table_Motif[,1]
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+goresults <- sapply(go_table$GO.ID, function(x)
+    {
+      genes<-genesInTerm(go_data, x) 
+      genes[[1]][genes[[1]] %in% sig.genes]
+    })
+
+
+```
+
+# Motif 7 
+
+```{r}
+true_false <- Table_Motif[,2] == 7
+summary(true_false)
+true_false <- as.numeric(true_false)
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- Table_Motif[,1]
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+sig.genes <- sigGenes(go_data)
+
+```
+
+# Combine Motifs 4+7
+
+```{r}
+true_false <- Table_Motif[,2] == 7 | Table_Motif[,2] == 4
+summary(true_false)
+true_false <- as.numeric(true_false)
+
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- Table_Motif[,1]
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+#write.csv(go_table, "/Users/laurenblake/Desktop/go_table_47.csv", quote = FALSE, row.names = FALSE)
+
+sig.genes <- sigGenes(go_data)
+
+```
+
+# Motif 2
+
+```{r}
+true_false <- Table_Motif[,2] == 2
+summary(true_false)
+true_false <- as.numeric(true_false)
+
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- Table_Motif[,1]
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+#write.csv(go_table, "/Users/laurenblake/Desktop/go_table_2.csv", quote = FALSE, row.names = FALSE)
+
+sig.genes <- sigGenes(go_data)
+
+```
+
+# Motif 3+5
+
+```{r}
+true_false <- Table_Motif[,2] == 3 | Table_Motif[,2] == 5
+summary(true_false)
+true_false <- as.numeric(true_false)
+
+
+# Merge ENSG with true/false
+
+test_gene <- as.vector(true_false)
+names(test_gene) <- Table_Motif[,1]
+
+# Run topGO
+go_data <- new("topGOdata",
+                   ontology = "BP",
+                   allGenes = test_gene, 
+                    geneSel = function(allScore){
+    return(allScore > 0.01)
+},
+                   nodeSize = 5,
+                   annotationFun = annFUN.org,
+                   mapping = "org.Hs.eg.db",
+                   ID = "ensembl")
+
+# Perform enrichment test
+go_test <- runTest(go_data, algorithm = "weight01", statistic = "fisher")
+
+go_table <- GenTable(go_data, weightFisher = go_test,
+                         orderBy = "weightFisher", ranksOf = "weightFisher",
+                         topNodes = sum(score(go_test) < .01))
+
+go_table
+
+#write.csv(go_table, "/Users/laurenblake/Desktop/go_table_35.csv", quote = FALSE, row.names = FALSE)
+
+sig.genes <- sigGenes(go_data)
+
+```
+
+# Compare enrichments from multiple categories
+
+```{r}
+# Make the different cluster (motif 2, motif 3+5, motif 4+7)
+
+true_false_2 <- Table_Motif[,2] == 2
+true_false_35 <- Table_Motif[,2] == 3 | Table_Motif[,2] == 5
+true_false_47 <- Table_Motif[,2] == 4 | Table_Motif[,2] == 7
+
+all_df <- data.frame(ensg = Table_Motif[,1], group2 = true_false_2, group35 = true_false_35, group47 = true_false_47)
+dim(all_df)
+
+# Subset to only the ones that don't have 3 FALSE
+
+test_df <- all_df[which(all_df$group2 == "TRUE" | all_df$group35 == "TRUE" | all_df$group47 == "TRUE"), ]
+summary(test_df)
+
+# Look at one cluster
+
+formula_res <- compareCluster(ensg~group2, data=test_df, fun="enrichGO", universe = all_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+								keyType       = 'ENSEMBL',
+                ont           = "BP",
+                pAdjustMethod = "fdr",
+                qvalueCutoff  = 0.05,
+								maxGSSize = 3000,
+								minGSSize = 3)
+
+formula_res %>%as.data.frame()%>%select(-geneID)->enrichment.res
+row.names(enrichment.res)=NULL
+
+
+# Compare the clusters
+formula_res <- compareCluster(ensg~group2+group35+group47, data=test_df, fun="enrichGO", universe = all_df$ensg,
+                OrgDb         = org.Hs.eg.db,
+								keyType       = 'ENSEMBL',
+                ont           = "BP",
+                pAdjustMethod = "fdr",
+                qvalueCutoff  = 0.05,
+								maxGSSize = 3000,
+								minGSSize = 3)
+
+formula_res %>%as.data.frame()%>%select(-geneID)->enrichment.res
+row.names(enrichment.res)=NULL
+
+summary(enrichment.res) 
+
+
+#Plot
+my_breaks = c(0.01,10^-10,10^-20, 10^-30)
+dotplot(formula_res)+bjp+theme(axis.text.x = element_text(angle = 60, hjust = 1))+
+	scale_color_gradient(low ="#f70028",high = "#0200ff",trans="log",breaks = my_breaks, labels = my_breaks)
+
+```
+

@@ -66,7 +66,7 @@ B <- as.data.frame(motif5[,2])
 colnames(B) <- c("Gene name")
 motif35 <- rbind(A, B)
 
-write.table(motif35, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif35.txt", sep="\t",  quote = F, col.names = F, row.names = F)
+#write.table(motif35, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif35.txt", sep="\t",  quote = F, col.names = F, row.names = F)
 
 # Let's compare to one motif (rather than a combination of motifs; motif 2, 1017)
 
@@ -75,7 +75,7 @@ motif2 <- as.data.frame(motif2[ ,2])
 colnames(motif2) <- c("Gene name")
 
 
-write.table(motif2, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif2_only.txt", sep="\t",  quote = F, col.names = F, row.names = F)
+#write.table(motif2, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif2_only.txt", sep="\t",  quote = F, col.names = F, row.names = F)
 
 # Let's look at all the other motifs individually
 
@@ -84,7 +84,7 @@ motif1 <- data.frame(lapply(motif1, as.character), stringsAsFactors=FALSE)
 A <- as.data.frame(motif1[ ,2])
 colnames(A) <- c("Gene name")
 
-write.table(A, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif1.txt", sep="\t",  quote = F, col.names = F, row.names = F)
+#write.table(A, "~/Dropbox/Endoderm TC/Cyclic_loess_norm/motif1.txt", sep="\t",  quote = F, col.names = F, row.names = F)
 
 ```
 
