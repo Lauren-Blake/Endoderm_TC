@@ -29,15 +29,23 @@ theme(
 
 # Import file
 
-Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3 <- read.delim("~/Desktop/Cells_EBV-transformed_lymphocytes_Analysis.v6p.normalized.expression 3.R")
+Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3 <- read.delim("/Users/laurenblake/Desktop/Cells_EBV-transformed_lymphocytes_Analysis.v6p.normalized.expression 3.R")
 
-Heart_Left_Ventricle_Analysis.v6p.normalized.expression <- read.delim("~/Desktop/Heart_Left_Ventricle_Analysis.v6p.normalized.expression.R")
+Heart_Left_Ventricle_Analysis.v6p.normalized.expression <- read.delim("/Users/laurenblake/Desktop/Endoderm_TC/Heart_Left_Ventricle_Analysis.v6p.normalized.expression.R")
 
-Pancreas_Analysis.v6p.normalized.expression <- read.delim("~/Desktop/Pancreas_Analysis.v6p.normalized.expression.R")
+which(grepl("ENSG00000118194", Heart_Left_Ventricle_Analysis.v6p.normalized.expression$gene_id) == TRUE)
 
-Liver_Analysis.v6p.normalized.expression <- read.delim("~/Desktop/Liver_Analysis.v6p.normalized.expression.R")
+pull_heart <- Heart_Left_Ventricle_Analysis.v6p.normalized.expression[1948,]
 
-Lung_Analysis.v6p.normalized.expression <- read.delim("~/Desktop/Lung_Analysis.v6p.normalized.expression.R")
+Pancreas_Analysis.v6p.normalized.expression <- read.delim("/Users/laurenblake/Desktop/Endoderm_TC/Pancreas_Analysis.v6p.normalized.expression.R")
+
+Liver_Analysis.v6p.normalized.expression <- read.delim("/Users/laurenblake/Desktop/Endoderm_TC/Liver_Analysis.v6p.normalized.expression.R")
+pull_liver <- Liver_Analysis.v6p.normalized.expression[1948,]
+
+mean(as.numeric(pull_heart))
+mean(as.numeric(pull_liver))
+
+Lung_Analysis.v6p.normalized.expression <- read.delim("/Users/laurenblake/Desktop/Endoderm_TC/Lung_Analysis.v6p.normalized.expression.R")
 
 intersect(intersect(intersect(intersect(colnames(Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3), colnames(Heart_Left_Ventricle_Analysis.v6p.normalized.expression)), colnames(Pancreas_Analysis.v6p.normalized.expression)), colnames(Liver_Analysis.v6p.normalized.expression)), colnames(Lung_Analysis.v6p.normalized.expression))
 
