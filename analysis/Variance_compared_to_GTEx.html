@@ -22,8 +22,8 @@
 <script src="libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="libs/navigation-1.1/tabsets.js"></script>
-<link href="libs/highlightjs-1.1/textmate.css" rel="stylesheet" />
-<script src="libs/highlightjs-1.1/highlight.js"></script>
+<link href="libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="libs/highlightjs-9.12.0/highlight.js"></script>
 
 <style type="text/css">
 
@@ -67,10 +67,12 @@ body {
   }
 </style>
 <script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
 }
 </script>
 
@@ -104,9 +106,7 @@ h6 {
 </style>
 
 
-</head>
 
-<body>
 
 <style type = "text/css">
 .main-container {
@@ -125,25 +125,98 @@ img {
 .tabbed-pane {
   padding-top: 12px;
 }
+.html-widget {
+  margin-bottom: 20px;
+}
 button.code-folding-btn:focus {
   outline: none;
+}
+summary {
+  display: list-item;
 }
 </style>
 
 
 
-<div class="container-fluid main-container">
-
 <!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
 <script>
 $(document).ready(function () {
   window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
 });
 </script>
 
 <!-- code folding -->
 
 
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
 
 
 
@@ -173,8 +246,8 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Variance comparison GTex</h1>
-<h4 class="author"><em>Lauren Blake</em></h4>
-<h4 class="date"><em>August 29, 2017</em></h4>
+<h4 class="author">Lauren Blake</h4>
+<h4 class="date">August 29, 2017</h4>
 
 </div>
 
@@ -194,7 +267,7 @@ $(document).ready(function () {
 <pre class="r"><code># Library 
 
 library(dplyr)</code></pre>
-<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.2.5</code></pre>
+<pre><code>## Warning: package &#39;dplyr&#39; was built under R version 3.4.4</code></pre>
 <pre><code>## 
 ## Attaching package: &#39;dplyr&#39;</code></pre>
 <pre><code>## The following objects are masked from &#39;package:stats&#39;:
@@ -203,9 +276,9 @@ library(dplyr)</code></pre>
 <pre><code>## The following objects are masked from &#39;package:base&#39;:
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(&quot;ggplot2&quot;)</code></pre>
-<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 3.2.5</code></pre>
-<pre class="r"><code># Function
+<pre class="r"><code>library(&quot;ggplot2&quot;)
+
+# Function
 bjp&lt;-
 theme(
   axis.text.y =  element_text(size = 9,face = &quot;bold&quot;,color = &quot;black&quot;),
@@ -216,15 +289,24 @@ theme(
 
 # Import file
 
-Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3 &lt;- read.delim(&quot;~/Desktop/Cells_EBV-transformed_lymphocytes_Analysis.v6p.normalized.expression 3.R&quot;)
+Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3 &lt;- read.delim(&quot;/Users/laurenblake/Desktop/Endoderm_TC/Cells_EBV-transformed_lymphocytes_Analysis.v6p.normalized.expression 3.R&quot;)
 
-Heart_Left_Ventricle_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;~/Desktop/Heart_Left_Ventricle_Analysis.v6p.normalized.expression.R&quot;)
+Heart_Left_Ventricle_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;/Users/laurenblake/Desktop/Endoderm_TC/Heart_Left_Ventricle_Analysis.v6p.normalized.expression.R&quot;)
 
-Pancreas_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;~/Desktop/Pancreas_Analysis.v6p.normalized.expression.R&quot;)
+which(grepl(&quot;ENSG00000118194&quot;, Heart_Left_Ventricle_Analysis.v6p.normalized.expression$gene_id) == TRUE)</code></pre>
+<pre><code>## [1] 1948</code></pre>
+<pre class="r"><code>pull_heart &lt;- Heart_Left_Ventricle_Analysis.v6p.normalized.expression[1948,]
 
-Liver_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;~/Desktop/Liver_Analysis.v6p.normalized.expression.R&quot;)
+Pancreas_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;/Users/laurenblake/Desktop/Endoderm_TC/Pancreas_Analysis.v6p.normalized.expression.R&quot;)
 
-Lung_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;~/Desktop/Lung_Analysis.v6p.normalized.expression.R&quot;)
+Liver_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;/Users/laurenblake/Desktop/Endoderm_TC/Liver_Analysis.v6p.normalized.expression.R&quot;)
+pull_liver &lt;- Liver_Analysis.v6p.normalized.expression[1948,]
+
+mean(as.numeric(pull_heart))</code></pre>
+<pre><code>## [1] 2075763</code></pre>
+<pre class="r"><code>mean(as.numeric(pull_liver))</code></pre>
+<pre><code>## [1] 4022948</code></pre>
+<pre class="r"><code>Lung_Analysis.v6p.normalized.expression &lt;- read.delim(&quot;/Users/laurenblake/Desktop/Endoderm_TC/Lung_Analysis.v6p.normalized.expression.R&quot;)
 
 intersect(intersect(intersect(intersect(colnames(Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3), colnames(Heart_Left_Ventricle_Analysis.v6p.normalized.expression)), colnames(Pancreas_Analysis.v6p.normalized.expression)), colnames(Liver_Analysis.v6p.normalized.expression)), colnames(Lung_Analysis.v6p.normalized.expression))</code></pre>
 <pre><code>##  [1] &quot;X.chr&quot;     &quot;start&quot;     &quot;end&quot;       &quot;gene_id&quot;   &quot;GTEX.WFON&quot;
@@ -356,9 +438,7 @@ gtex_var_labels &lt;- cbind(gtex_log_var, labels)
 p &lt;- ggplot(gtex_var_labels, aes(x = factor(labels), y = gtex_log_var))
 p &lt;- p + geom_violin(aes(fill = factor(labels)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + xlab(&quot;GTEx Tissue&quot;) + ylab(expression(bold(&#39;log&#39;[2]*&#39; variance of normalized gene expression (for each gene)&#39;))) + ggtitle(expression(bold(&#39;log&#39;[2]*&#39; variance of normalized gene expression (n = 17,542 genes) for 5 GTEx tissues&#39;)))
 p &lt;- p + scale_x_discrete(labels=c(&quot;1&quot; = &quot;LCL&quot;, &quot;2&quot; = &quot;Liver&quot;, &quot;3&quot; = &quot;Lung&quot;, &quot;4&quot; = &quot;Pancreas&quot;, &quot;5&quot; = &quot;Heart&quot;)) + bjp
-p</code></pre>
-<pre><code>## Don&#39;t know how to automatically pick scale for object of type data.frame. Defaulting to continuous.</code></pre>
-<p><img src="Variance_compared_to_GTEx_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+#p</code></pre>
 <div id="make-sure-the-data-looks-normally-distributed" class="section level2">
 <h2>Make sure the data looks normally distributed</h2>
 <pre class="r"><code># Get the row names for the common genes

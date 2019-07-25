@@ -29,7 +29,7 @@ theme(
 
 # Import file
 
-Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3 <- read.delim("/Users/laurenblake/Desktop/Cells_EBV-transformed_lymphocytes_Analysis.v6p.normalized.expression 3.R")
+Cells_EBV.transformed_lymphocytes_Analysis.v6p.normalized.expression.3 <- read.delim("/Users/laurenblake/Desktop/Endoderm_TC/Cells_EBV-transformed_lymphocytes_Analysis.v6p.normalized.expression 3.R")
 
 Heart_Left_Ventricle_Analysis.v6p.normalized.expression <- read.delim("/Users/laurenblake/Desktop/Endoderm_TC/Heart_Left_Ventricle_Analysis.v6p.normalized.expression.R")
 
@@ -151,7 +151,7 @@ gtex_var_labels <- cbind(gtex_log_var, labels)
 p <- ggplot(gtex_var_labels, aes(x = factor(labels), y = gtex_log_var))
 p <- p + geom_violin(aes(fill = factor(labels)), show.legend = FALSE) + geom_boxplot(aes(fill = factor(labels)), show.legend = FALSE, outlier.shape = NA,width=0.2) + theme_bw() + xlab("GTEx Tissue") + ylab(expression(bold('log'[2]*' variance of normalized gene expression (for each gene)'))) + ggtitle(expression(bold('log'[2]*' variance of normalized gene expression (n = 17,542 genes) for 5 GTEx tissues')))
 p <- p + scale_x_discrete(labels=c("1" = "LCL", "2" = "Liver", "3" = "Lung", "4" = "Pancreas", "5" = "Heart")) + bjp
-p
+#p
 
 ```
 
